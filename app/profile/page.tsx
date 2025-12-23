@@ -20,7 +20,42 @@ export default function ProfilePage() {
     const [yearOfStudy, setYearOfStudy] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("");
 
+    // Security states
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [securityLoading, setSecurityLoading] = useState(false);
+
     const router = useRouter();
+
+    const handlePasswordUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setMessage(null);
+
+        if (newPassword !== confirmPassword) {
+            setMessage({ type: "error", text: "Passwords do not match" });
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            setMessage({ type: "error", text: "Password must be at least 6 characters" });
+            return;
+        }
+
+        setSecurityLoading(true);
+
+        const { error } = await supabase.auth.updateUser({
+            password: newPassword
+        });
+
+        if (error) {
+            setMessage({ type: "error", text: error.message });
+        } else {
+            setMessage({ type: "success", text: "Password updated successfully!" });
+            setNewPassword("");
+            setConfirmPassword("");
+        }
+        setSecurityLoading(false);
+    };
 
     useEffect(() => {
         const getUser = async () => {
@@ -390,14 +425,64 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Account Security Card */}
-                <div className="mt-8 bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div>
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Account Security</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Want to change your password or secure your account further?</p>
+                {/* Security & Login Section */}
+                <div className="mt-8 bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 md:p-10 shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <div className="mb-8">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="p-2.5 bg-red-50 dark:bg-red-900/20 rounded-xl">
+                                <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Security & Login</h2>
+                        </div>
+                        <p className="text-gray-500 dark:text-gray-400 ml-1">Manage your password and account security settings.</p>
                     </div>
-                    <button className="px-6 py-3 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-bold rounded-xl border border-gray-200 dark:border-gray-700 transition-all">
-                        Security Settings
-                    </button>
+
+                    <form onSubmit={handlePasswordUpdate} className="space-y-6 max-w-2xl">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">New Password</label>
+                                <input
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    className="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-red-500 outline-none transition-all dark:text-white"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Confirm New Password</label>
+                                <input
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    className="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-red-500 outline-none transition-all dark:text-white"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <button
+                                type="submit"
+                                disabled={securityLoading || !newPassword || !confirmPassword}
+                                className={`px-8 py-3.5 bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 font-bold rounded-2xl transition-all shadow-lg hover:shadow-xl active:scale-95 flex items-center gap-2 ${securityLoading || !newPassword || !confirmPassword ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                {securityLoading ? (
+                                    <>
+                                        <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
+                                        Updating...
+                                    </>
+                                ) : (
+                                    "Update Password"
+                                )}
+                            </button>
+                            <p className="text-xs text-gray-400">
+                                Ensure your password is at least 6 characters long using letters and numbers.
+                            </p>
+                        </div>
+                    </form>
                 </div>
             </div>
         </main>

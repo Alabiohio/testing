@@ -67,18 +67,10 @@ export default function CreditsPage() {
                             🎨
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">UI/UX Designer</h3>
-                        <p className="text-gray-500 dark:text-gray-400 font-medium mb-4">Visual Identity & Experience</p>
+                        <p className="text-gray-500 dark:text-gray-400 font-medium mb-4">Ohiocheoya Alabi</p>
                         <div className="flex gap-4">
-                            <a href="#" className="text-blue-600 dark:text-blue-400 font-bold text-sm hover:underline">Behance</a>
+                            <a href="mailto:ohiocodespace@gmail.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 font-bold text-sm hover:underline">Email</a>
                         </div>
-                    </div>
-
-                    <div className="group bg-white dark:bg-gray-800 p-8 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                        <div className="w-20 h-20 bg-purple-100 dark:bg-purple-900/30 rounded-3xl flex items-center justify-center text-4xl mb-6 relative overflow-hidden group-hover:scale-110 transition-transform">
-                            🖊️
-                        </div>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Author</h3>
-                        <p className="text-gray-500 dark:text-gray-400 font-medium mb-4">Head Writer & Research</p>
                     </div>
 
                     <div className="group bg-white dark:bg-gray-800 p-8 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
@@ -87,14 +79,10 @@ export default function CreditsPage() {
                         </div>
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Israel Edeh</h3>
                         <p className="text-gray-500 dark:text-gray-400 font-medium mb-4">Logo Designer</p>
-                    </div>
-
-                    <div className="group bg-white dark:bg-gray-800 p-8 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                        <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 rounded-3xl flex items-center justify-center text-4xl mb-6 relative overflow-hidden group-hover:scale-110 transition-transform">
-                            💡
+                        <div className="flex gap-4">
+                            <a href="mailto:piedeh992@gmail.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 font-bold text-sm hover:underline">Email</a>
+                            <a href="https://wa.me/2347038200162" target="_blank" rel="noopener noreferrer" className="text-green-600 dark:text-green-400 font-bold text-sm hover:underline">WhatsApp</a>
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Content Strategy</h3>
-                        <p className="text-gray-500 dark:text-gray-400 font-medium mb-4">Editor & Communication</p>
                     </div>
 
                     <div className="group bg-white dark:bg-gray-800 p-8 rounded-[2.5rem] border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
@@ -107,40 +95,14 @@ export default function CreditsPage() {
                     </div>
                 </div>
 
-                {/* Tech Stack Section */}
-                <div className="bg-white dark:bg-gray-800/40 backdrop-blur-xl rounded-[3rem] p-12 md:p-20 border border-gray-100 dark:border-gray-800 shadow-2xl relative overflow-hidden mb-24">
+                {/* Partners / Special Thanks */}
+                <div className="text-center relative">
                     <div className="absolute top-0 right-0 p-8 opacity-10">
                         <Image src={icon} alt="Logo" width={150} height={150} />
                     </div>
-
-                    <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-12 tracking-tighter">Tools of the Trade</h2>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        <div className="space-y-2">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Framework</span>
-                            <p className="text-lg font-bold text-gray-900 dark:text-white">Next.js 15</p>
-                        </div>
-                        <div className="space-y-2">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Database</span>
-                            <p className="text-lg font-bold text-gray-900 dark:text-white">Supabase</p>
-                        </div>
-                        <div className="space-y-2">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">CMS</span>
-                            <p className="text-lg font-bold text-gray-900 dark:text-white">Sanity.io</p>
-                        </div>
-                        <div className="space-y-2">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Styling</span>
-                            <p className="text-lg font-bold text-gray-900 dark:text-white">Tailwind CSS</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Partners / Special Thanks */}
-                <div className="text-center">
                     <h3 className="text-sm font-black uppercase tracking-[0.3em] text-gray-400 mb-12">Special Thanks</h3>
                     <div className="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
-                        <span className="text-2xl font-black text-gray-900 dark:text-white">UNIBEN</span>
-                        <span className="text-2xl font-black text-gray-900 dark:text-white">Faculty of Engr.</span>
+                        <span className="text-2xl font-black text-gray-900 dark:text-white">Ghosty's Lab</span>
                         <span className="text-2xl font-black text-gray-900 dark:text-white">MTE240</span>
                         <span className="text-2xl font-black text-gray-900 dark:text-white">Ohio Codespace</span>
                     </div>

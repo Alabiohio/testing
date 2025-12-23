@@ -18,6 +18,14 @@ export const metadata: Metadata = {
     description: "Stay updated with the latest news, academic notices, and student life from the Faculty of Engineering, University of Benin.",
     type: "website",
     siteName: "Engine Blog",
+    images: [
+      {
+        url: "/og-image.png", // Make sure this exists or replace with a real link
+        width: 1200,
+        height: 630,
+        alt: "Engine Blog - UNIBEN",
+      },
+    ],
   }
 };
 

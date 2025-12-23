@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import icon from "@/public/icon.png";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Footer() {
   return (
@@ -59,6 +60,9 @@ export default function Footer() {
             <a href="https://www.tiktok.com/@mechatrons.2.4.0" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors font-bold uppercase tracking-widest">MTE240</a>
             <a href="https://ohiocodespace.vercel.app" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors font-bold uppercase tracking-widest">Ohio Codespace</a>
             <a href="https://github.com/Ghosty-s-Lab-Inc" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors font-bold uppercase tracking-widest">Ghosty's Lab Technology</a>
+            <div className="pl-6 border-l border-gray-100 dark:border-gray-800">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>

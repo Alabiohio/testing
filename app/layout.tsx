@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import LoaderRegistrar from "@/components/LoaderRegistrar";
 import ScrollToTop from "@/components/ScrollToTop";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import NextTopLoader from "nextjs-toploader";
 
 const geistSans = Geist({
@@ -53,24 +54,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NextTopLoader
-          color="#2563eb"
-          height={3}
-          showSpinner={false}
-          easing="ease"
-          speed={200}
-          shadow="0 0 10px #2563eb,0 0 5px #2563eb"
-        />
-        <LoaderRegistrar />
-        <FirebaseAnalytics />
-        <Navbar />
-        {children}
-        <Footer />
-        <ScrollToTop />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextTopLoader
+            color="#2563eb"
+            height={3}
+            showSpinner={false}
+            easing="ease"
+            speed={200}
+            shadow="0 0 10px #2563eb,0 0 5px #2563eb"
+          />
+          <LoaderRegistrar />
+          <FirebaseAnalytics />
+          <Navbar />
+          {children}
+          <Footer />
+          <ScrollToTop />
+        </ThemeProvider>
       </body>
     </html>
   );

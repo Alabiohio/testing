@@ -10,6 +10,7 @@ import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { logAnalyticsEvent } from "@/lib/firebase";
 import { faHome, faCalendarDays, faLayerGroup, faBell, faInfoCircle, faCalendarDay, faSignOut, faSignIn } from "@fortawesome/free-solid-svg-icons";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -107,6 +108,8 @@ export default function Navbar() {
 
             <NavLink href="/notices">Notices</NavLink>
             <NavLink href="/about">About</NavLink>
+
+
 
             {/* Auth Buttons */}
             {user ? (
@@ -285,6 +288,14 @@ export default function Navbar() {
               </Link>
             </div>
           )}
+
+          {/* Mobile Theme Toggle */}
+          <div className={`mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 transition-all duration-700 delay-500 ${open ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50 dark:bg-gray-800/50">
+              <span className="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Theme</span>
+              <ThemeToggle />
+            </div>
+          </div>
         </div>
       </div>
     </nav>

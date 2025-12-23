@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,11 +14,19 @@
   --font-mono: var(--font-geist-mono);
 }
 
+
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
+}
+
+/* Support class-based dark mode (next-themes) */
+:root.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
@@ -138,6 +148,34 @@ button {
 }
 
 .footer-links-out a {
-font-size: 0.6rem;
-font-weight: 300;
+  font-size: 0.6rem;
+  font-weight: 300;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(161, 195, 255, 0.8);
+  /* Neutral gray with opacity */
+  border-radius: 100vh;
+  border: 2px solid var(--background);
+  /* Creates a floating effect */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(161, 195, 255, 0.8);
+}
+
+/* Firefox Support */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(161, 195, 255, 0.8) var(--background);
 }

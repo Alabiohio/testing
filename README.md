@@ -272,7 +272,7 @@ Perfect for UNIBEN:
 * 🏗 Faculty announcements
 * 📢 Urgent updates
 
-This makes your blog **more useful than UNIBEN Blog** 😉
+This makes your blog **more useful than UNIBEN Blog** 
 
 ---
 

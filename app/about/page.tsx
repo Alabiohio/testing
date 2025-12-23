@@ -71,7 +71,7 @@ export default function AboutPage() {
                             We are always looking for fresh voices. Whether it's an article about your project or a coverage of an event, reach out!
                         </p>
                         <Link
-                            href="mailto:contact@engineblog.uniben.edu"
+                            href="mailto:unibenmte240@gmail.com"
                             className="inline-flex px-8 py-4 bg-white text-blue-600 font-bold rounded-2xl shadow-xl hover:shadow-blue-500/40 transition-all hover:scale-105 active:scale-95"
                         >
                             Get in Touch

@@ -256,6 +256,42 @@ button {
 }
 
 
+@keyframes mesh-gradient {
+  0% {
+    transform: translate(0%, 0%) scale(1);
+  }
+
+  33% {
+    transform: translate(10%, -10%) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-5%, 5%) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0%, 0%) scale(1);
+  }
+}
+
+@keyframes grid-move {
+  0% {
+    transform: perspective(100vh) rotateX(60deg) translateY(0);
+  }
+
+  100% {
+    transform: perspective(100vh) rotateX(60deg) translateY(60px);
+  }
+}
+
+.animate-mesh {
+  animation: mesh-gradient 20s ease-in-out infinite;
+}
+
+.animate-grid-move {
+  animation: grid-move 2s linear infinite;
+}
+
 @keyframes blur-flux {
 
   0%,

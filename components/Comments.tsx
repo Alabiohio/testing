@@ -64,7 +64,6 @@ export default function CommentsSection({ postSlug }: { postSlug: string }) {
         setComments(data);
     };
 
-
     const handleToggleReaction = async (commentId: number, emoji: string) => {
         const finalUserId = user?.id || guestId;
         if (!finalUserId) return;
@@ -176,6 +175,7 @@ function CommentThread({
     comment,
     allComments,
     user,
+    guestId,
     depth,
     replyingTo,
     handleReply,
@@ -264,6 +264,7 @@ function CommentThread({
 function CommentCard({
     comment,
     user,
+    guestId,
     parentUserName,
     onReply,
     replyCount = 0,

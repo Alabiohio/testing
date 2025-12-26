@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
-  // devIndicators: false,
+  devIndicators: false,
   images: {
     unoptimized: true,
     remotePatterns: [

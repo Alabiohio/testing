@@ -35,7 +35,7 @@ export default function SearchInput() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search posts..."
-                    className="w-full px-5 py-3 pl-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all dark:text-white"
+                    className="w-full px-5 py-3 pl-12 bg-white text-gray-500 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all dark:text-white"
                 />
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
                     <svg

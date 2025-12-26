@@ -1,20 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getReactions, addReaction, removeReaction, Reaction } from "@/lib/reactions";
-import { supabase } from "@/lib/supabase";
+import { getReactions, Reaction } from "@/lib/reactions";
+import { useUser } from "@clerk/nextjs";
+import { addReactionAction, removeReactionAction } from "@/app/actions/social";
 
-const EMOJIS = ["❤️", "😂", "😢", "👎"];
+const EMOJIS = ["❤️", "😂", "😢", "😠"];
 
 export default function Reactions({ postSlug }: { postSlug: string }) {
     const [reactions, setReactions] = useState<Reaction[]>([]);
     const [sessionUserId, setSessionUserId] = useState<string>("");
+    const { user, isLoaded } = useUser();
 
     useEffect(() => {
         const setupId = async () => {
-            // 1. Try to get authenticated user
-            const { data: { user } } = await supabase.auth.getUser();
-
             if (user) {
                 setSessionUserId(user.id);
             } else {
@@ -29,24 +28,10 @@ export default function Reactions({ postSlug }: { postSlug: string }) {
             fetchReactions();
         };
 
-        setupId();
-
-        // Listen for auth changes to switch IDs (e.g. if user logs in)
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (session?.user) {
-                setSessionUserId(session.user.id);
-            } else {
-                let anonId = sessionStorage.getItem("anonUserId");
-                if (!anonId) {
-                    anonId = crypto.randomUUID?.() || Math.random().toString(36).substring(2);
-                    sessionStorage.setItem("anonUserId", anonId);
-                }
-                setSessionUserId(anonId);
-            }
-        });
-
-        return () => subscription.unsubscribe();
-    }, [postSlug]);
+        if (isLoaded) {
+            setupId();
+        }
+    }, [isLoaded, user, postSlug]);
 
     const fetchReactions = async () => {
         const data = await getReactions(postSlug);
@@ -77,23 +62,15 @@ export default function Reactions({ postSlug }: { postSlug: string }) {
 
         try {
             if (existing) {
-                const { data, error } = await removeReaction({
+                await removeReactionAction({
                     postSlug,
-                    userId: sessionUserId,
                     reaction: emoji
                 });
-
-                if (error || (data && data.length === 0)) {
-                    console.error("Failed to remove reaction:", error || "No rows deleted");
-                    fetchReactions(); // Revert on failure or no-op
-                }
             } else {
-                const data = await addReaction({
+                await addReactionAction({
                     postSlug,
-                    userId: sessionUserId,
                     reaction: emoji
                 });
-                if (!data) fetchReactions(); // Revert on failure
             }
         } catch (error) {
             console.error("Reaction update failed:", error);
@@ -106,6 +83,8 @@ export default function Reactions({ postSlug }: { postSlug: string }) {
 
     const userHasReacted = (emoji: string) =>
         reactions.some((r) => r.user_id === sessionUserId && r.reaction === emoji);
+
+    if (!isLoaded) return null;
 
     return (
         <div className="flex flex-wrap gap-3 mb-8">

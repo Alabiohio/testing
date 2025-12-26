@@ -8,6 +8,7 @@ import LoaderRegistrar from "@/components/LoaderRegistrar";
 import ScrollToTop from "@/components/ScrollToTop";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import NextTopLoader from "nextjs-toploader";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,32 +55,34 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <NextTopLoader
-            color="#2563eb"
-            height={3}
-            showSpinner={false}
-            easing="ease"
-            speed={200}
-            shadow="0 0 10px #2563eb,0 0 5px #2563eb"
-          />
-          <LoaderRegistrar />
-          <FirebaseAnalytics />
-          <Navbar />
-          {children}
-          <Footer />
-          <ScrollToTop />
-        </ThemeProvider>
-      </body>
-    </html>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <NextTopLoader
+              color="#2563eb"
+              height={3}
+              showSpinner={false}
+              easing="ease"
+              speed={200}
+              shadow="0 0 10px #2563eb,0 0 5px #2563eb"
+            />
+            <LoaderRegistrar />
+            <FirebaseAnalytics />
+            <Navbar />
+            {children}
+            <Footer />
+            <ScrollToTop />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

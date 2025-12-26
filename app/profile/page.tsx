@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-import { User } from "@supabase/supabase-js";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import imageCompression from "browser-image-compression";
 
+import { supabase } from "@/lib/supabase";
+
 export default function ProfilePage() {
-    const [user, setUser] = useState<User | null>(null);
+    const { user, isLoaded } = useUser();
+    const { signOut } = useClerk();
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(false);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
@@ -21,60 +23,27 @@ export default function ProfilePage() {
     const [avatarUrl, setAvatarUrl] = useState("");
 
     // Security states
+    const [showPasswordForm, setShowPasswordForm] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [securityLoading, setSecurityLoading] = useState(false);
 
     const router = useRouter();
 
-    const handlePasswordUpdate = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setMessage(null);
-
-        if (newPassword !== confirmPassword) {
-            setMessage({ type: "error", text: "Passwords do not match" });
-            return;
-        }
-
-        if (newPassword.length < 6) {
-            setMessage({ type: "error", text: "Password must be at least 6 characters" });
-            return;
-        }
-
-        setSecurityLoading(true);
-
-        const { error } = await supabase.auth.updateUser({
-            password: newPassword
-        });
-
-        if (error) {
-            setMessage({ type: "error", text: error.message });
-        } else {
-            setMessage({ type: "success", text: "Password updated successfully!" });
-            setNewPassword("");
-            setConfirmPassword("");
-        }
-        setSecurityLoading(false);
-    };
-
     useEffect(() => {
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
+        if (isLoaded) {
             if (!user) {
-                router.push("/auth");
+                router.push("/sign-in");
                 return;
             }
-            setUser(user);
-            setUsername(user.user_metadata?.username || "");
-            setFullName(user.user_metadata?.full_name || "");
-            setDepartment(user.user_metadata?.department || "");
-            setYearOfStudy(user.user_metadata?.year_of_study || "");
-            setAvatarUrl(user.user_metadata?.engine_avatar_url || user.user_metadata?.avatar_url || user.user_metadata?.picture || "");
+            setUsername(user.username || "");
+            setFullName(`${user.firstName || ""} ${user.lastName || ""}`.trim());
+            setDepartment((user.publicMetadata?.department as string) || "");
+            setYearOfStudy((user.publicMetadata?.yearOfStudy as string) || "");
+            setAvatarUrl(user.imageUrl || "");
             setLoading(false);
-        };
-
-        getUser();
-    }, [router]);
+        }
+    }, [isLoaded, user, router]);
 
     const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
         try {
@@ -82,74 +51,34 @@ export default function ProfilePage() {
             setMessage(null);
 
             if (!user) throw new Error("User not authenticated");
-
             if (!event.target.files || event.target.files.length === 0) {
                 throw new Error("You must select an image");
             }
 
-            let file = event.target.files[0];
+            const file = event.target.files[0];
 
-            // 1. Initial Size Check (Max 450KB for raw file)
-            if (file.size > 450 * 1024) {
-                // We'll try to compress it below 95KB anyway, but this captures extreme cases
-            }
+            // 1. Clerk handles image uploads easily through user.setProfileImage
+            await user.setProfileImage({ file });
 
-            // 2. Compress to ~95KB while maintaining quality
-            const options = {
-                maxSizeMB: 0.095, // 95KB
-                maxWidthOrHeight: 1024,
-                useWebWorker: true,
-                initialQuality: 0.8,
-            };
+            // 2. Wait a moment for Clerk to process and provide the new image URL
+            await user.reload();
+            setAvatarUrl(user.imageUrl);
 
-            try {
-                const compressedFile = await imageCompression(file, options);
-                file = compressedFile as File;
-                console.log(`Compressed size: ${(file.size / 1024).toFixed(2)} KB`);
-            } catch (compressionError) {
-                console.error("Compression failed:", compressionError);
-                // Continue with original file if compression fails but it's under 450kb
-                if (file.size > 450 * 1024) throw new Error("File is too large and compression failed.");
-            }
-
-            const fileExt = file.name.split(".").pop();
-            const filePath = `${user.id}/avatar.${fileExt}`;
-
-            // 3. Clean up old files in this user's folder
-            const { data: existingFiles } = await supabase.storage
-                .from("avatars")
-                .list(user.id);
-
-            if (existingFiles && existingFiles.length > 0) {
-                const pathsToDelete = existingFiles.map(f => `${user.id}/${f.name}`);
-                await supabase.storage.from("avatars").remove(pathsToDelete);
-            }
-
-            // 2. Upload to Supabase Storage
-            const { error: uploadError } = await supabase.storage
-                .from("avatars")
-                .upload(filePath, file, { upsert: true });
-
-            if (uploadError) throw uploadError;
-
-            // 3. Get Public URL with cache buster
-            const { data } = supabase.storage
-                .from("avatars")
-                .getPublicUrl(filePath);
-
-            const publicUrl = `${data.publicUrl}?t=${Date.now()}`;
-            setAvatarUrl(publicUrl);
-
-            // 4. Update Auth Metadata - Using a unique key to prevent provider overwrite
-            const { data: { user: updatedUser }, error: updateError } = await supabase.auth.updateUser({
-                data: { engine_avatar_url: publicUrl },
+            // 3. Sync with Supabase immediately to capture new avatar_url
+            const res = await fetch("/api/user/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username,
+                    fullName,
+                    department,
+                    yearOfStudy,
+                }),
             });
 
-            if (updateError) throw updateError;
-
-            // 5. Force session refresh so all components see the change
-            await supabase.auth.refreshSession();
-            if (updatedUser) setUser(updatedUser);
+            if (!res.ok) {
+                console.error("Supabase sync failed after avatar upload");
+            }
 
             setMessage({ type: "success", text: "Profile picture updated!" });
         } catch (error: any) {
@@ -160,33 +89,90 @@ export default function ProfilePage() {
         }
     };
 
-
     const handleUpdateProfile = async (e: React.FormEvent) => {
         e.preventDefault();
         setUpdating(true);
         setMessage(null);
 
-        const { error } = await supabase.auth.updateUser({
-            data: {
-                username,
-                full_name: fullName,
-                department,
-                year_of_study: yearOfStudy,
-                engine_avatar_url: avatarUrl,
-            },
-        });
+        try {
+            const res = await fetch("/api/user/update", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username,
+                    fullName,
+                    department,
+                    yearOfStudy,
+                }),
+            });
 
-        if (error) {
-            setMessage({ type: "error", text: error.message });
-        } else {
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed to update profile");
+            }
+
             setMessage({ type: "success", text: "Profile updated successfully!" });
-            const { data: { user: updatedUser } } = await supabase.auth.getUser();
-            setUser(updatedUser);
+            await user?.reload();
+        } catch (error: any) {
+            setMessage({ type: "error", text: error.message });
+        } finally {
+            setUpdating(false);
         }
-        setUpdating(false);
     };
 
-    if (loading) {
+    const handleChangePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (newPassword !== confirmPassword) {
+            setMessage({ type: "error", text: "New passwords do not match" });
+            return;
+        }
+        setUpdating(true);
+        setMessage(null);
+        try {
+            if (user?.passwordEnabled) {
+                await user.updatePassword({
+                    currentPassword,
+                    newPassword,
+                });
+            } else {
+                // For users without a password (OAuth), we create one
+                // Clerk's updatePassword works without currentPassword if passwordEnabled is false
+                await user?.updatePassword({
+                    newPassword,
+                });
+            }
+            setMessage({ type: "success", text: user?.passwordEnabled ? "Password updated successfully!" : "Password created successfully!" });
+            setShowPasswordForm(false);
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
+        } catch (error: any) {
+            setMessage({ type: "error", text: error.message });
+        } finally {
+            setUpdating(false);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        const confirmed = window.confirm("Are you absolutely sure you want to delete your account? This action is permanent and cannot be undone.");
+        if (!confirmed) return;
+
+        setUpdating(true);
+        try {
+            // 1. Clean up Supabase data
+            await supabase.from("profiles").delete().eq("id", user?.id);
+
+            // 2. Delete from Clerk
+            await user?.delete();
+
+            router.push("/");
+        } catch (error: any) {
+            setMessage({ type: "error", text: "Failed to delete account: " + error.message });
+            setUpdating(false);
+        }
+    };
+
+    if (!isLoaded || loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
@@ -204,9 +190,10 @@ export default function ProfilePage() {
                     <span className="text-gray-900 dark:text-white font-medium">Profile Settings</span>
                 </nav>
 
-                <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden mb-8">
                     {/* Header Banner */}
                     <div className="h-32 bg-gradient-to-r from-blue-600 to-indigo-700 relative">
+                        {/* ... avatar code ... */}
                         <div className="absolute -bottom-12 left-8">
                             <label className="relative block group cursor-pointer" title="Change profile picture">
                                 <div className="w-24 h-24 rounded-3xl bg-white dark:bg-gray-800 p-1 shadow-xl group-hover:scale-105 transition-transform duration-300">
@@ -222,7 +209,7 @@ export default function ProfilePage() {
                                                 }}
                                             />
                                         ) : (
-                                            username?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase()
+                                            username?.charAt(0).toUpperCase() || user?.primaryEmailAddress?.emailAddress.charAt(0).toUpperCase()
                                         )}
                                         {/* Upload Overlay */}
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-300">
@@ -245,9 +232,17 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="pt-16 pb-12 px-8">
-                        <div className="mb-10">
-                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Account Settings</h1>
-                            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your public profile and preferences.</p>
+                        <div className="mb-10 flex items-start justify-between">
+                            <div>
+                                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Account Settings</h1>
+                                <p className="text-gray-500 dark:text-gray-400 mt-1">Manage your public profile and preferences.</p>
+                            </div>
+                            <button
+                                onClick={() => signOut(() => router.push("/"))}
+                                className="px-6 py-2.5 bg-gray-100 dark:bg-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-700 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-400 font-bold rounded-xl transition-all flex items-center gap-2"
+                            >
+                                <span>Sign Out</span>
+                            </button>
                         </div>
 
                         {message && (
@@ -262,6 +257,7 @@ export default function ProfilePage() {
 
                         <form onSubmit={handleUpdateProfile} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {/* ... previous form fields ... */}
                                 {/* Username */}
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Username</label>
@@ -390,7 +386,6 @@ export default function ProfilePage() {
                                         <option value="Theatre Arts">Theatre Arts</option>
                                         <option value="Veterinary Medicine">Veterinary Medicine</option>
                                         <option value="Zoology">Zoology</option>
-
                                     </datalist>
                                 </div>
 
@@ -421,11 +416,10 @@ export default function ProfilePage() {
                                 </label>
                                 <input
                                     type="email"
-                                    value={user?.email}
+                                    value={user?.primaryEmailAddress?.emailAddress}
                                     disabled
                                     className="w-full px-5 py-3.5 bg-gray-100 dark:bg-gray-900/80 border border-gray-200 dark:border-gray-800 rounded-2xl text-gray-500 cursor-not-allowed outline-none"
                                 />
-                                <p className="text-[11px] text-gray-400 ml-2">Email changes must be requested via administrative support for security.</p>
                             </div>
 
                             <div className="pt-8 border-t border-gray-100 dark:border-gray-700 flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -437,79 +431,98 @@ export default function ProfilePage() {
                                     disabled={updating}
                                     className={`w-full md:w-auto px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-xl hover:shadow-blue-500/20 active:scale-95 flex items-center justify-center gap-2 ${updating ? 'opacity-70 cursor-not-allowed' : ''}`}
                                 >
-                                    {updating ? (
-                                        <>
-                                            <span className="animate-spin h-4 w-4 border-2 border-white/30 border-t-white rounded-full"></span>
-                                            Saving Changes...
-                                        </>
-                                    ) : (
-                                        "Save Profile"
-                                    )}
+                                    {updating ? "Saving..." : "Save Profile"}
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
 
-                {/* Account Security Card */}
-                {/* Security & Login Section */}
-                <div className="mt-8 bg-white dark:bg-gray-800 rounded-[2.5rem] p-8 md:p-10 shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-                    <div className="mb-8">
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2.5 bg-red-50 dark:bg-red-900/20 rounded-xl">
-                                <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
+                {/* Security Section */}
+                <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden mb-8">
+                    <div className="p-8">
+                        <div className="flex items-center justify-between mb-8">
+                            <div>
+                                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Security</h2>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">Manage your password and protection.</p>
                             </div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Security & Login</h2>
-                        </div>
-                        <p className="text-gray-500 dark:text-gray-400 ml-1">Manage your password and account security settings.</p>
-                    </div>
-
-                    <form onSubmit={handlePasswordUpdate} className="space-y-6 max-w-2xl">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">New Password</label>
-                                <input
-                                    type="password"
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    placeholder="••••••••"
-                                    className="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-red-500 outline-none transition-all dark:text-white"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-sm font-bold text-gray-700 dark:text-gray-300 ml-1">Confirm New Password</label>
-                                <input
-                                    type="password"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    placeholder="••••••••"
-                                    className="w-full px-5 py-3.5 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-red-500 outline-none transition-all dark:text-white"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
                             <button
-                                type="submit"
-                                disabled={securityLoading || !newPassword || !confirmPassword}
-                                className={`px-8 py-3.5 bg-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-gray-900 font-bold rounded-2xl transition-all shadow-lg hover:shadow-xl active:scale-95 flex items-center gap-2 ${securityLoading || !newPassword || !confirmPassword ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                onClick={() => setShowPasswordForm(!showPasswordForm)}
+                                className="px-6 py-2 border border-gray-200 dark:border-gray-700 rounded-xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors dark:text-white"
                             >
-                                {securityLoading ? (
-                                    <>
-                                        <span className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></span>
-                                        Updating...
-                                    </>
-                                ) : (
-                                    "Update Password"
-                                )}
+                                {showPasswordForm ? "Cancel" : (user?.passwordEnabled ? "Change Password" : "Set Password")}
                             </button>
-                            <p className="text-xs text-gray-400">
-                                Ensure your password is at least 6 characters long using letters and numbers.
+                        </div>
+
+                        {showPasswordForm && (
+                            <form onSubmit={handleChangePassword} className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                <div className={`grid grid-cols-1 ${user?.passwordEnabled ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
+                                    {user?.passwordEnabled && (
+                                        <input
+                                            type="password"
+                                            placeholder="Current Password"
+                                            value={currentPassword}
+                                            onChange={(e) => setCurrentPassword(e.target.value)}
+                                            className="px-5 py-3 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+                                            required
+                                        />
+                                    )}
+                                    <input
+                                        type="password"
+                                        placeholder="New Password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        className="px-5 py-3 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+                                        required
+                                    />
+                                    <input
+                                        type="password"
+                                        placeholder="Confirm New Password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="px-5 py-3 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 dark:text-white"
+                                        required
+                                    />
+                                </div>
+                                <button
+                                    type="submit"
+                                    disabled={updating}
+                                    className="w-full md:w-auto px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold rounded-xl hover:scale-105 active:scale-95 transition-all shadow-lg"
+                                >
+                                    {user?.passwordEnabled ? "Update Password" : "Create Password"}
+                                </button>
+                                {user?.passwordEnabled && (
+                                    <div className="mt-2 text-right">
+                                        <Link
+                                            href="/sign-in?redirect_url=/profile"
+                                            className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                                        >
+                                            Forgot your current password? Reset via email
+                                        </Link>
+                                    </div>
+                                )}
+                            </form>
+                        )}
+                    </div>
+                </div>
+
+                {/* Danger Zone */}
+                <div className="bg-red-50/30 dark:bg-red-900/10 rounded-[2.5rem] border border-red-100 dark:border-red-900/50 p-8">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div>
+                            <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-1 uppercase tracking-wider">Danger Zone</h2>
+                            <p className="text-sm text-red-500/70 dark:text-red-400/60 font-medium">
+                                Once you delete your account, there is no going back. Please be certain.
                             </p>
                         </div>
-                    </form>
+                        <button
+                            onClick={handleDeleteAccount}
+                            disabled={updating}
+                            className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-2xl transition-all shadow-xl shadow-red-600/20 active:scale-95 whitespace-nowrap"
+                        >
+                            Delete Account
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>

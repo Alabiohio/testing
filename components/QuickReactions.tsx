@@ -1,17 +1,18 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { addReaction, removeReaction, getReactions, Reaction } from "@/lib/reactions";
-import { supabase } from "@/lib/supabase";
+import { getReactions, Reaction } from "@/lib/reactions";
+import { addReactionAction, removeReactionAction } from "@/app/actions/social";
+import { useUser } from "@clerk/nextjs";
 import { logAnalyticsEvent } from "@/lib/firebase";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faThumbsUp } from "@fortawesome/free-solid-svg-icons";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 const EMOJIS = [
-    { emoji: "👍", label: "Like" },
-    { emoji: "❤️", label: "Love" },
+    { emoji: "❤️", label: "love" },
     { emoji: "😂", label: "Funny" },
     { emoji: "😢", label: "Sad" },
+    { emoji: "😠", label: "angry" },
 ];
 
 export default function QuickReactions({ postSlug }: { postSlug: string }) {
@@ -20,18 +21,16 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
     const [showPicker, setShowPicker] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const pickerTimeout = useRef<NodeJS.Timeout | null>(null);
+    const { user, isLoaded } = useUser();
 
     useEffect(() => {
         // Initial user setup
         const setupUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 setSessionUserId(user.id);
             } else {
                 let anonId = sessionStorage.getItem("anonUserId");
                 if (!anonId) {
-                    // Create a valid-ish UUID v4 for anonymous users if crypto is available, 
-                    // otherwise fall back to a simple random string (which might fail if DB expects UUID)
                     anonId = typeof crypto !== "undefined" && crypto.randomUUID
                         ? crypto.randomUUID()
                         : 'anon-' + Math.random().toString(36).substring(2, 11);
@@ -42,20 +41,10 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
             await fetchReactions();
         };
 
-        setupUser();
-
-        // Listen for auth changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (session?.user) {
-                setSessionUserId(session.user.id);
-            } else {
-                const anonId = sessionStorage.getItem("anonUserId");
-                if (anonId) setSessionUserId(anonId);
-            }
-        });
-
-        return () => subscription.unsubscribe();
-    }, [postSlug]);
+        if (isLoaded) {
+            setupUser();
+        }
+    }, [isLoaded, user, postSlug]);
 
     const fetchReactions = async () => {
         const data = await getReactions(postSlug);
@@ -91,16 +80,16 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
 
         try {
             if (existing) {
-                await removeReaction({ postSlug, userId: sessionUserId, reaction: emoji });
+                await removeReactionAction({ postSlug, reaction: emoji });
                 logAnalyticsEvent('reaction_removed', { post_slug: postSlug, reaction: emoji });
             } else {
                 // If user had a different reaction, remove it first (implicit in FB style)
                 const otherReaction = reactions.find(r => r.user_id === sessionUserId && r.reaction !== emoji);
                 if (otherReaction) {
-                    await removeReaction({ postSlug, userId: sessionUserId, reaction: otherReaction.reaction });
+                    await removeReactionAction({ postSlug, reaction: otherReaction.reaction });
                     logAnalyticsEvent('reaction_changed', { post_slug: postSlug, old_reaction: otherReaction.reaction, new_reaction: emoji });
                 }
-                await addReaction({ postSlug, userId: sessionUserId, reaction: emoji });
+                await addReactionAction({ postSlug, reaction: emoji });
                 logAnalyticsEvent('reaction_added', { post_slug: postSlug, reaction: emoji });
             }
         } catch (error) {
@@ -127,6 +116,8 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
         }, 500);
     };
 
+    if (!isLoaded) return null;
+
     return (
         <div
             className="relative inline-block"
@@ -136,7 +127,7 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
         >
             {/* Main Button */}
             <button
-                onClick={() => handleReaction(userReaction ? userReaction.reaction : "👍")}
+                onClick={() => handleReaction(userReaction ? userReaction.reaction : "❤️")}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-all duration-300 border ${userReaction
                     ? "text-blue-600 bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800"
                     : "text-gray-500 hover:text-gray-700 bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-gray-300"
@@ -145,9 +136,9 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
                 {userReaction ? (
                     <span className="text-base">{userReaction.reaction}</span>
                 ) : (
-                    <FontAwesomeIcon icon={faThumbsUp} className="w-4 h-4" />
+                    <FontAwesomeIcon icon={faHeart} className="w-4 h-4" />
                 )}
-                <span>{userReaction ? "Reacted" : "React"}</span>
+                <span>{reactions.length > 0 ? reactions.length : 0}</span>
             </button>
 
             {/* Floating Picker */}

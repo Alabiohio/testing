@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import ShareButtons from "./ShareButtons";
-import InteractionsCount from "./InteractionsCount";
 import QuickReactions from "./QuickReactions";
+import CommentButton from "./CommentButton";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser, faCalendar } from "@fortawesome/free-solid-svg-icons";
 
 export default function PostCard({ post }: any) {
   const slug = typeof post.slug === 'string' ? post.slug : post.slug?.current || post.slug;
@@ -67,7 +69,8 @@ export default function PostCard({ post }: any) {
               {post.category}
             </span>
           ) : null}
-          <span className="text-xs text-gray-500 dark:text-gray-400">
+          <span className="text-xs text-gray-500 dark:text-gray-400 items-center ml-2">
+            <FontAwesomeIcon icon={faCalendar} size="lg" className="mr-2 text-blue-800 dark:text-blue-400" />
             {post.publishedAt && new Date(post.publishedAt).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -75,17 +78,13 @@ export default function PostCard({ post }: any) {
             })}
           </span>
           {post.author && (
-            <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center">
-              <span className="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-2" />
-              By {post.author}
+            <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center ml-2">
+              <FontAwesomeIcon icon={faUser} size="lg" className="mr-2 text-blue-800 dark:text-blue-400" />
+              {post.author}
             </span>
           )}
 
-          {/* Interaction Counts */}
-          <div className="flex items-center">
-            <span className="w-1 h-1 bg-gray-300 dark:bg-gray-600 rounded-full mx-2" />
-            <InteractionsCount postSlug={slug} />
-          </div>
+
         </div>
 
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
@@ -100,7 +99,10 @@ export default function PostCard({ post }: any) {
         </p>
 
         <div className="relative z-10 mb-6 flex flex-wrap items-center justify-between gap-4">
-          <QuickReactions postSlug={slug} />
+          <div className="flex items-center gap-2">
+            <QuickReactions postSlug={slug} />
+            <CommentButton postSlug={slug} />
+          </div>
           <ShareButtons url={postUrl} title={post.title} />
         </div>
 

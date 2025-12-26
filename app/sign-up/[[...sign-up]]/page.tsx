@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import AuthScreen from "@/components/AuthScreen";
 
-export default function AuthPage() {
+export default function Page() {
     return (
         <Suspense fallback={<div>Loading...</div>}>
-            <AuthScreen />
+            <AuthScreen initialMode="signup" />
         </Suspense>
     );
 }

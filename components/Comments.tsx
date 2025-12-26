@@ -1,42 +1,28 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getComments, addComment, Comment } from "@/lib/comments";
-import { supabase } from "@/lib/supabase";
-import { User } from "@supabase/supabase-js";
+import { getComments, Comment } from "@/lib/comments";
+import { useUser } from "@clerk/nextjs";
+import { addCommentAction, deleteCommentAction } from "@/app/actions/social";
 
 export default function CommentsSection({ postSlug }: { postSlug: string }) {
     const [comments, setComments] = useState<Comment[]>([]);
-    const [user, setUser] = useState<User | null>(null);
+    const { user, isLoaded } = useUser();
     const [userName, setUserName] = useState("");
     const [newComment, setNewComment] = useState("");
 
-    const getAvatarUrl = (user: User | null) => {
-        return user?.user_metadata?.engine_avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+    const getAvatarUrl = (user: any) => {
+        return user?.imageUrl || user?.profileImageUrl;
     };
 
     useEffect(() => {
-        const setupAuth = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                setUser(user);
-                setUserName(user.user_metadata?.username || user.email?.split('@')[0] || "");
-            }
-        };
+        if (user) {
+            setUserName(user.username || user.firstName || user.emailAddresses[0].emailAddress.split('@')[0] || "");
+        }
+    }, [user]);
 
-        setupAuth();
+    useEffect(() => {
         fetchComments();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (session?.user) {
-                setUser(session.user);
-                setUserName(session.user.user_metadata?.username || session.user.email?.split('@')[0] || "");
-            } else {
-                setUser(null);
-            }
-        });
-
-        return () => subscription.unsubscribe();
     }, [postSlug]);
 
     const fetchComments = async () => {
@@ -48,16 +34,22 @@ export default function CommentsSection({ postSlug }: { postSlug: string }) {
         e.preventDefault();
         if (!userName || !newComment) return;
 
-        await addComment({
-            postSlug,
-            userName,
-            comment: newComment,
-            userId: user?.id,
-            userAvatar: getAvatarUrl(user)
-        });
-        setNewComment("");
-        fetchComments();
+        try {
+            await addCommentAction({
+                postSlug,
+                userName,
+                userAvatar: getAvatarUrl(user),
+                comment: newComment,
+            });
+            setNewComment("");
+            fetchComments();
+        } catch (error) {
+            console.error("Failed to post comment:", error);
+            alert("Failed to post comment. Please try again.");
+        }
     };
+
+    if (!isLoaded) return null;
 
     return (
         <div className="mt-16 bg-gray-50 dark:bg-gray-900/50 rounded-2xl p-6 md:p-8 border border-gray-100 dark:border-gray-800">
@@ -103,7 +95,7 @@ export default function CommentsSection({ postSlug }: { postSlug: string }) {
                         placeholder="What are your thoughts?"
                         value={newComment}
                         onChange={(e) => setNewComment(e.target.value)}
-                        className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:text-white resize-none"
+                        className="w-full px-4 py-3 text-gray-500 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all dark:text-white resize-none"
                         rows={4}
                         required
                     />
@@ -125,7 +117,7 @@ export default function CommentsSection({ postSlug }: { postSlug: string }) {
                 ) : (
                     <ul className="space-y-6">
                         {comments.map((c) => (
-                            <li key={c.id} className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all hover:shadow-md">
+                            <li key={c.id} className="bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all hover:shadow-md group relative">
                                 <div className="flex justify-between items-start mb-3">
                                     <div className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
                                         <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm overflow-hidden">
@@ -144,15 +136,38 @@ export default function CommentsSection({ postSlug }: { postSlug: string }) {
                                         </div>
                                         {c.user_name}
                                     </div>
-                                    <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-900/50 px-2 py-1 rounded-md">
-                                        {new Date(c.created_at).toLocaleDateString("en-US", {
-                                            month: "short",
-                                            day: "numeric",
-                                            year: "numeric",
-                                            hour: "2-digit",
-                                            minute: "2-digit"
-                                        })}
-                                    </span>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-900/50 px-2 py-1 rounded-md">
+                                            {new Date(c.created_at).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric",
+                                                hour: "2-digit",
+                                                minute: "2-digit"
+                                            })}
+                                        </span>
+                                        {/* Delete Button */}
+                                        {user && user.id === c.user_id && (
+                                            <button
+                                                onClick={async () => {
+                                                    if (confirm("Are you sure you want to delete this comment?")) {
+                                                        try {
+                                                            await deleteCommentAction(c.id);
+                                                            setComments(prev => prev.filter(item => item.id !== c.id));
+                                                        } catch (err) {
+                                                            alert("Failed to delete comment");
+                                                        }
+                                                    }
+                                                }}
+                                                className="opacity-0 group-hover:opacity-100 p-1 text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400 transition-all"
+                                                title="Delete comment"
+                                            >
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed pl-10">
                                     {c.comment}

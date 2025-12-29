@@ -187,3 +187,77 @@ export async function toggleReactionAction({
         return { action: "added" };
     }
 }
+
+export async function toggleBookmarkAction({
+    postSlug,
+}: {
+    postSlug: string;
+}) {
+    const { userId } = await auth();
+
+    if (!userId) {
+        throw new Error("Unauthorized: Login required to bookmark");
+    }
+
+    console.log("toggleBookmarkAction: Toggling bookmark for", postSlug, "User:", userId);
+
+    // Check if bookmark already exists
+    const { data: existing } = await supabaseAdmin
+        .from("bookmarks")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("post_slug", postSlug)
+        .single();
+
+    console.log("toggleBookmarkAction: Existing bookmark?", existing);
+
+    if (existing) {
+        // Remove bookmark
+        const { error: deleteError } = await supabaseAdmin
+            .from("bookmarks")
+            .delete()
+            .eq("id", existing.id);
+
+        if (deleteError) {
+            console.error("toggleBookmarkAction: Delete error", deleteError);
+            throw new Error("Failed to remove bookmark");
+        }
+
+        revalidatePath(`/posts/${postSlug}`);
+        revalidatePath("/bookmarks");
+        return { action: "removed" };
+    } else {
+        // Add bookmark
+        const { data, error } = await supabaseAdmin.from("bookmarks").insert([
+            {
+                user_id: userId,
+                post_slug: postSlug,
+            },
+        ]).select();
+
+        if (error) {
+            console.error("toggleBookmarkAction: Insert error", error);
+            throw new Error("Failed to save bookmark: " + error.message);
+        }
+
+        console.log("toggleBookmarkAction: Insert success", data);
+
+        revalidatePath(`/posts/${postSlug}`);
+        revalidatePath("/bookmarks");
+        return { action: "added" };
+    }
+}
+
+export async function checkBookmarkAction(postSlug: string) {
+    const { userId } = await auth();
+    if (!userId) return false;
+
+    const { data, error } = await supabaseAdmin
+        .from("bookmarks")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("post_slug", postSlug)
+        .single();
+
+    return !!data;
+}

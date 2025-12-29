@@ -7,7 +7,7 @@ import icon from "@/public/icon.png";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { logAnalyticsEvent } from "@/lib/firebase";
-import { faHome, faCalendarDays, faLayerGroup, faBell, faInfoCircle, faCalendarDay, faSignOut, faSignIn } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faCalendarDays, faLayerGroup, faBell, faInfoCircle, faCalendarDay, faSignOut, faSignIn, faBookmark } from "@fortawesome/free-solid-svg-icons";
 import ThemeToggle from "./ThemeToggle";
 import { useUser, SignedIn, SignedOut, useClerk } from "@clerk/nextjs";
 
@@ -96,6 +96,10 @@ export default function Navbar() {
                           {user?.username || user?.firstName || "Profile"}
                         </span>
                       </div>
+                    </Link>
+                    <Link href="/bookmarks" className="flex items-center gap-2 group p-2 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-lg transition-all text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-blue-600 dark:hover:text-blue-400" title="Saved Posts">
+                      <FontAwesomeIcon icon={faBookmark} className="text-lg" />
+                      <span className="hidden xl:inline">Saved</span>
                     </Link>
                     <button
                       onClick={() => signOut(() => router.push("/"))}
@@ -188,6 +192,11 @@ export default function Navbar() {
                   <FontAwesomeIcon icon={faSignOut} />
                   <span>Sign Out</span>
                 </button>
+              </div>
+              <div className="px-3">
+                <MobileNavLink href="/bookmarks" onClick={() => setOpen(false)}>
+                  <FontAwesomeIcon icon={faBookmark} size="lg" /> Saved Posts
+                </MobileNavLink>
               </div>
             </div>
           </SignedIn>

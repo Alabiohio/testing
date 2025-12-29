@@ -3,6 +3,7 @@ import Image from "next/image";
 import ShareButtons from "./ShareButtons";
 import QuickReactions from "./QuickReactions";
 import CommentButton from "./CommentButton";
+import BookmarkButton from "./BookmarkButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faCalendar } from "@fortawesome/free-solid-svg-icons";
 
@@ -117,6 +118,7 @@ export default function PostCard({ post }: any) {
           <div className="flex items-center gap-2">
             <QuickReactions postSlug={slug} />
             <CommentButton postSlug={slug} />
+            <BookmarkButton postSlug={slug} />
           </div>
           <ShareButtons url={postUrl} title={post.title} />
         </div>
@@ -128,6 +130,6 @@ export default function PostCard({ post }: any) {
           </svg>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

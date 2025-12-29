@@ -9,6 +9,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import NextTopLoader from "nextjs-toploader";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -77,6 +78,7 @@ export default function RootLayout({
             <LoaderRegistrar />
             <FirebaseAnalytics />
             <Navbar />
+            <Toaster position="bottom-right" />
             {children}
             <Footer />
             <ScrollToTop />

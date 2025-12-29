@@ -133,3 +133,25 @@ export async function getAllAuthors() {
     }
   `);
 }
+
+export async function getPostsBySlugs(slugs: string[]) {
+  if (slugs.length === 0) return [];
+
+  return client.fetch(
+    `*[_type == "post" && slug.current in $slugs] | order(publishedAt desc) {
+      _id,
+      title,
+      "slug": slug.current,
+      "categories": categories[]->title,
+      "coverImage": mainImage.asset->url,
+      publishedAt,
+      excerpt,
+      body,
+      "author": author->name,
+      "authorImage": author->image.asset->url,
+      "authorSlug": author->slug.current,
+      "authorBio": author->bio
+    }`,
+    { slugs }
+  );
+}

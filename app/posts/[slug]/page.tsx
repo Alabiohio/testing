@@ -9,6 +9,7 @@ import html from "remark-html";
 import Image from "next/image";
 import PortableTextRenderer from "@/components/PortableTextRenderer";
 import ShareButtons from "@/components/ShareButtons";
+import BookmarkButton from "@/components/BookmarkButton";
 import CommentsSection from "@/components/Comments";
 import Reactions from "@/components/Reactions";
 import LightboxImage from "@/components/LightboxImage";
@@ -92,9 +93,14 @@ export default async function PostPage(props: {
           />
         )}
 
-        <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-6 tracking-tighter leading-tight">
-          {post.title}
-        </h1>
+        <div className="flex items-start justify-between gap-4 mb-6">
+          <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tighter leading-tight">
+            {post.title}
+          </h1>
+          <div className="shrink-0 pt-2">
+            <BookmarkButton postSlug={post.slug} />
+          </div>
+        </div>
 
         <div className="flex flex-wrap items-center gap-4 mb-10 pb-8 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3">

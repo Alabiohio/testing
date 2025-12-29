@@ -19,7 +19,8 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
     const [reactions, setReactions] = useState<Reaction[]>([]);
     const [sessionUserId, setSessionUserId] = useState<string>("");
     const [showPicker, setShowPicker] = useState(false);
-    const [isHovered, setIsHovered] = useState(false);
+    const pickerRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLDivElement>(null);
     const pickerTimeout = useRef<NodeJS.Timeout | null>(null);
     const { user, isLoaded } = useUser();
 
@@ -42,7 +43,21 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
         if (isLoaded) {
             setupUser();
         }
-    }, [isLoaded, user, postSlug]);
+
+        const handleClickOutside = (event: MouseEvent) => {
+            if (pickerRef.current && !pickerRef.current.contains(event.target as Node) &&
+                triggerRef.current && !triggerRef.current.contains(event.target as Node)) {
+                setShowPicker(false);
+            }
+        };
+
+        if (showPicker) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [isLoaded, user, postSlug, showPicker]);
 
     const fetchReactions = async () => {
         const data = await getReactions(postSlug);
@@ -110,8 +125,8 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
     };
 
     const handleMouseEnter = () => {
+        if (window.innerWidth < 1024) return; // Ignore hover on mobile/small screens
         if (pickerTimeout.current) clearTimeout(pickerTimeout.current);
-        setIsHovered(true);
         // Delay showing picker slightly for better UX
         pickerTimeout.current = setTimeout(() => {
             setShowPicker(true);
@@ -119,8 +134,8 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
     };
 
     const handleMouseLeave = () => {
+        if (window.innerWidth < 1024) return; // Ignore hover on mobile/small screens
         if (pickerTimeout.current) clearTimeout(pickerTimeout.current);
-        setIsHovered(false);
         // Delay hiding picker
         pickerTimeout.current = setTimeout(() => {
             setShowPicker(false);
@@ -131,14 +146,28 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
 
     return (
         <div
+            ref={triggerRef}
             className="relative inline-block"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+                e.stopPropagation();
+                // Toggle picker on click for mobile, but only if we're not hovering (desktop)
+                // Actually, on mobile, click is the primary interaction.
+                setShowPicker(!showPicker);
+            }}
         >
             {/* Main Button */}
             <button
-                onClick={() => handleReaction(userReaction ? userReaction.reaction : "❤️")}
+                onClick={(e) => {
+                    if (window.innerWidth < 1024) { // Mobile behavior: toggle picker first
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowPicker(!showPicker);
+                    } else {
+                        handleReaction(userReaction ? userReaction.reaction : "❤️");
+                    }
+                }}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-all duration-300 border ${userReaction
                     ? "text-blue-600 bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800"
                     : "text-gray-500 hover:text-gray-700 bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700 hover:border-gray-300"
@@ -154,7 +183,9 @@ export default function QuickReactions({ postSlug }: { postSlug: string }) {
 
             {/* Floating Picker */}
             {showPicker && (
-                <div className="absolute bottom-full left-0 mb-2 p-1.5 bg-white dark:bg-gray-800 rounded-full shadow-xl border border-gray-100 dark:border-gray-700 flex gap-2 animate-in fade-in slide-in-from-bottom-2 duration-200 z-50">
+                <div
+                    ref={pickerRef}
+                    className="absolute bottom-full left-0 mb-2 p-1.5 bg-white dark:bg-gray-800 rounded-full shadow-xl border border-gray-100 dark:border-gray-700 flex gap-2 animate-in fade-in slide-in-from-bottom-2 duration-200 z-50">
                     {EMOJIS.map((e) => (
                         <button
                             key={e.emoji}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getComments, Comment } from "@/lib/comments";
 import { useUser } from "@clerk/nextjs";
 import { addCommentAction, deleteCommentAction, toggleReactionAction } from "@/app/actions/social";
@@ -285,6 +285,26 @@ function CommentCard({
     onDelete: () => Promise<void>,
 }) {
     const [showBreakdown, setShowBreakdown] = useState(false);
+    const [showTray, setShowTray] = useState(false);
+    const trayRef = useRef<HTMLDivElement>(null);
+    const triggerRef = useRef<HTMLButtonElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (trayRef.current && !trayRef.current.contains(event.target as Node) &&
+                triggerRef.current && !triggerRef.current.contains(event.target as Node)) {
+                setShowTray(false);
+            }
+        };
+
+        if (showTray) {
+            document.addEventListener("mousedown", handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [showTray]);
+
     const emojis = ["❤️", "😂", "😢", "😠"];
 
     const reactionStats = (comment.reactions || []).reduce((acc, r) => {
@@ -427,6 +447,8 @@ function CommentCard({
                         <div className="relative group/reactions">
                             {/* Reaction Trigger */}
                             <button
+                                ref={triggerRef}
+                                onClick={() => setShowTray(!showTray)}
                                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700/50 text-gray-500 dark:text-gray-400 transition-all active:scale-95 text-xs font-bold"
                                 type="button"
                             >
@@ -435,14 +457,24 @@ function CommentCard({
                             </button>
 
                             {/* Hover Tray */}
-                            <div className="absolute left-0 bottom-full mb-2 flex items-center gap-1 bg-white dark:bg-gray-800 p-1.5 rounded-full shadow-2xl border border-gray-100 dark:border-gray-700 opacity-0 invisible group-hover/reactions:opacity-100 group-hover/reactions:visible transition-all translate-y-2 group-hover/reactions:translate-y-0 z-20">
+                            <div
+                                ref={trayRef}
+                                className={`absolute left-0 bottom-full mb-2 flex items-center gap-1 bg-white dark:bg-gray-800 p-1.5 rounded-full shadow-2xl border border-gray-100 dark:border-gray-700 transition-all z-20 ${showTray
+                                        ? "opacity-100 visible translate-y-0"
+                                        : "opacity-0 invisible translate-y-2 lg:group-hover/reactions:opacity-100 lg:group-hover/reactions:visible lg:group-hover/reactions:translate-y-0"
+                                    }`}
+                            >
                                 {emojis.map(emoji => {
                                     const activeId = user?.id || guestId;
                                     const hasReacted = activeId && (comment.reactions || []).some(r => r.user_id === activeId && r.reaction === emoji);
                                     return (
                                         <button
                                             key={emoji}
-                                            onClick={() => onToggleReaction(comment.id, emoji)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onToggleReaction(comment.id, emoji);
+                                                setShowTray(false);
+                                            }}
                                             className={`p-1.5 rounded-full text-lg transition-all hover:scale-125 active:scale-90 ${hasReacted ? "bg-blue-50 dark:bg-blue-900/40 scale-110" : "hover:bg-gray-50 dark:hover:bg-gray-900/50"
                                                 }`}
                                         >

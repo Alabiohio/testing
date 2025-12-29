@@ -59,7 +59,6 @@ export default function Footer() {
             © {new Date().getFullYear()} Engine Blog.
           </p>
           <div className="flex gap-6 footer-links-out">
-            <a href="https://www.tiktok.com/@mechatrons.2.4.0" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors font-bold uppercase tracking-widest">MTE240</a>
             <a href="https://ohiocodespace.vercel.app" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors font-bold uppercase tracking-widest">Ohio Codespace</a>
             <a href="https://github.com/Ghosty-s-Lab-Inc" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-600 transition-colors font-bold uppercase tracking-widest">Ghosty's Lab Technology</a>
           </div>

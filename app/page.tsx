@@ -54,22 +54,13 @@ export default async function Home(props: {
     <main className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="relative py-16 mb-16 overflow-hidden rounded-[2.5rem] bg-white dark:bg-gray-800/40 border border-gray-100 dark:border-gray-800 shadow-2xl shadow-blue-500/5">
-          {/* Decorative Background Glows */}
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
-
-          <div className="relative z-10 text-center px-6">
-
-            <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter">
-              <span className="bg-gradient-to-r from-gray-900 via-blue-800 to-gray-900 dark:from-white dark:via-blue-400 dark:to-white bg-clip-text text-transparent italic decoration-blue-500/30 underline-offset-8 transition-all hover:tracking-tight">
-                UNIBEN Engine Blog
-              </span>
+        <div className="mb-16 pb-12 border-b-2 border-blue-600 dark:border-blue-500">
+          <div className="max-w-4xl">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-gray-900 dark:text-white mb-6 leading-tight">
+              UNIBEN Engine Blog
             </h1>
-
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed font-medium">
-              Updates, news, and insights from Nigeria's premier center for
-              <span className="text-blue-600 dark:text-blue-400"> engineering excellence</span>.
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-2xl">
+              Your source for academic updates, engineering insights, and campus news from the University of Benin.
             </p>
           </div>
         </div>

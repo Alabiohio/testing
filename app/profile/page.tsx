@@ -344,7 +344,7 @@ export default function ProfilePage() {
                                             <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                                         ) : (
                                             <div className="w-full h-full bg-blue-600 flex items-center justify-center text-white font-bold text-3xl">
-                                                {username?.charAt(0).toUpperCase()}
+                                                {(user?.username || user?.firstName || "U").charAt(0).toUpperCase()}
                                             </div>
                                         )}
                                     </div>
@@ -354,9 +354,13 @@ export default function ProfilePage() {
                                     <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={uploadAvatar} disabled={updating} />
                                 </div>
                                 <div className="text-center sm:text-left">
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{fullName || username}</h3>
-                                    <p className="text-gray-500 text-sm">@{username}</p>
-                                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1 uppercase tracking-wide">{department || "No Department"}</p>
+                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                                        {user?.firstName || user?.lastName ? `${user.firstName || ""} ${user.lastName || ""}` : user?.username}
+                                    </h3>
+                                    <p className="text-gray-500 text-sm">@{user?.username}</p>
+                                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1 uppercase tracking-wide">
+                                        {(user?.publicMetadata?.department as string) || "No Department"}
+                                    </p>
                                 </div>
                             </div>
 

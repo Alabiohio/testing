@@ -107,8 +107,6 @@ export default async function PostPage(props: {
           </div>
         </div>
 
-
-
         <div className="flex flex-wrap items-center gap-4 mb-10 pb-8 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-3">
             {post.authorSlug ? (

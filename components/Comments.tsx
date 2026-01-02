@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { getComments, Comment } from "@/lib/comments";
 import { useUser } from "@clerk/nextjs";
 import { addCommentAction, deleteCommentAction, toggleReactionAction } from "@/app/actions/social";
+import Link from "next/link";
 
 function formatRelativeTime(dateString: string) {
     const now = new Date();
@@ -206,7 +207,8 @@ function CommentThread({
                 comment={comment}
                 user={user}
                 guestId={guestId}
-                parentUserName={parent?.user_name}
+                parentDisplayName={parent?.user_name}
+                parentUsername={parent?.profiles?.username}
                 onReply={() => handleReply(comment.id)}
                 replyCount={replies.length}
                 showReplies={showReplies}
@@ -265,7 +267,8 @@ function CommentCard({
     comment,
     user,
     guestId,
-    parentUserName,
+    parentDisplayName,
+    parentUsername,
     onReply,
     replyCount = 0,
     showReplies = false,
@@ -276,7 +279,8 @@ function CommentCard({
     comment: Comment,
     user: any,
     guestId: string | null,
-    parentUserName?: string,
+    parentDisplayName?: string,
+    parentUsername?: string,
     onReply: () => void,
     replyCount?: number,
     showReplies?: boolean,
@@ -317,28 +321,79 @@ function CommentCard({
         <div className={`bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all hover:shadow-md group relative ${comment.parent_id ? 'scale-[0.98] origin-left' : ''}`}>
             <div className="flex justify-between items-start mb-3">
                 <div className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm overflow-hidden">
-                        {comment.user_avatar ? (
-                            <img
-                                src={comment.user_avatar}
-                                alt={comment.user_name}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                    (e.target as HTMLImageElement).style.display = 'none';
-                                }}
-                            />
-                        ) : (
-                            comment.user_name.charAt(0).toUpperCase()
-                        )}
-                    </div>
-                    <div>
-                        <span className="block">{comment.user_name}</span>
-                        {parentUserName && (
-                            <span className="text-[10px] text-blue-500 font-medium uppercase tracking-wider">
-                                Replying to {parentUserName}
-                            </span>
-                        )}
-                    </div>
+                    {comment.profiles?.username ? (
+                        <Link href={`/${comment.profiles.username}`} className="group/avatar flex items-center gap-2">
+                            <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm overflow-hidden ring-0 group-hover/avatar:ring-2 ring-blue-500 transition-all">
+                                {comment.user_avatar ? (
+                                    <img
+                                        src={comment.user_avatar}
+                                        alt={comment.user_name}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).style.display = 'none';
+                                        }}
+                                    />
+                                ) : (
+                                    comment.user_name.charAt(0).toUpperCase()
+                                )}
+                            </div>
+                            <div>
+                                <span className="block hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{comment.user_name}</span>
+                                {parentDisplayName && (
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+                                            Replying to
+                                        </span>
+                                        {parentUsername ? (
+                                            <Link href={`/${parentUsername}`} className="text-[10px] text-blue-500 font-bold uppercase tracking-wider hover:underline">
+                                                {parentDisplayName}
+                                            </Link>
+                                        ) : (
+                                            <span className="text-[10px] text-blue-500 font-medium uppercase tracking-wider">
+                                                {parentDisplayName}
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </Link>
+                    ) : (
+                        <>
+                            <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm overflow-hidden">
+                                {comment.user_avatar ? (
+                                    <img
+                                        src={comment.user_avatar}
+                                        alt={comment.user_name}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => {
+                                            (e.target as HTMLImageElement).style.display = 'none';
+                                        }}
+                                    />
+                                ) : (
+                                    comment.user_name.charAt(0).toUpperCase()
+                                )}
+                            </div>
+                            <div>
+                                <span className="block">{comment.user_name}</span>
+                                {parentDisplayName && (
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+                                            Replying to
+                                        </span>
+                                        {parentUsername ? (
+                                            <Link href={`/profile/${parentUsername}`} className="text-[10px] text-blue-500 font-bold uppercase tracking-wider hover:underline">
+                                                {parentDisplayName}
+                                            </Link>
+                                        ) : (
+                                            <span className="text-[10px] text-blue-500 font-medium uppercase tracking-wider">
+                                                {parentDisplayName}
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
                 </div>
                 <div className="flex items-center gap-3">
                     <span className="text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-900/50 px-2 py-1 rounded-md">
@@ -460,8 +515,8 @@ function CommentCard({
                             <div
                                 ref={trayRef}
                                 className={`absolute left-0 bottom-full mb-2 flex items-center gap-1 bg-white dark:bg-gray-800 p-1.5 rounded-full shadow-2xl border border-gray-100 dark:border-gray-700 transition-all z-20 ${showTray
-                                        ? "opacity-100 visible translate-y-0"
-                                        : "opacity-0 invisible translate-y-2 lg:group-hover/reactions:opacity-100 lg:group-hover/reactions:visible lg:group-hover/reactions:translate-y-0"
+                                    ? "opacity-100 visible translate-y-0"
+                                    : "opacity-0 invisible translate-y-2 lg:group-hover/reactions:opacity-100 lg:group-hover/reactions:visible lg:group-hover/reactions:translate-y-0"
                                     }`}
                             >
                                 {emojis.map(emoji => {

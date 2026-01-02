@@ -90,13 +90,15 @@ export async function removeReaction({
 }
 
 export async function getReactionCount(postSlug: string): Promise<number> {
+    if (!postSlug) return 0;
+
     const { count, error } = await supabase
         .from("reactions")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("post_slug", postSlug);
 
     if (error) {
-        console.error("Error fetching reaction count:", error);
+        console.error("Error fetching reaction count for", postSlug, ":", error.message, error);
         return 0;
     }
 

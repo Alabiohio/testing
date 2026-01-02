@@ -13,11 +13,12 @@ export type Comment = {
     created_at: string;
     is_approved: boolean;
     reactions?: Reaction[];
+    profiles?: { username: string };
 };
 
 // Fetch all approved comments for a post, newest last
 export async function getComments(postSlug: string): Promise<Comment[]> {
-    const { data, error } = await supabase
+    const { data: comments, error } = await supabase
         .from("comments")
         .select("*, reactions(*)")
         .eq("post_slug", postSlug)
@@ -29,7 +30,27 @@ export async function getComments(postSlug: string): Promise<Comment[]> {
         return [];
     }
 
-    return data as Comment[];
+    if (!comments || comments.length === 0) return [];
+
+    // Fetch profiles separately to avoid join relationship issues if FKs are missing
+    const userIds = Array.from(new Set(comments.map(c => c.user_id).filter(id => id && id !== 'guest')));
+
+    if (userIds.length > 0) {
+        const { data: profiles, error: profileError } = await supabase
+            .from("profiles")
+            .select("id, username")
+            .in("id", userIds);
+
+        if (!profileError && profiles) {
+            const profileMap = Object.fromEntries(profiles.map(p => [p.id, p]));
+            return comments.map(c => ({
+                ...c,
+                profiles: c.user_id ? profileMap[c.user_id] : undefined
+            })) as Comment[];
+        }
+    }
+
+    return comments as Comment[];
 }
 
 export async function addComment({
@@ -67,14 +88,16 @@ export async function addComment({
 }
 
 export async function getCommentCount(postSlug: string): Promise<number> {
+    if (!postSlug) return 0;
+
     const { count, error } = await supabase
         .from("comments")
-        .select("*", { count: "exact", head: true })
+        .select("id", { count: "exact", head: true })
         .eq("post_slug", postSlug)
         .eq("is_approved", true);
 
     if (error) {
-        console.error("Error fetching comment count:", error);
+        console.error("Error fetching comment count for", postSlug, ":", error.message, error);
         return 0;
     }
 

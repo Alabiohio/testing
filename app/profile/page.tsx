@@ -358,9 +358,18 @@ export default function ProfilePage() {
                                         {user?.firstName || user?.lastName ? `${user.firstName || ""} ${user.lastName || ""}` : user?.username}
                                     </h3>
                                     <p className="text-gray-500 text-sm">@{user?.username}</p>
-                                    <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mt-1 uppercase tracking-wide">
-                                        {(user?.publicMetadata?.department as string) || "No Department"}
-                                    </p>
+                                    <div className="flex flex-wrap items-center gap-2 mt-1">
+                                        <p className="text-xs text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wide">
+                                            {(user?.publicMetadata?.department as string) || "No Department"}
+                                        </p>
+                                        <span className="text-gray-300 dark:text-gray-600 text-xs">•</span>
+                                        <Link
+                                            href={`/${user?.username}`}
+                                            className="text-xs text-gray-400 hover:text-blue-500 transition-colors font-bold underline decoration-dotted"
+                                        >
+                                            View Public Profile
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
 

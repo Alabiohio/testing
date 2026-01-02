@@ -11,7 +11,7 @@ import {
 import { getTrendingPosts, getNotices, getEvents } from "@/lib/api";
 
 export const metadata: Metadata = {
-  title: "Home",
+  title: "Engine Blog",
   description: "Stay updated with the latest news, academic notices, and student life from the Faculty of Engineering, University of Benin.",
   openGraph: {
     title: "Engine Blog",

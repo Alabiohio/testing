@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
-import { clerkClient } from "@clerk/nextjs/server";
+import { clerkClient, auth } from "@clerk/nextjs/server";
+import ProfileSocial from "@/components/ProfileSocial";
+import { getFollowersCount, getFollowingCount, isFollowing as checkFollowStatus, getFollowers, getFollowing } from "@/lib/follows";
 
 export async function generateMetadata(props: {
     params: Promise<{ username: string }>;
@@ -104,6 +106,16 @@ export default async function PublicProfilePage(props: {
         .order("created_at", { ascending: false })
         .limit(10);
 
+    // Social data
+    const { userId: currentUserId } = await auth();
+    const [followerCount, followingCount, initialIsFollowing, followers, following] = await Promise.all([
+        getFollowersCount(profileData.id),
+        getFollowingCount(profileData.id),
+        currentUserId ? checkFollowStatus(currentUserId, profileData.id) : Promise.resolve(false),
+        getFollowers(profileData.id),
+        getFollowing(profileData.id)
+    ]);
+
     return (
         <main className="min-h-screen bg-[#F0F2F5] dark:bg-gray-900 pt-24 pb-12 px-4">
             <div className="max-w-4xl mx-auto">
@@ -139,6 +151,16 @@ export default async function PublicProfilePage(props: {
                             <p className="text-xl text-blue-600 dark:text-blue-400 font-bold mb-4">
                                 @{profileData.username}
                             </p>
+
+                            <ProfileSocial
+                                profileId={profileData.id}
+                                username={profileData.username}
+                                followerCount={followerCount}
+                                followingCount={followingCount}
+                                followers={followers}
+                                following={following}
+                                initialIsFollowing={initialIsFollowing}
+                            />
 
                             <div className="flex flex-wrap justify-center md:justify-start gap-3">
                                 <div className="px-4 py-2 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-gray-100 dark:border-gray-800">

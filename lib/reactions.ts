@@ -104,3 +104,23 @@ export async function getReactionCount(postSlug: string): Promise<number> {
 
     return count || 0;
 }
+export async function getReactionCounts(postSlugs: string[]): Promise<Record<string, number>> {
+    if (!postSlugs.length) return {};
+
+    const { data, error } = await supabase
+        .from("reactions")
+        .select("post_slug")
+        .in("post_slug", postSlugs);
+
+    if (error) {
+        console.error("Error fetching batch reaction counts:", error);
+        return {};
+    }
+
+    const counts: Record<string, number> = {};
+    data.forEach(item => {
+        counts[item.post_slug] = (counts[item.post_slug] || 0) + 1;
+    });
+
+    return counts;
+}

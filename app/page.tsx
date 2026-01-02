@@ -9,6 +9,8 @@ import {
   searchPosts,
 } from "@/lib/posts";
 import { getTrendingPosts, getNotices, getEvents } from "@/lib/api";
+import { searchProfiles } from "@/lib/profiles";
+import ProfileSearchCard from "@/components/ProfileSearchCard";
 
 export const metadata: Metadata = {
   title: "Engine Blog",
@@ -37,7 +39,7 @@ export default async function Home(props: {
   const activeCategory = searchParams.category;
   const searchQuery = searchParams.q;
 
-  const [categories, posts, latestPosts, notices, trendingPosts, events] = await Promise.all([
+  const [categories, posts, latestPosts, notices, trendingPosts, events, profiles] = await Promise.all([
     getAllCategories(),
     searchQuery
       ? searchPosts(searchQuery)
@@ -48,6 +50,7 @@ export default async function Home(props: {
     getNotices(),
     getTrendingPosts(),
     getEvents(),
+    searchQuery ? searchProfiles(searchQuery) : Promise.resolve([]),
   ]);
 
   return (
@@ -95,8 +98,28 @@ export default async function Home(props: {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Posts */}
           <div className="order-1 lg:col-span-2">
+            {searchQuery && profiles.length > 0 && (
+              <div className="mb-12">
+                <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-3">
+                  <span className="w-8 h-1 bg-blue-600 rounded-full" />
+                  Users
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {profiles.map((profile: any) => (
+                    <ProfileSearchCard key={profile.id} profile={profile} />
+                  ))}
+                </div>
+              </div>
+            )}
+
             {posts.length > 0 ? (
               <div className="flex flex-col gap-8 justify-center max-w-7xl mx-auto">
+                {searchQuery && (
+                  <h3 className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-3">
+                    <span className="w-8 h-1 bg-blue-600 rounded-full" />
+                    Articles
+                  </h3>
+                )}
                 {posts.map((post: any) => (
                   <PostCard key={post._id} post={post} />
                 ))}
@@ -104,10 +127,10 @@ export default async function Home(props: {
             ) : (
               <div className="text-center py-20">
                 <h3 className="text-xl font-medium text-gray-900 dark:text-white mb-2">
-                  No posts found
+                  No {profiles.length > 0 ? "articles" : "results"} found
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400">
-                  No posts match your search or category.
+                  Try adjusting your search query.
                 </p>
               </div>
             )}

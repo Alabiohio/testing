@@ -103,3 +103,24 @@ export async function getCommentCount(postSlug: string): Promise<number> {
 
     return count || 0;
 }
+export async function getCommentCounts(postSlugs: string[]): Promise<Record<string, number>> {
+    if (!postSlugs.length) return {};
+
+    const { data, error } = await supabase
+        .from("comments")
+        .select("post_slug")
+        .in("post_slug", postSlugs)
+        .eq("is_approved", true);
+
+    if (error) {
+        console.error("Error fetching batch comment counts:", error);
+        return {};
+    }
+
+    const counts: Record<string, number> = {};
+    data.forEach(item => {
+        counts[item.post_slug] = (counts[item.post_slug] || 0) + 1;
+    });
+
+    return counts;
+}

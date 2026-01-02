@@ -143,8 +143,9 @@ export default function CreditsPage() {
                     </div>
                     <h3 className="text-sm font-black uppercase tracking-[0.3em] text-gray-400 mb-12">Special Thanks</h3>
                     <div className="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
-                        <span className="text-2xl font-black text-gray-900 dark:text-white">Ghosty's Lab</span>
-                        <span className="text-2xl font-black text-gray-900 dark:text-white">Ohio Codespace</span>
+                        <a href="https://github.com/Ghosty-s-Lab-Inc" target="_blank" rel="noopener noreferrer" className="text-2xl font-black text-gray-900 dark:text-white">Ghosty's Lab</a>
+                        <a href="https://ohiocodespace.vercel.app" target="_blank" rel="noopener noreferrer" className="text-2xl font-black text-gray-900 dark:text-white">Ohio Codespace</a>
+                        <a href="https://ag-tech.web.app" target="_blank" rel="noopener noreferrer" className="text-2xl font-black text-gray-900 dark:text-white">A&G Tech</a>
                     </div>
                 </div>
             </div>

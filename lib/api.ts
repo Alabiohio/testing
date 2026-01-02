@@ -1,6 +1,6 @@
 import { client } from "./sanity";
-import { getReactionCount } from "./reactions";
-import { getCommentCount } from "./comments";
+import { getReactionCount, getReactionCounts } from "./reactions";
+import { getCommentCount, getCommentCounts } from "./comments";
 
 // Fetch all categories
 export async function getAllCategories() {
@@ -47,30 +47,44 @@ export async function getTrendingPosts() {
     }
   `);
 
-  // 2. Fetch engagement data for these posts
-  const trendingData = await Promise.all(
-    posts.map(async (post: any) => {
-      const [reactions, comments] = await Promise.all([
-        getReactionCount(post.slug),
-        getCommentCount(post.slug)
-      ]);
+  // 2. Fetch engagement data for these posts in batch
+  const postSlugs = posts.map((p: { slug: string }) => p.slug);
+  const [allReactions, allComments] = await Promise.all([
+    getReactionCounts(postSlugs),
+    getCommentCounts(postSlugs)
+  ]);
 
-      // Score calculation: 
-      // - Manual isTrending: massive boost
-      // - Comments: weight 3
-      // - Reactions: weight 1
-      const score = (post.isTrending ? 1000 : 0) + (comments * 3) + reactions;
+  interface TrendingPostData {
+    _id: string;
+    title: string;
+    slug: string;
+    publishedAt: string;
+    isTrending?: boolean;
+    categories: string[];
+    score: number;
+    reactions: number;
+    comments: number;
+  }
 
-      return { ...post, score, reactions, comments };
-    })
-  );
+  const trendingData: TrendingPostData[] = posts.map((post: any) => {
+    const reactions = allReactions[post.slug] || 0;
+    const comments = allComments[post.slug] || 0;
+
+    // Score calculation: 
+    // - Manual isTrending: massive boost
+    // - Comments: weight 3
+    // - Reactions: weight 1
+    const score = (post.isTrending ? 1000 : 0) + (comments * 3) + reactions;
+
+    return { ...post, score, reactions, comments };
+  });
 
   // 3. Filter by threshold (min 50 reactions) unless manually flagged as trending
-  const filteredTrending = trendingData.filter(post => post.isTrending || post.reactions >= 50);
+  const filteredTrending = trendingData.filter((post: TrendingPostData) => post.isTrending || post.reactions >= 50);
 
   // 4. Sort by score and return top 5
   return filteredTrending
-    .sort((a, b) => b.score - a.score)
+    .sort((a: TrendingPostData, b: TrendingPostData) => b.score - a.score)
     .slice(0, 5);
 }
 

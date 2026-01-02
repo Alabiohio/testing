@@ -10,9 +10,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 import { supabase } from "@/lib/supabase";
+import ProfileSocial from "@/components/ProfileSocial";
+import { getFollowersCount, getFollowingCount, getFollowers, getFollowing } from "@/lib/follows";
 
 export default function ProfilePage() {
     const { user, isLoaded } = useUser();
+    //const router = useRouter(); // Added router hook
     const { signOut, session: currentSession } = useClerk();
     const executePasswordUpdate = useReverification(async () => {
         if (user?.passwordEnabled) {
@@ -47,6 +50,36 @@ export default function ProfilePage() {
     const [department, setDepartment] = useState("");
     const [yearOfStudy, setYearOfStudy] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("");
+
+    // Social states
+    const [followerCount, setFollowerCount] = useState(0);
+    const [followingCount, setFollowingCount] = useState(0);
+    const [followersList, setFollowersList] = useState<any[]>([]);
+    const [followingList, setFollowingList] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (isLoaded && user) {
+            fetchSocialStats();
+        }
+    }, [isLoaded, user]);
+
+    const fetchSocialStats = async () => {
+        if (!user) return;
+        try {
+            const [fCount, flCount, fList, flList] = await Promise.all([
+                getFollowersCount(user.id),
+                getFollowingCount(user.id),
+                getFollowers(user.id),
+                getFollowing(user.id)
+            ]);
+            setFollowerCount(fCount);
+            setFollowingCount(flCount);
+            setFollowersList(fList);
+            setFollowingList(flList);
+        } catch (error) {
+            console.error("Error fetching social stats:", error);
+        }
+    };
 
     // Security states
     const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -358,6 +391,19 @@ export default function ProfilePage() {
                                         {user?.firstName || user?.lastName ? `${user.firstName || ""} ${user.lastName || ""}` : user?.username}
                                     </h3>
                                     <p className="text-gray-500 text-sm">@{user?.username}</p>
+
+                                    <div className="mt-2">
+                                        <ProfileSocial
+                                            profileId={user?.id || ""}
+                                            username={user?.username || ""}
+                                            followerCount={followerCount}
+                                            followingCount={followingCount}
+                                            followers={followersList}
+                                            following={followingList}
+                                            initialIsFollowing={false} // You can't follow yourself
+                                        />
+                                    </div>
+
                                     <div className="flex flex-wrap items-center gap-2 mt-1">
                                         <p className="text-xs text-blue-600 dark:text-blue-400 font-medium uppercase tracking-wide">
                                             {(user?.publicMetadata?.department as string) || "No Department"}

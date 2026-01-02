@@ -30,6 +30,10 @@ const bookmarkSchema = z.object({
     postSlug: z.string().min(1),
 });
 
+const followSchema = z.object({
+    followingId: z.string().min(1),
+});
+
 export async function addCommentAction({
     postSlug,
     userName,
@@ -326,4 +330,64 @@ export async function checkBookmarkAction(postSlug: string) {
         .single();
 
     return !!data;
+}
+
+export async function toggleFollowAction({
+    followingId,
+    username, // for revalidation
+}: {
+    followingId: string;
+    username: string;
+}) {
+    const result = followSchema.safeParse({ followingId });
+    if (!result.success) throw new Error("Invalid Input");
+
+    const { userId } = await auth();
+    if (!userId) {
+        throw new Error("Unauthorized: Login required to follow users");
+    }
+
+    if (userId === followingId) {
+        throw new Error("You cannot follow yourself");
+    }
+
+    // Check if following already exists
+    const { data: existing } = await supabaseAdmin
+        .from("follows")
+        .select("id")
+        .eq("follower_id", userId)
+        .eq("following_id", followingId)
+        .single();
+
+    if (existing) {
+        // Unfollow
+        const { error: deleteError } = await supabaseAdmin
+            .from("follows")
+            .delete()
+            .eq("id", existing.id);
+
+        if (deleteError) {
+            console.error("toggleFollowAction: Delete error", deleteError);
+            throw new Error(`Failed to unfollow: ${deleteError.message}`);
+        }
+
+        revalidatePath(`/${username}`);
+        return { action: "unfollowed" };
+    } else {
+        // Follow
+        const { error: insertError } = await supabaseAdmin.from("follows").insert([
+            {
+                follower_id: userId,
+                following_id: followingId,
+            },
+        ]);
+
+        if (insertError) {
+            console.error("toggleFollowAction: Insert error", insertError);
+            throw new Error(`Failed to follow: ${insertError.message}`);
+        }
+
+        revalidatePath(`/${username}`);
+        return { action: "followed" };
+    }
 }

@@ -1,26 +1,90 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-leaf: #4CAF50;
+  --color-leaf-dark: #388E3C;
+  --color-deep-green: #1B5E20;
+  --color-earth: #795548;
+  --color-earth-dark: #5D4037;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+:root {
+  --background: #fdfdfb;
+  --foreground: #1a1c1a;
+  --primary: #4CAF50;
+  --primary-deep: #1B5E20;
+  --secondary: #8D6E63;
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(0, 0, 0, 0.1);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0a0d0a;
+    --foreground: #e8f5e9;
+    --primary: #81C784;
+    --primary-deep: #2E7D32;
+    --secondary: #A1887F;
+    --card-bg: rgba(26, 29, 26, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Header scroll styling */
+nav.scrolled {
+  background: rgba(255, 255, 255, 0.95) !important;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: background 0.5s ease, box-shadow 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  nav.scrolled {
+    background: rgba(26, 29, 26, 0.95) !important;
+    transition: background 0.5s ease, 0.3s ease;
+  }
+}
+
+.glass {
+  background: var(--card-bg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--primary), var(--primary-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.heroDiv {
+  background:
+    linear-gradient(to bottom, rgba(253, 253, 251, 0.98), rgba(253, 253, 251, 0.85)),
+    url("/hero.png") no-repeat center center;
+  background-size: cover;
+}
+
+@media (prefers-color-scheme: dark) {
+  .heroDiv {
+    background:
+      linear-gradient(to bottom, rgba(10, 13, 10, 0.8), rgba(10, 13, 10, 0.95)),
+      url("/hero.png") no-repeat center center;
+    background-size: cover;
+  }
 }

@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Search, ShoppingBag, ChevronRight, Calendar, Info, BookOpen } from "lucide-react";
 
 export default function Home() {
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
+  const galleryRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let ticking = false;
@@ -233,27 +235,60 @@ export default function Home() {
           <h2 className="text-3xl font-black text-deep-green dark:text-leaf tracking-tight uppercase">Event / Diary / Information</h2>
         </div>
 
-        <div className="flex gap-6 overflow-x-auto pb-8 snap-x no-scrollbar">
-          {galleryImages.map((item, idx) => (
-            <motion.div
-              key={idx}
-              className="flex-shrink-0 w-[350px] md:w-[450px] aspect-[4/3] rounded-[40px] bg-earth/5 dark:bg-white/5 relative overflow-hidden group snap-start cursor-pointer border-2 border-earth/10 dark:border-white/10"
-            >
-              <Image
-                src={item.image}
-                alt={item.title}
-                fill
-                className="object-cover group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
-              <div className="absolute inset-x-0 bottom-0 p-8 translate-y-2 group-hover:translate-y-0 transition-transform">
-                <div className="flex items-center gap-3 text-leaf font-bold text-sm uppercase tracking-widest mb-2">
-                  {item.type}
+        <div className="relative group/gallery">
+          <div
+            ref={galleryRef}
+            className="flex gap-6 overflow-x-auto pb-12 snap-x no-scrollbar scroll-smooth"
+            onScroll={(e) => {
+              const target = e.currentTarget;
+              const progress = target.scrollLeft / (target.scrollWidth - target.clientWidth);
+              const activeIndex = Math.round(progress * (galleryImages.length - 1));
+              setActiveGalleryIndex(activeIndex);
+            }}
+          >
+            {galleryImages.map((item, idx) => (
+              <motion.div
+                key={idx}
+                id={`gallery-item-${idx}`}
+                className="flex-shrink-0 w-[85vw] md:w-[450px] aspect-[4/3] rounded-[40px] bg-earth/5 dark:bg-white/5 relative overflow-hidden group snap-start cursor-pointer border-2 border-earth/10 dark:border-white/10"
+              >
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-x-0 bottom-0 p-8 translate-y-2 group-hover:translate-y-0 transition-transform">
+                  <div className="flex items-center gap-3 text-leaf font-bold text-sm uppercase tracking-widest mb-2">
+                    {item.type}
+                  </div>
+                  <h3 className="text-2xl font-black text-white">{item.title}</h3>
                 </div>
-                <h3 className="text-2xl font-black text-white">{item.title}</h3>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Scroll Progress Dots */}
+          <div className="flex justify-center gap-2 mt-4">
+            {galleryImages.map((_, i) => (
+              <button
+                key={i}
+                aria-label={`Go to item ${i + 1}`}
+                onClick={() => {
+                  const item = document.getElementById(`gallery-item-${i}`);
+                  if (galleryRef.current && item) {
+                    galleryRef.current.scrollTo({
+                      left: item.offsetLeft - galleryRef.current.offsetLeft,
+                      behavior: 'smooth'
+                    });
+                  }
+                }}
+                className={`h-2 rounded-full transition-all duration-500 ${i === activeGalleryIndex ? 'bg-leaf w-10' : 'bg-earth/20 dark:bg-white/10 w-2 hover:bg-leaf/40'
+                  }`}
+              />
+            ))}
+          </div>
         </div>
       </section>
 

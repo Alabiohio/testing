@@ -134,8 +134,7 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf dark:text-leaf-dark rounded-full text-sm font-bold mb-8 uppercase tracking-widest">
-                <span className="w-2 h-2 bg-leaf rounded-full animate-pulse" />
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf dark:text-leaf-dark rounded-full text-xl font-bold mb-8 uppercase tracking-widest">
                 Home of Catfish
               </div>
 

@@ -69,12 +69,12 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf dark:text-leaf-dark rounded-full text-xl font-bold mb-8 uppercase tracking-widest">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf dark:text-leaf-dark rounded-full text-sm md:text-xl font-bold mb-8 uppercase tracking-widest">
                 Trusted Catfish Supplier
               </div>
 
-              <h1 className="text-6xl lg:text-7xl font-black tracking-tighter mb-8 leading-[0.9] text-deep-green dark:text-white">
-                Premium Catfish for <br />
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter mb-8 leading-[0.9] text-deep-green dark:text-white">
+                Premium Catfish for <br className="hidden sm:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-leaf to-deep-green font-black">Farming & Consumption</span>
               </h1>
 
@@ -86,12 +86,12 @@ export default function Home() {
                 We supply high-quality catfish across every growth stage—perfect for fish farmers, retailers, restaurants, and households.
               </p>
 
-              <div className="flex flex-wrap gap-5">
-                <Link href="/booked-order" className="bg-leaf hover:bg-leaf-dark text-white px-10 py-5 rounded-2xl font-black text-xl flex items-center gap-3 transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/30 group uppercase tracking-widest">
+              <div className="flex flex-col sm:flex-row gap-5">
+                <Link href="/booked-order" className="bg-leaf hover:bg-leaf-dark text-white px-10 py-5 rounded-2xl font-black text-lg md:text-xl flex items-center justify-center gap-3 transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/30 group uppercase tracking-widest">
                   Order Now
                   <ShoppingBag className="w-6 h-6 group-hover:rotate-12 transition-transform" />
                 </Link>
-                <Link href="/contact" className="border-2 border-earth/20 dark:border-white/10 hover:border-leaf text-foreground px-10 py-5 rounded-2xl font-bold transition-all hover:bg-leaf/5 flex items-center gap-2">
+                <Link href="/contact" className="border-2 border-earth/20 dark:border-white/10 hover:border-leaf text-foreground px-10 py-5 rounded-2xl font-bold transition-all hover:bg-leaf/5 flex items-center justify-center gap-2">
                   Contact Us
                 </Link>
               </div>
@@ -198,15 +198,12 @@ export default function Home() {
 
       {/* 3. Our Categories Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 text-center md:text-left">
           <div className="space-y-2">
-            <h2 className="text-4xl font-black text-deep-green dark:text-leaf tracking-tight uppercase">Our Catfish Categories</h2>
+            <h2 className="text-3xl md:text-4xl font-black text-deep-green dark:text-leaf tracking-tight uppercase">Our Catfish Categories</h2>
             <p className="text-foreground/40 font-bold uppercase tracking-widest text-sm">Finest Quality Across All Stages</p>
           </div>
-          <div className="hidden md:block h-1 flex-grow mx-8 bg-earth/10 dark:bg-white/5 rounded-full" />
-          <Link href="/category" className="bg-leaf/10 text-leaf hover:bg-leaf hover:text-white px-6 py-3 rounded-2xl font-black transition-all text-sm uppercase tracking-widest">
-            View All Details
-          </Link>
+          <div className="hidden md:block h-1 flex-grow ml-8 bg-earth/10 dark:bg-white/5 rounded-full" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -269,7 +266,7 @@ export default function Home() {
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-               {/* <div className={`absolute inset-0 bg-gradient-to-t ${cat.color} to-transparent opacity-60`} /> */}
+                {/* <div className={`absolute inset-0 bg-gradient-to-t ${cat.color} to-transparent opacity-60`} /> */}
               </div>
               <div className="p-8">
                 <h3 className="text-2xl font-black text-deep-green dark:text-white mb-3 uppercase tracking-tight">{cat.name}</h3>
@@ -289,6 +286,12 @@ export default function Home() {
               </div>
             </motion.div>
           ))}
+        </div>
+
+        <div className="mt-16 flex justify-center">
+          <Link href="/category" className="inline-flex items-center gap-2 bg-leaf/10 text-leaf hover:bg-leaf hover:text-white px-10 py-5 rounded-2xl font-black transition-all text-sm uppercase tracking-widest border-2 border-leaf/5 hover:border-leaf shadow-xl shadow-leaf/5 hover:shadow-leaf/20">
+            View All Details <ChevronRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 
@@ -343,7 +346,7 @@ export default function Home() {
               <motion.div
                 key={idx}
                 whileHover={{ y: -10 }}
-                className="bg-white/5 backdrop-blur-md border border-white/10 p-10 rounded-[40px] text-center"
+                className="bg-white/5 backdrop-blur-md border border-white/10 p-6 md:p-10 rounded-[40px] text-center"
               >
                 <div className="w-16 h-16 bg-leaf rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-leaf/20">
                   <feature.icon className="w-8 h-8 text-white" />
@@ -396,7 +399,7 @@ export default function Home() {
 
           <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-4xl lg:text-5xl font-black text-deep-green dark:text-white mb-8">Serving Farmers <br /> & Families Alike</h2>
+              <h2 className="text-3xl md:text-5xl font-black text-deep-green dark:text-white mb-8">Serving Farmers <br className="hidden sm:block" /> & Families Alike</h2>
               <div className="space-y-8">
                 <div className="flex gap-6">
                   <div className="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-900 shadow-xl flex items-center justify-center shrink-0">
@@ -498,13 +501,13 @@ export default function Home() {
         <div className="bg-deep-green rounded-[60px] p-12 md:p-24 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('/hero.png')] opacity-10 bg-cover bg-center mix-blend-overlay" />
           <div className="relative z-10">
-            <h2 className="text-white text-5xl lg:text-7xl font-black mb-10 tracking-tighter">Ready to Buy <br /> <span className="text-leaf">Quality Catfish?</span></h2>
-            <p className="text-white/60 text-xl font-bold mb-12 max-w-2xl mx-auto">Place your order today or speak with our team for guidance on the best option for you.</p>
-            <div className="flex flex-wrap justify-center gap-6">
-              <Link href="/booked-order" className="bg-leaf hover:bg-leaf-dark text-white px-12 py-6 rounded-2xl font-black text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/40">
+            <h2 className="text-3xl md:text-5xl lg:text-7xl font-black mb-10 tracking-tighter">Ready to Buy <br className="hidden sm:block" /> <span className="text-leaf">Quality Catfish?</span></h2>
+            <p className="text-white/60 text-lg md:text-xl font-bold mb-12 max-w-2xl mx-auto">Place your order today or speak with our team for guidance on the best option for you.</p>
+            <div className="flex flex-col sm:flex-row justify-center gap-6">
+              <Link href="/booked-order" className="bg-leaf hover:bg-leaf-dark text-white px-8 md:px-12 py-4 md:py-6 rounded-2xl font-black text-lg md:text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/40 text-center">
                 PLACE ORDER NOW
               </Link>
-              <Link href="/contact" className="bg-white hover:bg-gray-100 text-deep-green px-12 py-6 rounded-2xl font-black text-xl transition-all hover:-translate-y-1">
+              <Link href="/contact" className="bg-white hover:bg-gray-100 text-deep-green px-8 md:px-12 py-4 md:py-6 rounded-2xl font-black text-lg md:text-xl transition-all hover:-translate-y-1 text-center">
                 GET EXPERT ADVICE
               </Link>
             </div>

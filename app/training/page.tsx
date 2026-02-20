@@ -41,13 +41,7 @@ export default function TrainingPage() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <header className="text-center mb-24">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-bold mb-6 uppercase tracking-widest"
-                    >
-                        Empowerment Through Knowledge
-                    </motion.div>
+
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -67,7 +61,7 @@ export default function TrainingPage() {
                     </motion.p>
                 </header>
 
-                {/* Stats Section */}
+                {/* Stats Section 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-24">
                     {[
                         { label: "Students Trained", value: "2,500+", icon: Users },
@@ -88,6 +82,7 @@ export default function TrainingPage() {
                         </motion.div>
                     ))}
                 </div>
+                */}
 
                 {/* Modules Grid */}
                 <div className="grid md:grid-cols-3 gap-8 mb-24">
@@ -137,9 +132,6 @@ export default function TrainingPage() {
                             <Link href="/contact" className="bg-white text-deep-green px-10 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">
                                 Contact for Consultation
                             </Link>
-                            <button className="border-2 border-white/30 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest hover:border-white transition-colors">
-                                Download Brochure
-                            </button>
                         </div>
                     </div>
                 </div>

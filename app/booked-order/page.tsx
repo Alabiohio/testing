@@ -115,6 +115,7 @@ export default function BookedOrderPage() {
                     {/* Order Form */}
                     <div className="lg:col-span-2">
                         <motion.form
+                            id="order-form"
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
@@ -276,7 +277,7 @@ export default function BookedOrderPage() {
                                 <div className="space-y-6">
                                     <div className="space-y-4">
                                         <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">
-                                            {formData.deliveryOption === "Pickup" ? "Preferred Pickup Area (Optional)" : "Street Address"}
+                                            {formData.deliveryOption === "Pickup" ? "Preferred Pickup Area" : "Street Address"}
                                         </label>
                                         <input
                                             required={formData.deliveryOption !== "Pickup"}
@@ -337,14 +338,6 @@ export default function BookedOrderPage() {
                                 />
                             </div>
 
-                            <button
-                                type="submit"
-                                className="w-full bg-leaf hover:bg-leaf-dark text-white py-6 rounded-3xl font-black text-xl uppercase tracking-widest shadow-2xl shadow-leaf/40 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-4"
-                            >
-                                PLACE ORDER
-                                <ChevronRight className="w-6 h-6" />
-                            </button>
-
                             <p className="text-center text-xs font-bold text-foreground/40 uppercase tracking-widest">
                                 📌 Our team will contact you within 24 hours to confirm total cost and delivery.
                             </p>
@@ -394,6 +387,15 @@ export default function BookedOrderPage() {
                                 </div>
                             </div>
                         </div>
+
+                        <button
+                            form="order-form"
+                            type="submit"
+                            className="w-full bg-leaf hover:bg-leaf-dark text-white py-6 rounded-3xl font-black text-xl uppercase tracking-widest shadow-2xl shadow-leaf/40 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-4"
+                        >
+                            PLACE ORDER
+                            <ChevronRight className="w-6 h-6" />
+                        </button>
 
                         <div className="space-y-4">
                             {[

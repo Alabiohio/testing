@@ -214,43 +214,43 @@ export default function Home() {
             {
               name: "Fingerlings",
               desc: "Strong, healthy fingerlings with high survival rates—ideal for new ponds.",
-              img: "/event.png",
-              color: "from-blue-500/20",
+              img: "/assets/images/fingerlings.png",
+              //color: "from-blue-500/20",
               tags: ["Disease-free", "Fast-growing strains", "Carefully sorted"]
             },
             {
               name: "Juveniles",
               desc: "Well-developed juveniles ready for rapid growth and smooth transition.",
-              img: "/diary.png",
-              color: "from-green-500/20",
+              img: "/assets/images/juveniles.png",
+              //color: "from-green-500/20",
               tags: ["Uniform sizes", "Feeding response", "Reduced grow-out"]
             },
             {
               name: "Fresh Table-Size",
               desc: "Freshly harvested, hygienically handled catfish for home and restaurants.",
-              img: "/hero.png",
-              color: "from-orange-500/20",
+              img: "/assets/images/tablesize.png",
+              //color: "from-orange-500/20",
               tags: ["Meaty & Nutritious", "Weights: 0.5kg-2kg+", "Same-day harvest"]
             },
             {
               name: "Smoked Catfish",
               desc: "Richly smoked catfish with long shelf life and irresistible flavor.",
-              img: "/event.png",
-              color: "from-red-500/20",
+              img: "/assets/images/smoked.png",
+              //color: "from-red-500/20",
               tags: ["Properly smoked", "No preservatives", "Export quality"]
             },
             {
               name: "Broodstock",
               desc: "High-quality broodstock selected for breeding and hatchery use.",
-              img: "/diary.png",
-              color: "from-purple-500/20",
+              img: "/assets/images/broodstock.png",
+              //color: "from-purple-500/20",
               tags: ["Proven genetics", "High fertility", "Expertly selected"]
             },
             {
               name: "Hatchery Services",
               desc: "Professional hatchery services for scalable farm expansion.",
-              img: "/hero.png",
-              color: "from-teal-500/20",
+              img: "/assets/images/hatchery.png",
+              //color: "from-teal-500/20",
               tags: ["Expert guidance", "Scalable solutions", "Reliable supply"]
             }
           ].filter(cat => cat.name.toLowerCase().includes(searchQuery.toLowerCase())).map((cat, idx) => (

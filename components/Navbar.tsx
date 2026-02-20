@@ -19,7 +19,7 @@ const Navbar = () => {
         { name: 'Home', href: '/' },
         { name: 'Category', href: '/category' },
         { name: 'Training', href: '/training' },
-        { name: 'About Us', href: '/about' },
+        { name: 'Booked Order', href: '/booked-order' },
         { name: 'Contact Us', href: '/contact' },
     ];
 
@@ -66,12 +66,12 @@ const Navbar = () => {
                 <div className="flex justify-between h-18 items-center lg:px-4">
                     {/* Logo */}
                     <Link href="/" className="flex items-center gap-2 group">
-                        <div className="relative w-36 h-36 flex items-center justify-center p-1 rounded-2xl group-hover:scale-110 transition-transform duration-300 overflow-hidden">
+                        <div className="relative w-36 h-36 flex items-center justify-center p-1 rounded-2xl overflow-hidden">
                             <Image
-                                src="/logo.png"
+                                src="/ccbLogo.png"
                                 alt="CCB Farms Logo"
-                                width={144}
-                                height={144}
+                                width={100}
+                                height={100}
                                 className="object-contain"
                             />
                         </div>

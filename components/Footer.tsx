@@ -10,16 +10,16 @@ const Footer = () => {
 
     const footerLinks = {
         company: [
-            { name: 'About Us', href: '/about' },
-            { name: 'Our Farm', href: '/farm' },
-            { name: 'Success Stories', href: '/stories' },
+            { name: 'About Us', href: '/#about' },
+            { name: 'Category', href: '/category' },
+            { name: 'Training', href: '/training' },
             { name: 'Contact Us', href: '/contact' },
         ],
         services: [
-            { name: 'Catfish Training', href: '/training' },
-            { name: 'Fingerlings Sale', href: '/category' },
-            { name: 'Bulk Orders', href: '/contact' },
-            { name: 'Consultancy', href: '/services' },
+            { name: 'Fingerlings', href: '/category' },
+            { name: 'Juveniles', href: '/category' },
+            { name: 'Training Programs', href: '/training' },
+            { name: 'Bulk Orders', href: '/booked-order' },
         ],
         legal: [
             { name: 'Privacy Policy', href: '/privacy' },
@@ -36,7 +36,7 @@ const Footer = () => {
                     <div className="space-y-6">
                         <Link href="/" className="inline-block relative w-32 h-12">
                             <Image
-                                src="/logo.png"
+                                src="/ccbLogo.png"
                                 alt="CCB Farms Logo"
                                 fill
                                 className="object-contain"
@@ -96,13 +96,13 @@ const Footer = () => {
                                 <div className="p-3 bg-leaf/5 rounded-2xl">
                                     <MapPin className="w-5 h-5 text-leaf" />
                                 </div>
-                                <p className="text-foreground/60 font-medium">123 Solomon Okonkwo Estate, <br />Lagos State, Nigeria</p>
+                                <p className="text-foreground/60 font-medium">Ogun State and Lagos, <br />Nigeria</p>
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="p-3 bg-leaf/5 rounded-2xl">
                                     <Phone className="w-5 h-5 text-leaf" />
                                 </div>
-                                <a href="tel:+2340000000000" className="text-foreground/60 hover:text-leaf font-medium transition-colors">+234 000 000 0000</a>
+                                <a href="tel:+2349093009400" className="text-foreground/60 hover:text-leaf font-medium transition-colors">0909 300 9400</a>
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="p-3 bg-leaf/5 rounded-2xl">

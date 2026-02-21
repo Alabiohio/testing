@@ -47,14 +47,6 @@ const categories = [
         specs: ["Weight: 1.5kg - 3kg+", "Fertility: High", "Genetics: Proven"],
         price: "₦4,000 – ₦10,000 per fish",
     },
-    {
-        id: "hatchery",
-        name: "Hatchery Services",
-        description: "Professional hatchery services for scalable farm expansion. Expert guidance and reliable supply for serious aquaculture businesses.",
-        image: "/assets/images/hatchery.png",
-        specs: ["Scalable", "Expert Support", "Reliable Supply"],
-        price: "Contact for Quote",
-    },
 ];
 
 export default function CategoryPage() {

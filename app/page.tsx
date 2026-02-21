@@ -210,41 +210,40 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[
             {
+              id: "fingerlings",
               name: "Fingerlings",
               desc: "Strong, healthy fingerlings with high survival rates—ideal for new ponds.",
               img: "/assets/bgImages/fingerlings.png",
               tags: ["Disease-free", "Fast-growing strains", "Carefully sorted"]
             },
             {
+              id: "juveniles",
               name: "Juveniles",
               desc: "Well-developed juveniles ready for rapid growth and smooth transition.",
               img: "/assets/bgImages/juveniles.png",
               tags: ["Uniform sizes", "Feeding response", "Reduced grow-out"]
             },
             {
+              id: "table-size",
               name: "Fresh Table-Size",
               desc: "Freshly harvested, hygienically handled catfish for home and restaurants.",
               img: "/assets/bgImages/tablesize.png",
               tags: ["Meaty & Nutritious", "Weights: 0.5kg-2kg+", "Same-day harvest"]
             },
             {
+              id: "smoked",
               name: "Smoked Catfish",
               desc: "Richly smoked catfish with long shelf life and irresistible flavor.",
               img: "/assets/bgImages/smoked.png",
               tags: ["Properly smoked", "No preservatives", "Export quality"]
             },
             {
+              id: "broodstock",
               name: "Broodstock",
               desc: "High-quality broodstock selected for breeding and hatchery use.",
               img: "/assets/bgImages/broodstock.png",
               tags: ["Proven genetics", "High fertility", "Expertly selected"]
             },
-            {
-              name: "Hatchery Services",
-              desc: "Professional hatchery services for scalable farm expansion.",
-              img: "/assets/images/hatchery.png",
-              tags: ["Expert guidance", "Scalable solutions", "Reliable supply"]
-            }
           ].filter(cat => cat.name.toLowerCase().includes(searchQuery.toLowerCase())).map((cat, idx) => (
             <motion.div
               key={cat.name}
@@ -274,8 +273,8 @@ export default function Home() {
                   ))}
                 </div>
 
-                <Link href="/booked-order" className="inline-flex items-center gap-2 text-leaf font-black uppercase tracking-widest text-sm group/btn">
-                  Order Now <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                <Link href={`/booked-order?cat=${cat.id}`} className="inline-flex items-center gap-2 text-leaf font-black uppercase tracking-widest text-sm group/btn">
+                  Order {cat.name} <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                 </Link>
               </div>
             </motion.div>

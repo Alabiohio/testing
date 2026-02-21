@@ -51,15 +51,6 @@ const categoryGroups: Record<string, CategoryGroup> = {
             { label: "Large Smoked (1kg and above)", value: "large-smoked" },
         ]
     },
-    hatchery: {
-        name: "Hatchery Services",
-        unit: "capacity",
-        options: [
-            { label: "Full Hatchery Setup", value: "full-setup" },
-            { label: "Hatchery Maintenance", value: "maintenance" },
-            { label: "Technical Consultation", value: "consultation" },
-        ]
-    }
 };
 
 const deliveryOptions = [

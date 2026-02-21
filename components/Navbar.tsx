@@ -84,7 +84,7 @@ const Navbar = () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('open-global-search', handleOpenSearch);
         };
-    }, [lastScrollY]);
+    }, [isHome, lastScrollY]);
 
 
     return (
@@ -186,107 +186,111 @@ const Navbar = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* Mobile Menu Side Drawer */}
-                <AnimatePresence>
-                    {isOpen && (
-                        <>
-                            {/* Backdrop */}
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                onClick={() => setIsOpen(false)}
-                                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] md:hidden"
-                            />
-
-                            {/* Drawer */}
-                            <motion.div
-                                initial={{ x: '100%' }}
-                                animate={{ x: 0 }}
-                                exit={{ x: '100%' }}
-                                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                                className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white dark:bg-zinc-900 z-[120] md:hidden shadow-[-20px_0_50px_rgba(0,0,0,0.2)] flex flex-col"
-                            >
-                                {/* Header */}
-                                <div className="p-6 flex items-center justify-between border-b border-earth/5 dark:border-white/5">
-                                    <div className="relative w-24 h-12">
-                                        <Image
-                                            src="/ccbLogo.png"
-                                            alt="CCB Farms Logo"
-                                            width={80}
-                                            height={80}
-                                            className="object-contain"
-                                        />
-                                    </div>
-                                    <button
-                                        onClick={() => setIsOpen(false)}
-                                        className="p-2 bg-earth/5 dark:bg-white/5 rounded-xl text-foreground/40 hover:text-leaf transition-colors"
-                                    >
-                                        <X className="w-6 h-6" />
-                                    </button>
-                                </div>
-
-                                {/* Menu Content */}
-                                <div className="flex-grow overflow-y-auto px-6 py-8 custom-scrollbar">
-                                    {/* Mobile Search Input */}
-                                    <div className="mb-10">
-                                        <div
-                                            className="relative group cursor-pointer"
-                                            onClick={() => {
-                                                setIsOpen(false);
-                                                setIsSearchOpen(true);
-                                            }}
-                                        >
-                                            <div className="w-full h-14 pl-12 pr-4 rounded-2xl bg-earth/5 dark:bg-white/5 border-2 border-transparent group-hover:border-leaf/20 transition-all flex items-center">
-                                                <span className="text-foreground/30 font-medium">Search for catfish...</span>
-                                            </div>
-                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-leaf/60" />
-                                        </div>
-                                    </div>
-
-                                    {/* Links */}
-                                    <div className="space-y-2">
-                                        {menuItems.map((item, idx) => {
-                                            const isActive = pathname === item.href;
-                                            return (
-                                                <motion.div
-                                                    key={item.name}
-                                                    initial={{ x: 20, opacity: 0 }}
-                                                    animate={{ x: 0, opacity: 1 }}
-                                                    transition={{ delay: 0.1 + idx * 0.05 }}
-                                                >
-                                                    <Link
-                                                        href={item.href}
-                                                        onClick={() => setIsOpen(false)}
-                                                        className={`flex items-center justify-between px-4 py-4 rounded-2xl text-lg font-bold transition-all group ${isActive
-                                                            ? 'text-leaf bg-leaf/10'
-                                                            : 'text-foreground/70 hover:text-leaf hover:bg-leaf/5'
-                                                            }`}
-                                                    >
-                                                        {item.name}
-                                                        <ArrowRight className={`w-5 h-5 transition-all ${isActive
-                                                            ? 'opacity-100 translate-x-0 text-leaf'
-                                                            : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'
-                                                            }`} />
-                                                    </Link>
-                                                </motion.div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-
-                                {/* Footer CTA */}
-                                <div className="p-6 border-t border-earth/5 dark:border-white/5 bg-earth/5 dark:bg-white/5">
-                                    <button className="w-full bg-leaf text-white py-5 rounded-[20px] font-black text-lg shadow-xl shadow-leaf/20 active:scale-95 transition-all">
-                                        GET STARTED
-                                    </button>
-                                </div>
-                            </motion.div>
-                        </>
-                    )}
-                </AnimatePresence>
             </nav>
+
+            {/* Mobile Menu Side Drawer */}
+            <AnimatePresence>
+                {isOpen && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsOpen(false)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] md:hidden"
+                        />
+
+                        {/* Drawer */}
+                        <motion.div
+                            initial={{ x: '100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white dark:bg-zinc-900 z-[120] md:hidden shadow-[-20px_0_50px_rgba(0,0,0,0.2)] flex flex-col"
+                        >
+                            {/* Header */}
+                            <div className="p-6 flex items-center justify-between border-b border-earth/5 dark:border-white/5">
+                                <div className="relative w-24 h-12">
+                                    <Image
+                                        src="/ccbLogo.png"
+                                        alt="CCB Farms Logo"
+                                        width={80}
+                                        height={80}
+                                        className="object-contain"
+                                    />
+                                </div>
+                                <button
+                                    onClick={() => setIsOpen(false)}
+                                    className="p-2 bg-earth/5 dark:bg-white/5 rounded-xl text-foreground/40 hover:text-leaf transition-colors"
+                                >
+                                    <X className="w-6 h-6" />
+                                </button>
+                            </div>
+
+                            {/* Menu Content */}
+                            <div className="flex-grow overflow-y-auto px-6 py-8 custom-scrollbar">
+                                {/* Mobile Search Input */}
+                                <div className="mb-10">
+                                    <div
+                                        className="relative group cursor-pointer"
+                                        onClick={() => {
+                                            setIsOpen(false);
+                                            setIsSearchOpen(true);
+                                        }}
+                                    >
+                                        <div className="w-full h-14 pl-12 pr-4 rounded-2xl bg-earth/5 dark:bg-white/5 border-2 border-transparent group-hover:border-leaf/20 transition-all flex items-center">
+                                            <span className="text-foreground/30 font-medium">Search for catfish...</span>
+                                        </div>
+                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-leaf/60" />
+                                    </div>
+                                </div>
+
+                                {/* Links */}
+                                <div className="space-y-2">
+                                    {menuItems.map((item, idx) => {
+                                        const isActive = pathname === item.href;
+                                        return (
+                                            <motion.div
+                                                key={item.name}
+                                                initial={{ x: 20, opacity: 0 }}
+                                                animate={{ x: 0, opacity: 1 }}
+                                                transition={{ delay: 0.1 + idx * 0.05 }}
+                                            >
+                                                <Link
+                                                    href={item.href}
+                                                    onClick={() => setIsOpen(false)}
+                                                    className={`flex items-center justify-between px-4 py-4 rounded-2xl text-lg font-bold transition-all group ${isActive
+                                                        ? 'text-leaf bg-leaf/10'
+                                                        : 'text-foreground/70 hover:text-leaf hover:bg-leaf/5'
+                                                        }`}
+                                                >
+                                                    {item.name}
+                                                    <ArrowRight className={`w-5 h-5 transition-all ${isActive
+                                                        ? 'opacity-100 translate-x-0 text-leaf'
+                                                        : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'
+                                                        }`} />
+                                                </Link>
+                                            </motion.div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            {/* Footer CTA */}
+                            <div className="p-6 border-t border-earth/5 dark:border-white/5 bg-earth/5 dark:bg-white/5">
+                                <Link
+                                    href="/booked-order"
+                                    onClick={() => setIsOpen(false)}
+                                    className="w-full bg-leaf text-white py-5 rounded-[20px] font-black text-lg shadow-xl shadow-leaf/20 active:scale-95 transition-all flex items-center justify-center uppercase tracking-widest"
+                                >
+                                    GET STARTED
+                                </Link>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
 
             {/* Global Search Modal */}
             <GlobalSearch

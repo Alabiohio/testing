@@ -1,8 +1,72 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Truck, User, Phone, MapPin, Mail, ChevronRight, Info, ShieldCheck, Check } from "lucide-react";
+
+const categoryGroups: Record<string, CategoryGroup> = {
+    fingerlings: {
+        name: "Fingerlings (Farming)",
+        unit: "pieces",
+        options: [
+            { label: "Small Fingerlings (5–10g)", value: "small-fingerlings" },
+            { label: "Medium Fingerlings (10–20g)", value: "medium-fingerlings" },
+            { label: "Large Fingerlings (20–30g)", value: "large-fingerlings" },
+        ]
+    },
+    juveniles: {
+        name: "Juvenile Catfish (Farming)",
+        unit: "pieces",
+        options: [
+            { label: "Small Juveniles (50–100g)", value: "small-juveniles" },
+            { label: "Medium Juveniles (100–200g)", value: "medium-juveniles" },
+            { label: "Large Juveniles (200–300g)", value: "large-juveniles" },
+        ]
+    },
+    broodstock: {
+        name: "Broodstock Catfish (Farming)",
+        unit: "fish",
+        options: [
+            { label: "Medium Broodstock (1.5 – 2kg)", value: "medium-broodstock" },
+            { label: "Large Broodstock (2 – 3kg)", value: "large-broodstock" },
+            { label: "Extra Large (3kg and above)", value: "xl-broodstock" },
+        ]
+    },
+    "table-size": {
+        name: "Fresh Table-Size (Consumption)",
+        unit: "kg",
+        options: [
+            { label: "Small (0.5 – 0.8kg)", value: "small-table" },
+            { label: "Medium (1 – 1.5kg)", value: "medium-table" },
+            { label: "Large (1.5 – 2kg)", value: "large-table" },
+        ]
+    },
+    smoked: {
+        name: "Smoked Catfish (Consumption)",
+        unit: "kg",
+        options: [
+            { label: "Small Smoked (0.3 – 0.5kg)", value: "small-smoked" },
+            { label: "Medium Smoked (0.6 – 0.9kg)", value: "medium-smoked" },
+            { label: "Large Smoked (1kg and above)", value: "large-smoked" },
+        ]
+    },
+    hatchery: {
+        name: "Hatchery Services",
+        unit: "capacity",
+        options: [
+            { label: "Full Hatchery Setup", value: "full-setup" },
+            { label: "Hatchery Maintenance", value: "maintenance" },
+            { label: "Technical Consultation", value: "consultation" },
+        ]
+    }
+};
+
+const deliveryOptions = [
+    "Pickup",
+    "Home Delivery",
+    "Farm-to-Farm Transfer (for live fish)"
+];
 
 export default function BookedOrderPage() {
     const [formData, setFormData] = useState({
@@ -19,64 +83,46 @@ export default function BookedOrderPage() {
         notes: "",
     });
 
-    const categoryGroups = {
-        fingerlings: {
-            name: "Fingerlings (Farming)",
-            unit: "pieces",
-            options: [
-                { label: "Small Fingerlings (5–10g)", value: "small-fingerlings" },
-                { label: "Medium Fingerlings (10–20g)", value: "medium-fingerlings" },
-                { label: "Large Fingerlings (20–30g)", value: "large-fingerlings" },
-            ]
-        },
-        juveniles: {
-            name: "Juvenile Catfish (Farming)",
-            unit: "pieces",
-            options: [
-                { label: "Small Juveniles (50–100g)", value: "small-juveniles" },
-                { label: "Medium Juveniles (100–200g)", value: "medium-juveniles" },
-                { label: "Large Juveniles (200–300g)", value: "large-juveniles" },
-            ]
-        },
-        broodstock: {
-            name: "Broodstock Catfish (Farming)",
-            unit: "fish",
-            options: [
-                { label: "Medium Broodstock (1.5 – 2kg)", value: "medium-broodstock" },
-                { label: "Large Broodstock (2 – 3kg)", value: "large-broodstock" },
-                { label: "Extra Large (3kg and above)", value: "xl-broodstock" },
-            ]
-        },
-        "table-size": {
-            name: "Fresh Table-Size (Consumption)",
-            unit: "kg",
-            options: [
-                { label: "Small (0.5 – 0.8kg)", value: "small-table" },
-                { label: "Medium (1 – 1.5kg)", value: "medium-table" },
-                { label: "Large (1.5 – 2kg)", value: "large-table" },
-            ]
-        },
-        smoked: {
-            name: "Smoked Catfish (Consumption)",
-            unit: "kg",
-            options: [
-                { label: "Small Smoked (0.3 – 0.5kg)", value: "small-smoked" },
-                { label: "Medium Smoked (0.6 – 0.9kg)", value: "medium-smoked" },
-                { label: "Large Smoked (1kg and above)", value: "large-smoked" },
-            ]
-        }
-    };
-
-    const deliveryOptions = [
-        "Pickup",
-        "Home Delivery",
-        "Farm-to-Farm Transfer (for live fish)"
-    ];
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         alert("Thank you! Your order has been placed successfully. Our team will contact you within 24 hours.");
     };
+
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-black text-leaf">Loading...</div>}>
+            <OrderFormContent formData={formData} setFormData={setFormData} categoryGroups={categoryGroups} deliveryOptions={deliveryOptions} handleSubmit={handleSubmit} />
+        </Suspense>
+    );
+}
+
+interface CategoryOption {
+    label: string;
+    value: string;
+}
+
+interface CategoryGroup {
+    name: string;
+    unit: string;
+    options: CategoryOption[];
+}
+
+interface OrderFormContentProps {
+    formData: any;
+    setFormData: React.Dispatch<React.SetStateAction<any>>;
+    categoryGroups: Record<string, CategoryGroup>;
+    deliveryOptions: string[];
+    handleSubmit: (e: React.FormEvent) => void;
+}
+
+function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptions, handleSubmit }: OrderFormContentProps) {
+    const searchParams = useSearchParams();
+    const catParam = searchParams.get("cat");
+
+    useEffect(() => {
+        if (catParam && categoryGroups[catParam] && formData.category !== catParam) {
+            setFormData((prev: any) => ({ ...prev, category: catParam }));
+        }
+    }, [catParam, categoryGroups, setFormData, formData.category]);
 
     return (
         <div className="min-h-screen bg-background pt-32 pb-24 relative overflow-hidden">
@@ -180,7 +226,7 @@ export default function BookedOrderPage() {
                                 <div className="space-y-6">
                                     <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Select Main Category</label>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {Object.entries(categoryGroups).map(([id, group]) => (
+                                        {Object.entries(categoryGroups).map(([id, group]: [string, CategoryGroup]) => (
                                             <button
                                                 key={id}
                                                 type="button"
@@ -214,7 +260,7 @@ export default function BookedOrderPage() {
                                     >
                                         <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Choose Size/Weight</label>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            {categoryGroups[formData.category as keyof typeof categoryGroups].options.map((opt) => (
+                                            {categoryGroups[formData.category as keyof typeof categoryGroups].options.map((opt: CategoryOption) => (
                                                 <button
                                                     key={opt.value}
                                                     type="button"
@@ -259,7 +305,7 @@ export default function BookedOrderPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    {deliveryOptions.map((opt) => (
+                                    {deliveryOptions.map((opt: string) => (
                                         <button
                                             key={opt}
                                             type="button"

@@ -16,8 +16,11 @@ const Footer = () => {
             { name: 'Contact Us', href: '/contact' },
         ],
         services: [
-            { name: 'Fingerlings', href: '/category' },
-            { name: 'Juveniles', href: '/category' },
+            { name: 'Fingerlings', href: '/category#fingerlings' },
+            { name: 'Juveniles', href: '/category#juveniles' },
+            { name: 'Table Size', href: '/category#table-size' },
+            { name: 'Smoked Catfish', href: '/category#smoked' },
+            { name: 'Broodstock', href: '/category#broodstock' },
             { name: 'Training Programs', href: '/training' },
             { name: 'Bulk Orders', href: '/booked-order' },
         ],

@@ -27,34 +27,35 @@ export default function Home() {
       <div className="absolute bottom-0 right-0 translate-y-1/4 w-[400px] h-[400px] bg-deep-green/10 dark:bg-deep-green/5 rounded-full blur-[100px] -z-10" />
 
 
-      {/* Desktop Sticky Search Bar (Hidden on mobile to prevent layout scattering) */}
-      <div className="hidden md:sticky top-[72px] z-40 md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="relative group">
-          <input
-            type="text"
-            placeholder="Search for farm produce, training, etc..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-14 pl-14 pr-6 rounded-2xl border-2 border-earth/20 dark:border-white/10 focus:border-leaf focus:ring-4 focus:ring-leaf/5 outline-none text-foreground bg-white/70 dark:bg-white/10 backdrop-blur-md shadow-lg group-hover:shadow-xl placeholder:text-foreground/40 text-lg transition-all"
-          />
-          <Search
-            className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-foreground/40 group-focus-within:text-leaf transition-colors"
-          />
-        </div>
-      </div>
 
       {/* Hero Section - Standard Two-Column Layout */}
-      <section className="w-full mb-24 relative heroDiv pt-32">
+      <section className="w-full mb-24 relative heroDiv pt-32 lg:pt-40">
+        {/* Desktop Search Bar */}
+        <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+          <div
+            className="relative group cursor-pointer"
+            onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+          >
+            <div className="w-full h-16 pl-14 pr-6 rounded-2xl border-2 border-earth/20 dark:border-white/10 focus-within:border-leaf focus-within:ring-4 focus-within:ring-leaf/5 text-foreground bg-white/70 dark:bg-white/10 backdrop-blur-md shadow-2xl group-hover:shadow-leaf/10 transition-all flex items-center">
+              <span className="text-foreground/40 text-xl font-medium">Search for farm produce, training, etc...</span>
+            </div>
+            <Search
+              className="absolute left-5 top-1/2 -translate-y-1/2 w-7 h-7 text-leaf transition-colors"
+            />
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              <span className="text-[12px] font-black text-foreground/30 bg-foreground/5 px-3 py-1.5 rounded-lg uppercase tracking-widest border border-foreground/5">Cmd + K</span>
+            </div>
+          </div>
+        </div>
         {/* Mobile Search Bar */}
         <div className="md:hidden max-w-7xl mx-auto px-4 py-6">
-          <div className="relative group">
-            <input
-              type="text"
-              placeholder="Search for farm produce, training, etc..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-14 pl-14 pr-6 rounded-2xl border-2 border-earth/20 dark:border-white/10 focus:border-leaf focus:ring-4 focus:ring-leaf/5 outline-none text-foreground bg-white/70 dark:bg-white/10 backdrop-blur-md shadow-lg group-hover:shadow-xl placeholder:text-foreground/40 text-lg transition-all"
-            />
+          <div
+            className="relative group"
+            onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
+          >
+            <div className="w-full h-14 pl-14 pr-6 rounded-2xl border-2 border-earth/20 dark:border-white/10 text-foreground bg-white/70 dark:bg-white/10 backdrop-blur-md shadow-lg flex items-center">
+              <span className="text-foreground/40 text-lg">Search...</span>
+            </div>
             <Search
               className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-foreground/40 group-focus-within:text-leaf transition-colors"
             />

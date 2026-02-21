@@ -92,10 +92,11 @@ export default function CategoryPage() {
                     {categories.map((cat, idx) => (
                         <motion.div
                             key={cat.id}
+                            id={cat.id}
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-10%" }}
-                            className="grid lg:grid-cols-2 gap-12 items-center p-6 md:p-12 rounded-[40px] md:rounded-[60px] border-2 border-earth/5 dark:border-white/5 bg-white/50 dark:bg-white/5 backdrop-blur-sm group hover:border-leaf/20 transition-all"
+                            className="grid lg:grid-cols-2 gap-12 items-center p-6 md:p-12 rounded-[40px] md:rounded-[60px] border-2 border-earth/5 dark:border-white/5 bg-white/50 dark:bg-white/5 backdrop-blur-sm group hover:border-leaf/20 transition-all scroll-mt-32"
                         >
                             <div className={`w-full max-w-[500px] lg:max-w-none mx-auto ${idx % 2 === 1 ? "lg:order-2" : ""}`}>
                                 <div className="relative aspect-[4/3] rounded-[30px] md:rounded-[40px] overflow-hidden shadow-2xl group-hover:scale-[1.02] transition-transform duration-700">
@@ -130,7 +131,7 @@ export default function CategoryPage() {
                                 </div>
 
                                 <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">
-                                    <Link href="/booked-order" className="bg-leaf hover:bg-leaf-dark text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all">
+                                    <Link href={`/booked-order?cat=${cat.id}`} className="bg-leaf hover:bg-leaf-dark text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all">
                                         Order {cat.name}
                                         <ShoppingBag className="w-5 h-5" />
                                     </Link>

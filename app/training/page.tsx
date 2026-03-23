@@ -74,7 +74,7 @@ export default function TrainingPage() {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: i * 0.1 }}
-                            className="bg-white/50 dark:bg-white/5 border border-earth/10 dark:border-white/10 p-8 rounded-[32px] text-center"
+                            className="bg-white/50 dark:bg-white/5 border border-earth/10 dark:border-white/10 p-8 rounded-2xl text-center"
                         >
                             <stat.icon className="w-8 h-8 text-leaf mx-auto mb-4" />
                             <p className="text-3xl font-black text-deep-green dark:text-leaf mb-1">{stat.value}</p>
@@ -90,11 +90,11 @@ export default function TrainingPage() {
                         <motion.div
                             key={idx}
                             whileHover={{ y: -10 }}
-                            className="bg-white dark:bg-zinc-900 shadow-2xl shadow-black/5 dark:shadow-none border border-earth/5 dark:border-white/5 p-10 rounded-[48px] relative overflow-hidden group"
+                            className="bg-white dark:bg-zinc-900 shadow-2xl shadow-black/5 dark:shadow-none border border-earth/5 dark:border-white/5 p-10 rounded-3xl relative overflow-hidden group"
                         >
                             <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 -translate-y-1/2 translate-x-1/2 rounded-full group-hover:scale-150 transition-transform duration-700" />
 
-                            <div className="w-14 h-14 bg-leaf/10 rounded-2xl flex items-center justify-center mb-8">
+                            <div className="w-14 h-14 bg-leaf/10 rounded-xl flex items-center justify-center mb-8">
                                 <module.icon className="w-7 h-7 text-leaf" />
                             </div>
 
@@ -121,7 +121,7 @@ export default function TrainingPage() {
                 </div>
 
                 {/* CTA Section */}
-                <div className="bg-deep-green rounded-[60px] p-12 md:p-20 text-center text-white relative overflow-hidden">
+                <div className="bg-deep-green rounded-3xl p-12 md:p-20 text-center text-white relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('/event.png')] bg-cover bg-center" />
                     <div className="relative z-10">
                         <h2 className="text-4xl lg:text-5xl font-black mb-8">Ready to Start Your Journey?</h2>
@@ -129,7 +129,7 @@ export default function TrainingPage() {
                             Don&apos;t just farm, farm like a pro. Get the skills, mentorship, and support you need to succeed in the catfish business.
                         </p>
                         <div className="flex flex-wrap justify-center gap-6">
-                            <Link href="/contact" className="bg-white text-deep-green px-10 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">
+                            <Link href="/contact" className="bg-white text-deep-green px-10 py-5 rounded-xl font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">
                                 Contact for Consultation
                             </Link>
                         </div>

@@ -22,9 +22,9 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300 relative overflow-x-clip">
       {/* Background Decorative Blobs */}
-      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[600px] h-[600px] bg-leaf/10 dark:bg-leaf/5 rounded-full blur-[120px] -z-10" />
-      <div className="absolute middle-0 left-0 translate-y-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-earth/10 dark:bg-earth/5 rounded-full blur-[100px] -z-10" />
-      <div className="absolute bottom-0 right-0 translate-y-1/4 w-[400px] h-[400px] bg-deep-green/10 dark:bg-deep-green/5 rounded-full blur-[100px] -z-10" />
+      {/* Background Decorative Grid - More Commerce/Professional Look */}
+      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:40px_40px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 -z-10" />
+      <div className="absolute top-0 right-0 w-full h-[800px] bg-gradient-to-b from-leaf/5 to-transparent -z-10" />
 
 
 
@@ -36,7 +36,7 @@ export default function Home() {
             className="relative group cursor-pointer"
             onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
           >
-            <div className="w-full h-16 pl-14 pr-6 rounded-2xl border-2 border-earth/20 dark:border-white/10 focus-within:border-leaf focus-within:ring-4 focus-within:ring-leaf/5 text-foreground bg-white/70 dark:bg-white/10 backdrop-blur-md shadow-2xl group-hover:shadow-leaf/10 transition-all flex items-center">
+            <div className="w-full h-16 pl-14 pr-6 rounded-2xl border-2 border-earth/20 dark:border-white/10 focus-within:border-leaf focus-within:ring-4 focus-within:ring-leaf/5 text-foreground bg-white dark:bg-zinc-900 shadow-xl transition-all flex items-center">
               <span className="text-foreground/40 text-xl font-medium">Search for farm produce, training, etc...</span>
             </div>
             <Search
@@ -53,7 +53,7 @@ export default function Home() {
             className="relative group"
             onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
           >
-            <div className="w-full h-14 pl-14 pr-6 rounded-2xl border-2 border-earth/20 dark:border-white/10 text-foreground bg-white/70 dark:bg-white/10 backdrop-blur-md shadow-lg flex items-center">
+            <div className="w-full h-14 pl-14 pr-6 rounded-2xl border-2 border-earth/20 dark:border-white/10 text-foreground bg-white dark:bg-zinc-900 shadow-lg flex items-center">
               <span className="text-foreground/40 text-lg">Search...</span>
             </div>
             <Search
@@ -118,12 +118,13 @@ export default function Home() {
               className="relative"
             >
               <div className="aspect-square relative rounded-[60px] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border-8 border-white dark:border-white/5 group">
-                <Image
-                  src="/hero.png"
-                  alt="Catfish Farm"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-1000"
-                  priority
+                <video
+                  src="/assets/bgVid/hero.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="object-cover w-full h-full absolute inset-0 group-hover:scale-105 transition-transform duration-1000"
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-deep-green/40 to-transparent mix-blend-overlay" />
 
@@ -134,8 +135,8 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Abstract Background for Image */}
-              <div className="absolute -z-10 -top-10 -right-10 w-full h-full bg-leaf/10 rounded-[60px] blur-3xl" />
+              {/* Clean Shadow instead of Blur */}
+              <div className="absolute -z-10 -bottom-4 -right-4 w-full h-full border-2 border-leaf/10 rounded-[60px]" />
             </motion.div>
           </div>
         </div>
@@ -201,10 +202,10 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 text-center md:text-left">
           <div className="space-y-2">
-            <h2 className="text-3xl md:text-4xl font-black text-deep-green dark:text-leaf tracking-tight uppercase">Our Catfish Categories</h2>
+            <h2 className="text-3xl md:text-5xl font-black text-deep-green dark:text-leaf tracking-tight uppercase">Featured Products</h2>
             <p className="text-foreground/40 font-bold uppercase tracking-widest text-sm">Finest Quality Across All Stages</p>
           </div>
-          <div className="hidden md:block h-1 flex-grow ml-8 bg-earth/10 dark:bg-white/5 rounded-full" />
+          <div className="hidden md:block h-[1px] flex-grow ml-8 bg-earth/10 dark:bg-white/5" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -214,6 +215,8 @@ export default function Home() {
               name: "Fingerlings",
               desc: "Strong, healthy fingerlings with high survival rates—ideal for new ponds.",
               img: "/assets/bgImages/fingerlings.png",
+              price: "₦80",
+              unit: "piece",
               tags: ["Disease-free", "Fast-growing strains", "Carefully sorted"]
             },
             {
@@ -221,6 +224,8 @@ export default function Home() {
               name: "Juveniles",
               desc: "Well-developed juveniles ready for rapid growth and smooth transition.",
               img: "/assets/bgImages/juveniles.png",
+              price: "₦300",
+              unit: "piece",
               tags: ["Uniform sizes", "Feeding response", "Reduced grow-out"]
             },
             {
@@ -228,6 +233,8 @@ export default function Home() {
               name: "Fresh Table-Size",
               desc: "Freshly harvested, hygienically handled catfish for home and restaurants.",
               img: "/assets/bgImages/tablesize.png",
+              price: "₦1,500",
+              unit: "kg",
               tags: ["Meaty & Nutritious", "Weights: 0.5kg-2kg+", "Same-day harvest"]
             },
             {
@@ -235,6 +242,8 @@ export default function Home() {
               name: "Smoked Catfish",
               desc: "Richly smoked catfish with long shelf life and irresistible flavor.",
               img: "/assets/bgImages/smoked.png",
+              price: "₦4,000",
+              unit: "kg",
               tags: ["Properly smoked", "No preservatives", "Export quality"]
             },
             {
@@ -242,6 +251,8 @@ export default function Home() {
               name: "Broodstock",
               desc: "High-quality broodstock selected for breeding and hatchery use.",
               img: "/assets/bgImages/broodstock.png",
+              price: "₦4,000",
+              unit: "fish",
               tags: ["Proven genetics", "High fertility", "Expertly selected"]
             },
           ].filter(cat => cat.name.toLowerCase().includes(searchQuery.toLowerCase())).map((cat, idx) => (
@@ -262,19 +273,27 @@ export default function Home() {
                 />
               </div>
               <div className="p-8">
-                <h3 className="text-2xl font-black text-deep-green dark:text-white mb-3 uppercase tracking-tight">{cat.name}</h3>
-                <p className="text-foreground/50 font-medium mb-6 line-clamp-2">{cat.desc}</p>
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-2xl font-black text-deep-green dark:text-white uppercase tracking-tight">{cat.name}</h3>
+                  <div className="text-right">
+                    <p className="text-xl font-black text-leaf tracking-tighter">{cat.price}</p>
+                    <p className="text-[10px] font-bold text-foreground/30 uppercase">per {cat.unit}</p>
+                  </div>
+                </div>
+                
+                <p className="text-foreground/50 font-medium mb-6 line-clamp-2 text-sm">{cat.desc}</p>
 
-                <div className="flex flex-wrap gap-2 mb-8">
+                <div className="flex flex-wrap gap-1.5 mb-8">
                   {cat.tags.map(tag => (
-                    <span key={tag} className="px-3 py-1 bg-leaf/5 text-leaf dark:text-leaf-dark text-[10px] font-black uppercase tracking-widest rounded-full border border-leaf/10">
+                    <span key={tag} className="px-2.5 py-1 bg-leaf/5 text-leaf dark:text-leaf-dark text-[9px] font-black uppercase tracking-widest rounded-lg border border-leaf/10">
                       {tag}
                     </span>
                   ))}
                 </div>
 
-                <Link href={`/booked-order?cat=${cat.id}`} className="inline-flex items-center gap-2 text-leaf font-black uppercase tracking-widest text-sm group/btn">
-                  Order {cat.name} <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                <Link href={`/booked-order?cat=${cat.id}`} className="w-full inline-flex items-center justify-center gap-3 bg-deep-green dark:bg-leaf text-white px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-xs group/btn transition-all hover:bg-leaf hover:shadow-xl hover:shadow-leaf/20">
+                  <ShoppingBag className="w-4 h-4 transition-transform group-hover/btn:-rotate-12" />
+                  Add to Cart
                 </Link>
               </div>
             </motion.div>
@@ -288,11 +307,64 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 4.5. Pricing Catalogue Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-bold mb-6 uppercase tracking-widest">
+            Pricing
+          </div>
+          <h2 className="text-3xl md:text-5xl font-black text-deep-green dark:text-white uppercase tracking-tight">Price Catalogue</h2>
+          <p className="text-foreground/50 mt-4 text-lg font-medium max-w-2xl mx-auto">
+            Transparent and competitive pricing for all our high-quality catfish categories.
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-6">
+          {[
+            { name: "Fingerlings", desc: "Strong and healthy (5-30g)", unit: "per piece", price: "₦80 – ₦150", id: "fingerlings", img: "/assets/bgImages/fingerlings.png" },
+            { name: "Juveniles", desc: "Well-developed (50-300g)", unit: "per piece", price: "₦300 – ₦700", id: "juveniles", img: "/assets/bgImages/juveniles.png" },
+            { name: "Fresh Table-Size", desc: "Ready for consumption", unit: "per kg", price: "₦1,500 – ₦3,500", id: "table-size", img: "/assets/bgImages/tablesize.png" },
+            { name: "Smoked Catfish", desc: "Richly smoked & packaged", unit: "per kg", price: "₦4,000 – ₦8,000", id: "smoked", img: "/assets/bgImages/smoked.png" },
+            { name: "Broodstock", desc: "High-quality breeders", unit: "per fish", price: "₦4,000 – ₦10,000", id: "broodstock", img: "/assets/bgImages/broodstock.png" },
+          ].map((item, idx) => (
+            <motion.div 
+              key={idx} 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.1 }}
+              className="bg-white dark:bg-zinc-900 border-2 border-earth/5 dark:border-white/5 hover:border-leaf/30 rounded-[32px] p-4 sm:p-6 flex flex-col md:flex-row items-center gap-6 md:gap-8 shadow-xl shadow-black/5 transition-all group overflow-hidden relative"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 -translate-y-1/2 translate-x-1/2 rounded-full blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              
+              <div className="relative w-full md:w-40 h-48 md:h-28 rounded-2xl overflow-hidden shrink-0 border-2 border-earth/10 dark:border-white/5">
+                <Image src={item.img} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+              </div>
+              
+              <div className="flex-grow text-center md:text-left space-y-2 relative z-10 w-full md:w-auto">
+                <h3 className="text-2xl md:text-3xl font-black text-deep-green dark:text-white uppercase tracking-tight">{item.name}</h3>
+                <p className="text-sm font-bold text-foreground/50">{item.desc}</p>
+                <div className="inline-flex items-center gap-2 bg-leaf/5 px-3 py-1 rounded-xl border border-leaf/10">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-leaf">{item.unit}</span>
+                </div>
+              </div>
+
+              <div className="flex flex-col items-center md:items-end gap-4 w-full md:w-auto relative z-10 pt-4 md:pt-0 border-t md:border-t-0 border-earth/5 dark:border-white/5">
+                <p className="font-black text-leaf text-3xl md:text-4xl whitespace-nowrap tracking-tighter">{item.price}</p>
+                <Link href={`/booked-order?cat=${item.id}`} className="bg-leaf/5 hover:bg-leaf text-leaf hover:text-white px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all w-full md:w-auto text-center border border-leaf/10 shadow-lg shadow-black/5 hover:shadow-leaf/20 flex items-center justify-center gap-2">
+                  <ShoppingBag className="w-4 h-4" />
+                  Order
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
       {/* 5. Why Choose Us Section */}
       <section className="bg-deep-green py-24 mb-24 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
-          <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-leaf rounded-full blur-[120px]" />
-          <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-leaf rounded-full blur-[120px]" />
+        <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
+          <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)] [background-size:200%_200%] animate-[shimmer_10s_infinite_linear]" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -428,7 +500,7 @@ export default function Home() {
 
       {/* 8. Event/Diary/Information Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="flex items-center gap-4 mb-10">
+        <div className="flex items-center gap-4 mb-10 text-center md:text-left">
           <h2 className="text-3xl font-black text-deep-green dark:text-leaf tracking-tight uppercase">Event / Diary / Information</h2>
         </div>
 
@@ -489,12 +561,35 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 8.5. Newsletter Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+        <div className="bg-leaf/5 dark:bg-leaf/10 rounded-[40px] md:rounded-[60px] p-10 md:p-20 border-2 border-leaf/10 relative overflow-hidden text-center">
+            <div className="relative z-10 max-w-3xl mx-auto">
+                <h2 className="text-3xl md:text-5xl font-black text-deep-green dark:text-white mb-6 uppercase tracking-tight">Stay in the Loop</h2>
+                <p className="text-foreground/60 text-lg mb-10 font-bold">
+                    Get weekly price updates, farming tips, and exclusive offers delivered to your inbox.
+                </p>
+                <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto" onSubmit={(e) => { e.preventDefault(); alert("Thanks for subscribing!"); }}>
+                    <input 
+                        required 
+                        type="email" 
+                        placeholder="your@email.com" 
+                        className="flex-grow bg-white dark:bg-zinc-900 border-2 border-transparent focus:border-leaf rounded-2xl px-6 py-4 outline-none font-bold shadow-lg"
+                    />
+                    <button type="submit" className="bg-deep-green text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-leaf transition-all active:scale-95 shadow-xl shadow-deep-green/20">
+                        Subscribe
+                    </button>
+                </form>
+            </div>
+        </div>
+      </section>
+
       {/* 9. Call to Action Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="bg-deep-green rounded-[60px] p-12 md:p-24 text-center relative overflow-hidden">
+        <div className="bg-deep-green rounded-[20px] p-8 md:p-24 text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-[url('/hero.png')] opacity-10 bg-cover bg-center mix-blend-overlay" />
           <div className="relative z-10">
-            <h2 className="text-3xl md:text-5xl lg:text-7xl font-black mb-10 tracking-tighter">Ready to Buy <br className="hidden sm:block" /> <span className="text-leaf">Quality Catfish?</span></h2>
+            <h2 className="text-3xl md:text-5xl lg:text-7xl font-black mb-10 tracking-tighter text-white">Ready to Buy <br className="hidden sm:block" /> <span className="text-leaf">Quality Catfish?</span></h2>
             <p className="text-white/60 text-lg md:text-xl font-bold mb-12 max-w-2xl mx-auto">Place your order today or speak with our team for guidance on the best option for you.</p>
             <div className="flex flex-col sm:flex-row justify-center gap-6">
               <Link href="/booked-order" className="bg-leaf hover:bg-leaf-dark text-white px-8 md:px-12 py-4 md:py-6 rounded-2xl font-black text-lg md:text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/40 text-center">

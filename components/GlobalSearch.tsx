@@ -68,7 +68,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                         initial={{ opacity: 0, scale: 0.9, y: -20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                        className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-[32px] shadow-2xl overflow-hidden border border-earth/10 dark:border-white/10"
+                        className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl overflow-hidden border border-earth/10 dark:border-white/10"
                     >
                         {/* Search Input Area */}
                         <div className="p-6 border-b border-earth/5 dark:border-white/5">
@@ -103,7 +103,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                                             <button
                                                 key={item.id}
                                                 onClick={() => handleSelect(item.href)}
-                                                className="w-full text-left p-4 rounded-2xl hover:bg-leaf/5 dark:hover:bg-leaf/10 group transition-all flex items-center gap-4"
+                                                className="w-full text-left p-4 rounded-xl hover:bg-leaf/5 dark:hover:bg-leaf/10 group transition-all flex items-center gap-4"
                                             >
                                                 <div className="w-12 h-12 rounded-xl bg-leaf/10 flex items-center justify-center shrink-0">
                                                     {item.category === "Produce" && <ShoppingBag className="w-6 h-6 text-leaf" />}

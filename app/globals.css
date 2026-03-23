@@ -74,17 +74,6 @@ nav.scrolled {
 }
 
 .heroDiv {
-  background:
-    linear-gradient(to bottom, rgba(253, 253, 251, 0.98), rgba(253, 253, 251, 0.85)),
-    url("/hero.png") no-repeat center center;
-  background-size: cover;
-}
-
-@media (prefers-color-scheme: dark) {
-  .heroDiv {
-    background:
-      linear-gradient(to bottom, rgba(10, 13, 10, 0.8), rgba(10, 13, 10, 0.95)),
-      url("/hero.png") no-repeat center center;
-    background-size: cover;
-  }
+  position: relative;
+  overflow: hidden;
 }

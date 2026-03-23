@@ -91,24 +91,23 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Contact Info */}
                     <div>
                         <h4 className="text-deep-green dark:text-leaf font-black text-sm uppercase tracking-widest mb-6">Get in Touch</h4>
                         <div className="space-y-6">
                             <div className="flex items-start gap-4">
-                                <div className="p-3 bg-leaf/5 rounded-2xl">
+                                <div className="p-3 bg-leaf/5 rounded-xl">
                                     <MapPin className="w-5 h-5 text-leaf" />
                                 </div>
                                 <p className="text-foreground/60 font-medium">Ogun State and Lagos, <br />Nigeria</p>
                             </div>
                             <div className="flex items-center gap-4">
-                                <div className="p-3 bg-leaf/5 rounded-2xl">
+                                <div className="p-3 bg-leaf/5 rounded-xl">
                                     <Phone className="w-5 h-5 text-leaf" />
                                 </div>
                                 <a href="tel:+2349093009400" className="text-foreground/60 hover:text-leaf font-medium transition-colors">0909 300 9400</a>
                             </div>
                             <div className="flex items-center gap-4">
-                                <div className="p-3 bg-leaf/5 rounded-2xl">
+                                <div className="p-3 bg-leaf/5 rounded-xl">
                                     <Mail className="w-5 h-5 text-leaf" />
                                 </div>
                                 <a href="mailto:hello@ccbfarms.com" className="text-foreground/60 hover:text-leaf font-medium transition-colors">hello@ccbfarms.com</a>

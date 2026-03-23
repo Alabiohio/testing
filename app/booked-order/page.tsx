@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Truck, User, Phone, MapPin, Mail, ChevronRight, Info, ShieldCheck, Check } from "lucide-react";
@@ -9,6 +10,7 @@ const categoryGroups: Record<string, CategoryGroup> = {
     fingerlings: {
         name: "Fingerlings (Farming)",
         unit: "pieces",
+        image: "/assets/bgImages/fingerlings.png",
         options: [
             { label: "Small Fingerlings (5–10g)", value: "small-fingerlings" },
             { label: "Medium Fingerlings (10–20g)", value: "medium-fingerlings" },
@@ -18,6 +20,7 @@ const categoryGroups: Record<string, CategoryGroup> = {
     juveniles: {
         name: "Juvenile Catfish (Farming)",
         unit: "pieces",
+        image: "/assets/bgImages/juveniles.png",
         options: [
             { label: "Small Juveniles (50–100g)", value: "small-juveniles" },
             { label: "Medium Juveniles (100–200g)", value: "medium-juveniles" },
@@ -27,6 +30,7 @@ const categoryGroups: Record<string, CategoryGroup> = {
     broodstock: {
         name: "Broodstock Catfish (Farming)",
         unit: "fish",
+        image: "/assets/bgImages/broodstock.png",
         options: [
             { label: "Medium Broodstock (1.5 – 2kg)", value: "medium-broodstock" },
             { label: "Large Broodstock (2 – 3kg)", value: "large-broodstock" },
@@ -36,6 +40,7 @@ const categoryGroups: Record<string, CategoryGroup> = {
     "table-size": {
         name: "Fresh Table-Size (Consumption)",
         unit: "kg",
+        image: "/assets/bgImages/tablesize.png",
         options: [
             { label: "Small (0.5 – 0.8kg)", value: "small-table" },
             { label: "Medium (1 – 1.5kg)", value: "medium-table" },
@@ -45,6 +50,7 @@ const categoryGroups: Record<string, CategoryGroup> = {
     smoked: {
         name: "Smoked Catfish (Consumption)",
         unit: "kg",
+        image: "/assets/bgImages/smoked.png",
         options: [
             { label: "Small Smoked (0.3 – 0.5kg)", value: "small-smoked" },
             { label: "Medium Smoked (0.6 – 0.9kg)", value: "medium-smoked" },
@@ -94,6 +100,7 @@ interface CategoryOption {
 interface CategoryGroup {
     name: string;
     unit: string;
+    image: string;
     options: CategoryOption[];
 }
 
@@ -123,13 +130,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <header className="mb-16 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="inline-flex items-center gap-2 px-6 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-black uppercase tracking-widest mb-6 border border-leaf/20"
-                    >
-                        <ShoppingBag className="w-4 h-4" /> Order Form
-                    </motion.div>
+                   
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -157,7 +158,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
                             onSubmit={handleSubmit}
-                            className="bg-white dark:bg-zinc-900 shadow-2xl shadow-black/5 border-2 border-earth/5 dark:border-white/5 p-8 md:p-14 rounded-[60px] space-y-12 relative overflow-hidden"
+                            className="bg-white dark:bg-zinc-900 shadow-2xl shadow-black/5 border-2 border-earth/5 dark:border-white/5 p-8 md:p-14 rounded-3xl space-y-12 relative overflow-hidden"
                         >
                             <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 rounded-bl-[100px] -z-0" />
 
@@ -175,7 +176,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                         <input
                                             required
                                             type="text"
-                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-3xl py-5 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
                                             placeholder="John Doe"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -186,7 +187,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                         <input
                                             required
                                             type="tel"
-                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-3xl py-5 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
                                             placeholder="0909 300 9400"
                                             value={formData.phone}
                                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -197,7 +198,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                     <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Email (Optional)</label>
                                     <input
                                         type="email"
-                                        className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-3xl py-5 px-8 outline-none transition-all font-bold"
+                                        className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-sm py-5 px-8 outline-none transition-all font-bold"
                                         placeholder="john@example.com"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -222,20 +223,30 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                 key={id}
                                                 type="button"
                                                 onClick={() => setFormData({ ...formData, category: id, subCategory: "" })}
-                                                className={`p-6 rounded-3xl border-2 transition-all text-left group relative overflow-hidden ${formData.category === id
+                                                className={`p-4 rounded-xl border-2 transition-all text-left group relative overflow-hidden flex items-center gap-4 ${formData.category === id
                                                     ? "border-leaf bg-leaf/10"
                                                     : "border-earth/10 bg-earth/5 hover:border-leaf/30"
                                                     }`}
                                             >
+                                                <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border border-leaf/10">
+                                                    <Image 
+                                                        src={group.image} 
+                                                        alt={group.name} 
+                                                        fill 
+                                                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                    />
+                                                </div>
+                                                <div className="flex-grow">
+                                                    <p className={`font-black uppercase tracking-wider text-[10px] mb-1 ${formData.category === id ? "text-leaf" : "text-foreground/40"}`}>
+                                                        {id.replace('-', ' ')}
+                                                    </p>
+                                                    <p className="font-black text-deep-green dark:text-white leading-tight text-sm">{group.name}</p>
+                                                </div>
                                                 {formData.category === id && (
-                                                    <div className="absolute top-4 right-4 text-leaf">
+                                                    <div className="text-leaf shrink-0">
                                                         <Check className="w-5 h-5" />
                                                     </div>
                                                 )}
-                                                <p className={`font-black uppercase tracking-wider text-xs mb-2 ${formData.category === id ? "text-leaf" : "text-foreground/40"}`}>
-                                                    {id.replace('-', ' ')}
-                                                </p>
-                                                <p className="font-black text-deep-green dark:text-white leading-tight">{group.name}</p>
                                             </button>
                                         ))}
                                     </div>
@@ -256,7 +267,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                     key={opt.value}
                                                     type="button"
                                                     onClick={() => setFormData({ ...formData, subCategory: opt.label })}
-                                                    className={`p-5 rounded-2xl border-2 transition-all text-left flex items-center justify-between ${formData.subCategory === opt.label
+                                                    className={`p-5 rounded-xl border-2 transition-all text-left flex items-center justify-between ${formData.subCategory === opt.label
                                                         ? "border-leaf bg-leaf/5 text-leaf"
                                                         : "border-leaf/10 dark:border-white/5 hover:border-leaf/40"
                                                         }`}
@@ -277,7 +288,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                         <input
                                             required
                                             type="text"
-                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-3xl py-5 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
                                             placeholder={`e.g. 1000 ${categoryGroups[formData.category as keyof typeof categoryGroups].unit}`}
                                             value={formData.quantity}
                                             onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
@@ -301,7 +312,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                             key={opt}
                                             type="button"
                                             onClick={() => setFormData({ ...formData, deliveryOption: opt })}
-                                            className={`p-5 rounded-2xl border-2 transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
+                                            className={`p-5 rounded-xl border-2 transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
                                                 ? "border-leaf bg-leaf text-white"
                                                 : "border-leaf/10 dark:border-white/5 hover:border-leaf/30"
                                                 }`}
@@ -319,7 +330,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                         <input
                                             required={formData.deliveryOption !== "Pickup"}
                                             type="text"
-                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-3xl py-5 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
                                             placeholder={
                                                 formData.deliveryOption === "Pickup"
                                                     ? "e.g. Near Sagamu Interchange"
@@ -333,7 +344,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                     <div className="space-y-4">
                                         <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">State</label>
                                         <select
-                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-3xl py-5 px-8 outline-none transition-all font-bold appearance-none"
+                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold appearance-none"
                                             value={formData.state}
                                             onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                                         >
@@ -349,7 +360,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                             <input
                                                 required={formData.deliveryOption !== "Pickup"}
                                                 type="text"
-                                                className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-3xl py-5 px-8 outline-none transition-all font-bold"
+                                                className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
                                                 placeholder="e.g. Ikeja"
                                                 value={formData.city}
                                                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
@@ -368,7 +379,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                             <div className="space-y-4">
                                 <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Additional Notes (Optional)</label>
                                 <textarea
-                                    className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-3xl py-5 px-8 outline-none transition-all font-bold min-h-[100px]"
+                                    className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold min-h-[100px]"
                                     placeholder="Special size requests, bulk discounts, event orders, etc."
                                     value={formData.notes}
                                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -383,7 +394,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
 
                     {/* Sidebar / Summary */}
                     <div className="space-y-8 sticky top-32">
-                        <div className="bg-leaf/5 rounded-[50px] p-10 border border-leaf/10 border-dashed relative overflow-hidden">
+                        <div className="bg-leaf/5 rounded-3xl p-10 border border-leaf/10 border-dashed relative overflow-hidden">
                             <div className="absolute -top-10 -right-10 w-32 h-32 bg-leaf/10 rounded-full blur-3xl" />
                             <h3 className="text-3xl font-black text-deep-green dark:text-leaf mb-10 leading-none">Order <br /> Summary</h3>
 
@@ -415,7 +426,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                 </div>
 
                                 <div className="pt-8 border-t border-leaf/10">
-                                    <div className="flex items-start gap-4 p-4 bg-white/50 dark:bg-black/20 rounded-2xl border border-leaf/5">
+                                    <div className="flex items-start gap-4 p-4 bg-white/50 dark:bg-black/20 rounded-xl border border-leaf/5">
                                         <Info className="w-5 h-5 text-leaf shrink-0 mt-0.5" />
                                         <p className="text-xs text-foreground/50 font-medium leading-relaxed italic">
                                             Prices may vary based on market conditions. Final quote will be shared during confirmation.
@@ -428,7 +439,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                         <button
                             form="order-form"
                             type="submit"
-                            className="w-full bg-leaf hover:bg-leaf-dark text-white py-6 rounded-3xl font-black text-xl uppercase tracking-widest shadow-2xl shadow-leaf/40 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-4"
+                            className="w-full bg-leaf hover:bg-leaf-dark text-white py-6 rounded-2xl font-black text-xl uppercase tracking-widest shadow-2xl shadow-leaf/40 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-4"
                         >
                             PLACE ORDER
                             <ChevronRight className="w-6 h-6" />
@@ -440,8 +451,8 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                 { title: "Expert Care", desc: "Hygienic processing", icon: Check },
                                 { title: "Fast Support", desc: "24h Response guaranteed", icon: Phone },
                             ].map((item, i) => (
-                                <div key={i} className="flex gap-4 items-center bg-white/50 dark:bg-white/5 p-6 rounded-[30px] border border-earth/5 dark:border-white/5 backdrop-blur-sm">
-                                    <div className="w-12 h-12 rounded-2xl bg-leaf/10 flex items-center justify-center shrink-0">
+                                <div key={i} className="flex gap-4 items-center bg-white/50 dark:bg-white/5 p-6 rounded-2xl border border-earth/5 dark:border-white/5 backdrop-blur-sm">
+                                    <div className="w-12 h-12 rounded-xl bg-leaf/10 flex items-center justify-center shrink-0">
                                         <item.icon className="w-6 h-6 text-leaf" />
                                     </div>
                                     <div>

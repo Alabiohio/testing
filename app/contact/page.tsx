@@ -39,13 +39,7 @@ export default function ContactPage() {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <header className="mb-20">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-bold mb-6 uppercase tracking-widest"
-                    >
-                        Get In Touch
-                    </motion.div>
+                    
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -170,6 +164,54 @@ export default function ContactPage() {
                         </div>
                     </motion.div>
                 </div>
+
+                {/* FAQ Section */}
+                <section className="mt-32">
+                    <div className="text-center mb-16">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-bold mb-6 uppercase tracking-widest">
+                            Help Center
+                        </div>
+                        <h2 className="text-4xl lg:text-5xl font-black text-deep-green dark:text-white mb-6 tracking-tight">Frequently Asked Questions</h2>
+                    </div>
+
+                    <div className="max-w-4xl mx-auto space-y-6">
+                        {[
+                            {
+                                q: "Do you deliver nationwide?",
+                                a: "Yes, we deliver across all states in Nigeria using climate-controlled transport to ensure our live fish arrive healthy and vibrant."
+                            },
+                            {
+                                q: "What are your minimum order quantities?",
+                                a: "Minimum order for fingerlings is 500 pieces. For juveniles, it's 200 pieces. Table-size and smoked catfish start from 10kg."
+                            },
+                            {
+                                q: "Are your training programs online or physical?",
+                                a: "We offer both! Our theory modules are available online for convenience, followed by intensive physical residency for hands-on farm experience."
+                            },
+                            {
+                                q: "How do I pay for my order?",
+                                a: "We accept bank transfers, online card payments, and USSD. Once you place an order, our team will provide a final invoice for secure payment."
+                            }
+                        ].map((faq, i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                                className="bg-white dark:bg-zinc-900 border-2 border-earth/5 dark:border-white/5 rounded-3xl p-8 hover:border-leaf/20 transition-all cursor-help group"
+                            >
+                                <h3 className="text-xl font-black text-deep-green dark:text-leaf mb-4 flex items-center gap-4">
+                                    <span className="w-8 h-8 rounded-full bg-leaf/10 text-leaf flex items-center justify-center text-xs">Q</span>
+                                    {faq.q}
+                                </h3>
+                                <p className="text-foreground/60 leading-relaxed font-medium pl-12">
+                                    {faq.a}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </section>
             </div>
         </div>
     );

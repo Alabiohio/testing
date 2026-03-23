@@ -54,13 +54,6 @@ export default function CategoryPage() {
         <div className="min-h-screen bg-background pt-32 pb-24 overflow-x-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <header className="mb-16">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-bold mb-6 uppercase tracking-widest"
-                    >
-                        Explore Our Range
-                    </motion.div>
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -134,6 +127,43 @@ export default function CategoryPage() {
                             </div>
                         </motion.div>
                     ))}
+                </div>
+
+                {/* Trust Section */}
+                <div className="mt-32 grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {[
+                        {
+                            title: "Healthy Guarantee",
+                            desc: "Every fish is inspected and certified disease-free before dispatch.",
+                            icon: ShieldCheck
+                        },
+                        {
+                            title: "Fast Logistics",
+                            desc: "Nationwide delivery within 24-48 hours via climate-controlled vans.",
+                            icon: TrendingUp
+                        },
+                        {
+                            title: "Expert Support",
+                            desc: "Free consulting for all bulk orders and new pond set-ups.",
+                            icon: Info
+                        }
+                    ].map((trust, i) => (
+                        <div key={i} className="bg-leaf/5 rounded-3xl p-10 border-2 border-leaf/10 text-center">
+                            <div className="w-16 h-16 bg-white dark:bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl text-leaf">
+                                <trust.icon className="w-8 h-8" />
+                            </div>
+                            <h3 className="text-xl font-black text-deep-green dark:text-leaf mb-3">{trust.title}</h3>
+                            <p className="text-foreground/60 font-medium text-sm leading-relaxed">{trust.desc}</p>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="mt-24 text-center">
+                    <h3 className="text-3xl font-black text-deep-green dark:text-white mb-6 tracking-tight uppercase">Ready to Start Your Order?</h3>
+                    <Link href="/booked-order" className="inline-flex items-center gap-3 bg-leaf hover:bg-leaf-dark text-white px-12 py-6 rounded-2xl font-black text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/30 uppercase tracking-[0.2em]">
+                        GO TO CHECKOUT
+                        <ShoppingBag className="w-6 h-6" />
+                    </Link>
                 </div>
             </div>
         </div>

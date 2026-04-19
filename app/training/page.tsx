@@ -46,7 +46,7 @@ export default function TrainingPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl lg:text-7xl font-black text-deep-green dark:text-white mb-8 tracking-tighter"
+                        className="text-5xl lg:text-7xl font-black text-deep-green  mb-8 tracking-tighter"
                     >
                         Become a Professional <br />
                         <span className="text-leaf">Catfish Farmer</span>
@@ -74,10 +74,10 @@ export default function TrainingPage() {
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: i * 0.1 }}
-                            className="bg-white/50 dark:bg-white/5 border border-earth/10 dark:border-white/10 p-8 rounded-2xl text-center"
+                            className="bg-white/50  border border-earth/10  p-8 rounded-2xl text-center"
                         >
                             <stat.icon className="w-8 h-8 text-leaf mx-auto mb-4" />
-                            <p className="text-3xl font-black text-deep-green dark:text-leaf mb-1">{stat.value}</p>
+                            <p className="text-3xl font-black text-deep-green  mb-1">{stat.value}</p>
                             <p className="text-xs font-bold text-foreground/40 uppercase tracking-widest">{stat.label}</p>
                         </motion.div>
                     ))}
@@ -90,7 +90,7 @@ export default function TrainingPage() {
                         <motion.div
                             key={idx}
                             whileHover={{ y: -10 }}
-                            className="bg-white dark:bg-zinc-900 shadow-2xl shadow-black/5 dark:shadow-none border border-earth/5 dark:border-white/5 p-10 rounded-3xl relative overflow-hidden group"
+                            className="bg-white  shadow-2xl shadow-black/5  border border-earth/5  p-10 rounded-3xl relative overflow-hidden group"
                         >
                             <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 -translate-y-1/2 translate-x-1/2 rounded-full group-hover:scale-150 transition-transform duration-700" />
 
@@ -98,7 +98,7 @@ export default function TrainingPage() {
                                 <module.icon className="w-7 h-7 text-leaf" />
                             </div>
 
-                            <h3 className="text-2xl font-black text-deep-green dark:text-white mb-6 leading-tight">{module.title}</h3>
+                            <h3 className="text-2xl font-black text-deep-green  mb-6 leading-tight">{module.title}</h3>
                             <p className="text-foreground/60 mb-8 leading-relaxed mb-10">{module.desc}</p>
 
                             <div className="flex items-center gap-6 mb-10 pt-6 border-t border-foreground/5">
@@ -139,3 +139,4 @@ export default function TrainingPage() {
         </div>
     );
 }
+

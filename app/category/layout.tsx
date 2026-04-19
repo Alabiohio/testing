@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Catfish Categories",
-    description: "Explore our range of premium catfish, from Fingerlings and Juveniles to Table-size and Smoked catfish. Quality aquaculture products for farmers and consumers.",
+    title: "Official Categories",
+    description: "Explore our premium catfish categories. From healthy fingerlings to delicious smoked catfish - order online for nationwide delivery.",
     openGraph: {
-        title: "Catfish Categories | CCB Farms",
-        description: "Quality Fingerlings, Juveniles, Table-size, and Smoked Catfish at CCB Farms.",
+        title: "Official Categories | CCB Farms",
+        description: "Explore our catfish categories - Fingerlings, Juveniles, Table-size, and Smoked Catfish.",
         images: ["/assets/bgImages/tablesize.png"],
     },
 };

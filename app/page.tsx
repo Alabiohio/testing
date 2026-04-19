@@ -1,634 +1,111 @@
-"use client";
+import HomeClient from "@/components/HomeClient";
+import { db } from "@/lib/db";
+import { products as productsTable, type Product } from "@/lib/db/schema";
+import { desc } from "drizzle-orm";
 
-import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { Search, ShoppingBag, ChevronRight, Calendar, Info, BookOpen, ShieldCheck, Users, Sprout, TrendingUp, Truck, Handshake, Phone, MapPin, ArrowRight } from "lucide-react";
+export const dynamic = 'force-dynamic';
 
-export default function Home() {
-  const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
-  const galleryRef = useRef<HTMLDivElement>(null);
-  const [searchQuery, setSearchQuery] = useState("");
+export default async function Home() {
+  let dbProducts: Product[] = [];
+  try {
+     dbProducts = await db.select().from(productsTable).orderBy(desc(productsTable.createdAt));
+  } catch (error) {
+    console.error("Failed to fetch products from database:", error);
+  }
 
-
-  const galleryImages = [
-    { title: "Annual Catfish Fry & Tour", type: "Event", image: "/event.png" },
-    { title: "Feeding Logs & Growth", type: "Diary", image: "/diary.png" },
-    { title: "Best Practices Guide", type: "Info", image: "/hero.png" }, // Reusing hero for info for now
-    { title: "Harvest Day Highlights", type: "Event", image: "/event.png" },
+  // Map DB products to the format expected by HomeClient
+  // If DB is empty, we can provide some defaults or the static ones
+  const mappedProducts = dbProducts.length > 0 ? dbProducts.map((p: Product) => ({
+    id: p.id,
+    name: p.name,
+    desc: p.description || "",
+    img: p.imageUrl || "/assets/bgImages/fingerlings.png", // fallback
+    price: p.price ? `₦${p.price.toLocaleString()}` : (p.price_range || "Contact for price"),
+    originalPrice: p.price_range || "",
+    unit: p.unit,
+    category: p.category,
+    tags: ["Quality Assured", "Farm Fresh"], // Default tags as DB doesn't have them yet
+    rating: 4.9, // Default rating
+    reviews: 10, // Default reviews
+    badge: p.available ? "In Stock" : "Out of Stock",
+    badgeColor: p.available ? "bg-leaf" : "bg-gray-400",
+  })) : [
+    {
+      id: "fingerlings",
+      name: "Fingerlings",
+      desc: "Strong, healthy fingerlings with high survival rates—ideal for new ponds.",
+      img: "/assets/bgImages/fingerlings.png",
+      price: "₦80",
+      originalPrice: "₦120",
+      unit: "piece",
+      category: "Farming",
+      tags: ["Disease-free", "Fast-growing", "Carefully sorted"],
+      rating: 4.9,
+      reviews: 128,
+      badge: "Best Seller",
+      badgeColor: "bg-amber-500",
+    },
+    {
+      id: "juveniles",
+      name: "Juveniles",
+      desc: "Well-developed juveniles ready for rapid growth and smooth transition.",
+      img: "/assets/bgImages/juveniles.png",
+      price: "₦300",
+      originalPrice: "₦420",
+      unit: "piece",
+      category: "Farming",
+      tags: ["Uniform sizes", "High feed response", "Reduced grow-out"],
+      rating: 4.8,
+      reviews: 94,
+      badge: "Popular",
+      badgeColor: "bg-blue-500",
+    },
+    {
+      id: "table-size",
+      name: "Fresh Table-Size",
+      desc: "Freshly harvested, hygienically handled catfish for home & restaurants.",
+      img: "/assets/bgImages/tablesize.png",
+      price: "₦1,500",
+      originalPrice: "₦2,000",
+      unit: "kg",
+      category: "Consumption",
+      tags: ["Same-day harvest", "0.5kg–2kg+", "Meaty & Nutritious"],
+      rating: 4.9,
+      reviews: 215,
+      badge: "Flash Deal",
+      badgeColor: "bg-red-500",
+    },
+    {
+      id: "smoked",
+      name: "Smoked Catfish",
+      desc: "Richly smoked catfish with long shelf life and irresistible flavor.",
+      img: "/assets/bgImages/smoked.png",
+      price: "₦4,000",
+      originalPrice: "₦5,500",
+      unit: "kg",
+      category: "Consumption",
+      tags: ["No preservatives", "Properly smoked", "Export quality"],
+      rating: 4.7,
+      reviews: 77,
+      badge: "Premium",
+      badgeColor: "bg-deep-green",
+    },
+    {
+      id: "broodstock",
+      name: "Broodstock",
+      desc: "High-quality broodstock selected for breeding and hatchery use.",
+      img: "/assets/bgImages/broodstock.png",
+      price: "₦4,000",
+      originalPrice: "₦6,000",
+      unit: "fish",
+      category: "Breeding",
+      tags: ["Proven genetics", "High fertility", "Expertly selected"],
+      rating: 5.0,
+      reviews: 42,
+      badge: "Expert Pick",
+      badgeColor: "bg-purple-600",
+    },
   ];
 
-  return (
-    <div className="min-h-screen bg-background text-foreground transition-colors duration-300 relative overflow-x-clip">
-      {/* Background Decorative Blobs */}
-      {/* Background Decorative Grid - More Commerce/Professional Look */}
-      <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:40px_40px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 -z-10" />
-      <div className="absolute top-0 right-0 w-full h-[800px] bg-gradient-to-b from-leaf/5 to-transparent -z-10" />
-
-
-
-      {/* Hero Section - Standard Two-Column Layout */}
-      <section className="w-full mb-24 relative heroDiv pt-32 lg:pt-40">
-        {/* Desktop Search Bar */}
-        <div className="hidden md:block max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-          <div
-            className="relative group cursor-pointer"
-            onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-          >
-            <div className="w-full h-16 pl-14 pr-6 rounded-2xl border-2 border-earth/20 dark:border-white/10 focus-within:border-leaf focus-within:ring-4 focus-within:ring-leaf/5 text-foreground bg-white dark:bg-zinc-900 shadow-xl transition-all flex items-center">
-              <span className="text-foreground/40 text-xl font-medium">Search for farm produce, training, etc...</span>
-            </div>
-            <Search
-              className="absolute left-5 top-1/2 -translate-y-1/2 w-7 h-7 text-leaf transition-colors"
-            />
-            <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2">
-              <span className="text-[12px] font-black text-foreground/30 bg-foreground/5 px-3 py-1.5 rounded-lg uppercase tracking-widest border border-foreground/5">Cmd + K</span>
-            </div>
-          </div>
-        </div>
-        {/* Mobile Search Bar */}
-        <div className="md:hidden max-w-7xl mx-auto px-4 py-6">
-          <div
-            className="relative group"
-            onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
-          >
-            <div className="w-full h-14 pl-14 pr-6 rounded-2xl border-2 border-earth/20 dark:border-white/10 text-foreground bg-white dark:bg-zinc-900 shadow-lg flex items-center">
-              <span className="text-foreground/40 text-lg">Search...</span>
-            </div>
-            <Search
-              className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-foreground/40 group-focus-within:text-leaf transition-colors"
-            />
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Left Column: Content */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf dark:text-leaf-dark rounded-full text-sm md:text-xl font-bold mb-8 uppercase tracking-widest">
-                Trusted Catfish Supplier
-              </div>
-
-              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tighter mb-8 leading-[0.9] text-deep-green dark:text-white">
-                Premium Catfish for <br className="hidden sm:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-leaf to-deep-green font-black">Farming & Consumption</span>
-              </h1>
-
-              <p className="text-xl text-foreground/60 mb-10 max-w-lg leading-relaxed font-bold">
-                Healthy. Fresh. Responsibly Raised.
-              </p>
-
-              <p className="text-lg text-foreground/50 mb-10 max-w-lg leading-relaxed font-medium italic">
-                We supply high-quality catfish across every growth stage—perfect for fish farmers, retailers, restaurants, and households.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-5">
-                <Link href="/booked-order" className="bg-leaf hover:bg-leaf-dark text-white px-10 py-5 rounded-2xl font-black text-lg md:text-xl flex items-center justify-center gap-3 transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/30 group uppercase tracking-widest">
-                  Order Now
-                  <ShoppingBag className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-                </Link>
-                <Link href="/contact" className="border-2 border-earth/20 dark:border-white/10 hover:border-leaf text-foreground px-10 py-5 rounded-2xl font-bold transition-all hover:bg-leaf/5 flex items-center justify-center gap-2">
-                  Contact Us
-                </Link>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="mt-16 grid grid-cols-2 gap-8 border-t border-foreground/5 pt-8">
-                <div>
-                  <p className="text-3xl font-black text-leaf">100%</p>
-                  <p className="text-sm font-bold text-foreground/50 uppercase tracing-wider">Organic Feed</p>
-                </div>
-                <div>
-                  <p className="text-3xl font-black text-leaf">24h</p>
-                  <p className="text-sm font-bold text-foreground/50 uppercase tracing-wider">Farm to Table</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Right Column: Visual Component */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, rotate: 5 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 1, ease: "easeOut" }}
-              className="relative"
-            >
-              <div className="aspect-square relative rounded-[60px] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] border-8 border-white dark:border-white/5 group">
-                <video
-                  src="/assets/bgVid/hero.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="object-cover w-full h-full absolute inset-0 group-hover:scale-105 transition-transform duration-1000"
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-deep-green/40 to-transparent mix-blend-overlay" />
-
-                {/* Floating Badge */}
-                <div className="absolute -bottom-6 -left-6 bg-white dark:bg-zinc-900 p-6 rounded-3xl shadow-2xl border border-earth/10 dark:border-white/10 animate-bounce-slow">
-                  <p className="text-leaf font-black text-3xl">Premium</p>
-                  <p className="text-foreground/50 text-xs font-bold uppercase tracking-widest">Quality Guaranteed</p>
-                </div>
-              </div>
-
-              {/* Clean Shadow instead of Blur */}
-              <div className="absolute -z-10 -bottom-4 -right-4 w-full h-full border-2 border-leaf/10 rounded-[60px]" />
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. About Us Section */}
-      <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div className="relative order-2 lg:order-1">
-            <div className="aspect-[4/5] relative rounded-[40px] overflow-hidden border-8 border-white dark:border-white/5 shadow-2xl">
-              <Image
-                src="/event.png"
-                alt="Our Farm"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="absolute -bottom-8 -right-8 bg-leaf text-white p-8 rounded-3xl shadow-xl hidden md:block">
-              <p className="text-4xl font-black mb-1">Fast</p>
-              <p className="text-sm font-bold uppercase tracking-widest opacity-80">Growth Strains</p>
-            </div>
-          </div>
-
-          <div className="order-1 lg:order-2">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-bold mb-6 uppercase tracking-widest">
-              About Us
-            </div>
-            <h2 className="text-4xl lg:text-5xl font-black text-deep-green dark:text-white mb-8 leading-tight">
-              Quality, Consistency & <br />
-              <span className="text-leaf">Satisfaction</span>
-            </h2>
-            <p className="text-lg text-foreground/60 mb-8 leading-relaxed font-medium">
-              We are a trusted catfish supplier committed to quality, consistency, and customer satisfaction. Our fish are raised under controlled conditions with proper feeding, clean water systems, and expert handling to ensure fast growth, high survival rates, and excellent taste.
-            </p>
-            <p className="text-lg text-foreground/50 mb-10 leading-relaxed italic">
-              Whether you’re starting a fish farm, restocking ponds, or buying catfish for consumption, we’ve got you covered.
-            </p>
-            <div className="grid sm:grid-cols-2 gap-8 mb-10">
-              <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-xl bg-leaf/10 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-6 h-6 text-leaf" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-deep-green dark:text-leaf-dark mb-1">Hygienic Bio-Security</h4>
-                  <p className="text-sm text-foreground/50">Rigorous standards for healthy, disease-free fish.</p>
-                </div>
-              </div>
-              <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-xl bg-leaf/10 flex items-center justify-center shrink-0">
-                  <Users className="w-6 h-6 text-leaf" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-deep-green dark:text-leaf-dark mb-1">Expert Support</h4>
-                  <p className="text-sm text-foreground/50">Professional guidance for serious fish farmers.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Our Categories Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6 text-center md:text-left">
-          <div className="space-y-2">
-            <h2 className="text-3xl md:text-5xl font-black text-deep-green dark:text-leaf tracking-tight uppercase">Featured Products</h2>
-            <p className="text-foreground/40 font-bold uppercase tracking-widest text-sm">Finest Quality Across All Stages</p>
-          </div>
-          <div className="hidden md:block h-[1px] flex-grow ml-8 bg-earth/10 dark:bg-white/5" />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[
-            {
-              id: "fingerlings",
-              name: "Fingerlings",
-              desc: "Strong, healthy fingerlings with high survival rates—ideal for new ponds.",
-              img: "/assets/bgImages/fingerlings.png",
-              price: "₦80",
-              unit: "piece",
-              tags: ["Disease-free", "Fast-growing strains", "Carefully sorted"]
-            },
-            {
-              id: "juveniles",
-              name: "Juveniles",
-              desc: "Well-developed juveniles ready for rapid growth and smooth transition.",
-              img: "/assets/bgImages/juveniles.png",
-              price: "₦300",
-              unit: "piece",
-              tags: ["Uniform sizes", "Feeding response", "Reduced grow-out"]
-            },
-            {
-              id: "table-size",
-              name: "Fresh Table-Size",
-              desc: "Freshly harvested, hygienically handled catfish for home and restaurants.",
-              img: "/assets/bgImages/tablesize.png",
-              price: "₦1,500",
-              unit: "kg",
-              tags: ["Meaty & Nutritious", "Weights: 0.5kg-2kg+", "Same-day harvest"]
-            },
-            {
-              id: "smoked",
-              name: "Smoked Catfish",
-              desc: "Richly smoked catfish with long shelf life and irresistible flavor.",
-              img: "/assets/bgImages/smoked.png",
-              price: "₦4,000",
-              unit: "kg",
-              tags: ["Properly smoked", "No preservatives", "Export quality"]
-            },
-            {
-              id: "broodstock",
-              name: "Broodstock",
-              desc: "High-quality broodstock selected for breeding and hatchery use.",
-              img: "/assets/bgImages/broodstock.png",
-              price: "₦4,000",
-              unit: "fish",
-              tags: ["Proven genetics", "High fertility", "Expertly selected"]
-            },
-          ].filter(cat => cat.name.toLowerCase().includes(searchQuery.toLowerCase())).map((cat, idx) => (
-            <motion.div
-              key={cat.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="group relative bg-white dark:bg-zinc-900 rounded-[40px] overflow-hidden border-2 border-earth/5 dark:border-white/5 hover:border-leaf/20 transition-all shadow-xl shadow-black/5"
-            >
-              <div className="aspect-[16/10] relative overflow-hidden">
-                <Image
-                  src={cat.img}
-                  alt={cat.name}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-              </div>
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-2xl font-black text-deep-green dark:text-white uppercase tracking-tight">{cat.name}</h3>
-                  <div className="text-right">
-                    <p className="text-xl font-black text-leaf tracking-tighter">{cat.price}</p>
-                    <p className="text-[10px] font-bold text-foreground/30 uppercase">per {cat.unit}</p>
-                  </div>
-                </div>
-                
-                <p className="text-foreground/50 font-medium mb-6 line-clamp-2 text-sm">{cat.desc}</p>
-
-                <div className="flex flex-wrap gap-1.5 mb-8">
-                  {cat.tags.map(tag => (
-                    <span key={tag} className="px-2.5 py-1 bg-leaf/5 text-leaf dark:text-leaf-dark text-[9px] font-black uppercase tracking-widest rounded-lg border border-leaf/10">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <Link href={`/booked-order?cat=${cat.id}`} className="w-full inline-flex items-center justify-center gap-3 bg-deep-green dark:bg-leaf text-white px-6 py-4 rounded-2xl font-black uppercase tracking-widest text-xs group/btn transition-all hover:bg-leaf hover:shadow-xl hover:shadow-leaf/20">
-                  <ShoppingBag className="w-4 h-4 transition-transform group-hover/btn:-rotate-12" />
-                  Add to Cart
-                </Link>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="mt-16 flex justify-center">
-          <Link href="/category" className="inline-flex items-center gap-2 bg-leaf/10 text-leaf hover:bg-leaf hover:text-white px-10 py-5 rounded-2xl font-black transition-all text-sm uppercase tracking-widest border-2 border-leaf/5 hover:border-leaf shadow-xl shadow-leaf/5 hover:shadow-leaf/20">
-            View All Details <ChevronRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </section>
-
-      {/* 4.5. Pricing Catalogue Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-bold mb-6 uppercase tracking-widest">
-            Pricing
-          </div>
-          <h2 className="text-3xl md:text-5xl font-black text-deep-green dark:text-white uppercase tracking-tight">Price Catalogue</h2>
-          <p className="text-foreground/50 mt-4 text-lg font-medium max-w-2xl mx-auto">
-            Transparent and competitive pricing for all our high-quality catfish categories.
-          </p>
-        </div>
-
-        <div className="flex flex-col gap-6">
-          {[
-            { name: "Fingerlings", desc: "Strong and healthy (5-30g)", unit: "per piece", price: "₦80 – ₦150", id: "fingerlings", img: "/assets/bgImages/fingerlings.png" },
-            { name: "Juveniles", desc: "Well-developed (50-300g)", unit: "per piece", price: "₦300 – ₦700", id: "juveniles", img: "/assets/bgImages/juveniles.png" },
-            { name: "Fresh Table-Size", desc: "Ready for consumption", unit: "per kg", price: "₦1,500 – ₦3,500", id: "table-size", img: "/assets/bgImages/tablesize.png" },
-            { name: "Smoked Catfish", desc: "Richly smoked & packaged", unit: "per kg", price: "₦4,000 – ₦8,000", id: "smoked", img: "/assets/bgImages/smoked.png" },
-            { name: "Broodstock", desc: "High-quality breeders", unit: "per fish", price: "₦4,000 – ₦10,000", id: "broodstock", img: "/assets/bgImages/broodstock.png" },
-          ].map((item, idx) => (
-            <motion.div 
-              key={idx} 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="bg-white dark:bg-zinc-900 border-2 border-earth/5 dark:border-white/5 hover:border-leaf/30 rounded-[32px] p-4 sm:p-6 flex flex-col md:flex-row items-center gap-6 md:gap-8 shadow-xl shadow-black/5 transition-all group overflow-hidden relative"
-            >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 -translate-y-1/2 translate-x-1/2 rounded-full blur-[40px] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              
-              <div className="relative w-full md:w-40 h-48 md:h-28 rounded-2xl overflow-hidden shrink-0 border-2 border-earth/10 dark:border-white/5">
-                <Image src={item.img} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-              </div>
-              
-              <div className="flex-grow text-center md:text-left space-y-2 relative z-10 w-full md:w-auto">
-                <h3 className="text-2xl md:text-3xl font-black text-deep-green dark:text-white uppercase tracking-tight">{item.name}</h3>
-                <p className="text-sm font-bold text-foreground/50">{item.desc}</p>
-                <div className="inline-flex items-center gap-2 bg-leaf/5 px-3 py-1 rounded-xl border border-leaf/10">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-leaf">{item.unit}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col items-center md:items-end gap-4 w-full md:w-auto relative z-10 pt-4 md:pt-0 border-t md:border-t-0 border-earth/5 dark:border-white/5">
-                <p className="font-black text-leaf text-3xl md:text-4xl whitespace-nowrap tracking-tighter">{item.price}</p>
-                <Link href={`/booked-order?cat=${item.id}`} className="bg-leaf/5 hover:bg-leaf text-leaf hover:text-white px-8 py-4 rounded-xl font-black text-sm uppercase tracking-widest transition-all w-full md:w-auto text-center border border-leaf/10 shadow-lg shadow-black/5 hover:shadow-leaf/20 flex items-center justify-center gap-2">
-                  <ShoppingBag className="w-4 h-4" />
-                  Order
-                </Link>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* 5. Why Choose Us Section */}
-      <section className="bg-deep-green py-24 mb-24 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
-          <div className="absolute top-0 left-0 w-full h-full bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.05)_50%,transparent_75%)] [background-size:200%_200%] animate-[shimmer_10s_infinite_linear]" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-white text-4xl lg:text-5xl font-black mb-6 uppercase tracking-tight">Why Choose CCB Farms?</h2>
-            <p className="text-white/60 text-lg max-w-2xl mx-auto font-medium">
-              We supply catfish you can trust, delivered with reliability and expert care.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                title: "Healthy & Disease-Free",
-                desc: "Our fish are raised under strict bio-security controls to ensure robust health and zero disease.",
-                icon: ShieldCheck
-              },
-              {
-                title: "Consistent Quality",
-                desc: "We guarantee uniform sizes and excellent feeding response across all our catfish categories.",
-                icon: TrendingUp
-              },
-              {
-                title: "Reliable Supply",
-                desc: "Count on us for consistent supply and timely nationwide delivery to your farm or home.",
-                icon: Truck
-              },
-              {
-                title: "Affordable Pricing",
-                desc: "Premium quality catfish at competitive market prices, offering the best value for your investment.",
-                icon: ShoppingBag
-              },
-              {
-                title: "Hygienic Processing",
-                desc: "Hygienic handling and professional packaging for both live and smoked catfish products.",
-                icon: Sprout
-              },
-              {
-                title: "Expert Support",
-                desc: "Professional guidance and technical support for farmers to ensure maximum yield and success.",
-                icon: Handshake
-              }
-            ].map((feature, idx) => (
-              <motion.div
-                key={idx}
-                whileHover={{ y: -10 }}
-                className="bg-white/5 backdrop-blur-md border border-white/10 p-6 md:p-10 rounded-[40px] text-center"
-              >
-                <div className="w-16 h-16 bg-leaf rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-leaf/20">
-                  <feature.icon className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-white mb-4">{feature.title}</h3>
-                <p className="text-white/60 leading-relaxed font-medium">{feature.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 6. How It Works Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-bold mb-6 uppercase tracking-widest">
-            The Process
-          </div>
-          <h2 className="text-4xl lg:text-5xl font-black text-deep-green dark:text-white mb-6">How It Works</h2>
-        </div>
-
-        <div className="grid md:grid-cols-4 gap-8">
-          {[
-            { step: "01", title: "Choose Category", desc: "Select from Fingerlings, Juveniles, Table-size, Smoked, or Broodstock.", icon: Search },
-            { step: "02", title: "Place Order", desc: "Order online or via phone/WhatsApp at [09093009400].", icon: ShoppingBag },
-            { step: "03", title: "Processing", desc: "We package your order with care and handle with hygiene.", icon: ShieldCheck },
-            { step: "04", title: "Delivery/Pickup", desc: "Fast and reliable nationwide delivery options available.", icon: Truck },
-          ].map((item, idx) => (
-            <div key={idx} className="relative">
-              {idx < 3 && (
-                <div className="hidden lg:block absolute top-12 left-full w-full h-[2px] bg-earth/10 -z-10" />
-              )}
-              <div className="bg-white dark:bg-white/5 border border-earth/10 dark:border-white/10 p-8 rounded-[32px] hover:border-leaf transition-colors group">
-                <div className="w-12 h-12 bg-earth/5 dark:bg-white/5 rounded-xl flex items-center justify-center mb-6 group-hover:bg-leaf group-hover:text-white transition-colors">
-                  <item.icon className="w-6 h-6" />
-                </div>
-                <span className="text-4xl font-black text-earth/10 dark:text-white/5 absolute top-6 right-8">{item.step}</span>
-                <h3 className="text-xl font-bold text-deep-green dark:text-leaf-dark mb-4">{item.title}</h3>
-                <p className="text-foreground/50 text-sm leading-relaxed font-medium">{item.desc}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 7. Serving Farmers & Families Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="bg-leaf/5 dark:bg-leaf/10 rounded-[60px] p-8 md:p-16 border-2 border-leaf/10 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-1/3 h-full bg-leaf/10 -skew-x-12 translate-x-1/2" />
-
-          <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-5xl font-black text-deep-green dark:text-white mb-8">Serving Farmers <br className="hidden sm:block" /> & Families Alike</h2>
-              <div className="space-y-8">
-                <div className="flex gap-6">
-                  <div className="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-900 shadow-xl flex items-center justify-center shrink-0">
-                    <Handshake className="w-7 h-7 text-leaf" />
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-bold text-deep-green dark:text-leaf mb-2">For Farmers & Retailers</h4>
-                    <p className="text-foreground/60 leading-relaxed font-medium">From small-scale farmers to large commercial operations—we supply fish that meet your needs.</p>
-                  </div>
-                </div>
-                <div className="flex gap-6">
-                  <div className="w-14 h-14 rounded-2xl bg-white dark:bg-zinc-900 shadow-xl flex items-center justify-center shrink-0">
-                    <ShoppingBag className="w-7 h-7 text-leaf" />
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-bold text-deep-green dark:text-leaf mb-2">For Families & Restaurants</h4>
-                    <p className="text-foreground/60 leading-relaxed font-medium">Hygienically handled catfish delivered straight to your home or kitchen for a premium experience.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="relative aspect-[4/3] rounded-[40px] overflow-hidden shadow-2xl border-4 border-white dark:border-white/10">
-              <Image
-                src="/diary.png"
-                alt="Happy Farmers"
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 8. Event/Diary/Information Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="flex items-center gap-4 mb-10 text-center md:text-left">
-          <h2 className="text-3xl font-black text-deep-green dark:text-leaf tracking-tight uppercase">Event / Diary / Information</h2>
-        </div>
-
-        <div className="relative group/gallery">
-          <div
-            ref={galleryRef}
-            className="flex gap-6 overflow-x-auto pb-12 snap-x no-scrollbar scroll-smooth"
-            onScroll={(e) => {
-              const target = e.currentTarget;
-              const progress = target.scrollLeft / (target.scrollWidth - target.clientWidth);
-              const activeIndex = Math.round(progress * (galleryImages.length - 1));
-              setActiveGalleryIndex(activeIndex);
-            }}
-          >
-            {galleryImages.map((item, idx) => (
-              <motion.div
-                key={idx}
-                id={`gallery-item-${idx}`}
-                className="flex-shrink-0 w-[85vw] md:w-[450px] aspect-[4/3] rounded-[40px] bg-earth/5 dark:bg-white/5 relative overflow-hidden group snap-start cursor-pointer border-2 border-earth/10 dark:border-white/10"
-              >
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
-                <div className="absolute inset-x-0 bottom-0 p-8 translate-y-2 group-hover:translate-y-0 transition-transform">
-                  <div className="flex items-center gap-3 text-leaf font-bold text-sm uppercase tracking-widest mb-2">
-                    {item.type}
-                  </div>
-                  <h3 className="text-2xl font-black text-white">{item.title}</h3>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Scroll Progress Dots */}
-          <div className="flex justify-center gap-2 mt-4">
-            {galleryImages.map((_, i) => (
-              <button
-                key={i}
-                aria-label={`Go to item ${i + 1}`}
-                onClick={() => {
-                  const item = document.getElementById(`gallery-item-${i}`);
-                  if (galleryRef.current && item) {
-                    galleryRef.current.scrollTo({
-                      left: item.offsetLeft - galleryRef.current.offsetLeft,
-                      behavior: 'smooth'
-                    });
-                  }
-                }}
-                className={`h-2 rounded-full transition-all duration-500 ${i === activeGalleryIndex ? 'bg-leaf w-10' : 'bg-earth/20 dark:bg-white/10 w-2 hover:bg-leaf/40'
-                  }`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 8.5. Newsletter Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="bg-leaf/5 dark:bg-leaf/10 rounded-[40px] md:rounded-[60px] p-10 md:p-20 border-2 border-leaf/10 relative overflow-hidden text-center">
-            <div className="relative z-10 max-w-3xl mx-auto">
-                <h2 className="text-3xl md:text-5xl font-black text-deep-green dark:text-white mb-6 uppercase tracking-tight">Stay in the Loop</h2>
-                <p className="text-foreground/60 text-lg mb-10 font-bold">
-                    Get weekly price updates, farming tips, and exclusive offers delivered to your inbox.
-                </p>
-                <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto" onSubmit={(e) => { e.preventDefault(); alert("Thanks for subscribing!"); }}>
-                    <input 
-                        required 
-                        type="email" 
-                        placeholder="your@email.com" 
-                        className="flex-grow bg-white dark:bg-zinc-900 border-2 border-transparent focus:border-leaf rounded-2xl px-6 py-4 outline-none font-bold shadow-lg"
-                    />
-                    <button type="submit" className="bg-deep-green text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-leaf transition-all active:scale-95 shadow-xl shadow-deep-green/20">
-                        Subscribe
-                    </button>
-                </form>
-            </div>
-        </div>
-      </section>
-
-      {/* 9. Call to Action Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="bg-deep-green rounded-[20px] p-8 md:p-24 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/hero.png')] opacity-10 bg-cover bg-center mix-blend-overlay" />
-          <div className="relative z-10">
-            <h2 className="text-3xl md:text-5xl lg:text-7xl font-black mb-10 tracking-tighter text-white">Ready to Buy <br className="hidden sm:block" /> <span className="text-leaf">Quality Catfish?</span></h2>
-            <p className="text-white/60 text-lg md:text-xl font-bold mb-12 max-w-2xl mx-auto">Place your order today or speak with our team for guidance on the best option for you.</p>
-            <div className="flex flex-col sm:flex-row justify-center gap-6">
-              <Link href="/booked-order" className="bg-leaf hover:bg-leaf-dark text-white px-8 md:px-12 py-4 md:py-6 rounded-2xl font-black text-lg md:text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/40 text-center">
-                PLACE ORDER NOW
-              </Link>
-              <Link href="/contact" className="bg-white hover:bg-gray-100 text-deep-green px-8 md:px-12 py-4 md:py-6 rounded-2xl font-black text-lg md:text-xl transition-all hover:-translate-y-1 text-center">
-                GET EXPERT ADVICE
-              </Link>
-            </div>
-            <div className="mt-16 flex flex-wrap justify-center gap-12 text-white/50 font-bold uppercase tracking-widest text-sm">
-              <span className="flex items-center gap-2"><Phone className="w-5 h-5" /> 09093009400</span>
-              <span className="flex items-center gap-2"><MapPin className="w-5 h-5" /> Ogun State & Lagos</span>
-              <span className="flex items-center gap-2"><Truck className="w-5 h-5" /> Nationwide Delivery</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <style jsx global>{`
-        .glass-dark {
-          background: rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-        }
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        @keyframes bounce-slow {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-20px); }
-        }
-        .animate-bounce-slow {
-          animation: bounce-slow 4s infinite ease-in-out;
-        }
-      `}</style>
-    </div>
-  );
+  return <HomeClient initialProducts={mappedProducts} />;
 }

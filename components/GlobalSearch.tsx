@@ -68,10 +68,10 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                         initial={{ opacity: 0, scale: 0.9, y: -20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: -20 }}
-                        className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl overflow-hidden border border-earth/10 dark:border-white/10"
+                        className="relative w-full max-w-2xl bg-white  rounded-3xl shadow-2xl overflow-hidden border border-earth/10 "
                     >
                         {/* Search Input Area */}
-                        <div className="p-6 border-b border-earth/5 dark:border-white/5">
+                        <div className="p-6 border-b border-earth/5 ">
                             <div className="relative flex items-center">
                                 <Search className="absolute left-4 w-6 h-6 text-leaf" />
                                 <input
@@ -80,12 +80,12 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                                     placeholder="Search catfish, training modules, services..."
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
-                                    className="w-full bg-earth/5 dark:bg-white/5 pl-14 pr-12 py-4 rounded-2xl outline-none text-xl font-medium placeholder:text-foreground/30 text-foreground"
+                                    className="w-full bg-earth/5  pl-14 pr-12 py-4 rounded-2xl outline-none text-xl font-medium placeholder:text-foreground/30 text-foreground"
                                 />
                                 {query && (
                                     <button
                                         onClick={() => setQuery("")}
-                                        className="absolute right-4 p-1 hover:bg-earth/10 dark:hover:bg-white/10 rounded-full transition-colors"
+                                        className="absolute right-4 p-1 hover:bg-earth/10  rounded-full transition-colors"
                                     >
                                         <X className="w-5 h-5 text-foreground/40" />
                                     </button>
@@ -103,7 +103,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                                             <button
                                                 key={item.id}
                                                 onClick={() => handleSelect(item.href)}
-                                                className="w-full text-left p-4 rounded-xl hover:bg-leaf/5 dark:hover:bg-leaf/10 group transition-all flex items-center gap-4"
+                                                className="w-full text-left p-4 rounded-xl hover:bg-leaf/5  group transition-all flex items-center gap-4"
                                             >
                                                 <div className="w-12 h-12 rounded-xl bg-leaf/10 flex items-center justify-center shrink-0">
                                                     {item.category === "Produce" && <ShoppingBag className="w-6 h-6 text-leaf" />}
@@ -113,7 +113,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                                                 </div>
                                                 <div className="flex-grow">
                                                     <div className="flex items-center justify-between">
-                                                        <h4 className="font-bold text-lg text-deep-green dark:text-white group-hover:text-leaf transition-colors">
+                                                        <h4 className="font-bold text-lg text-deep-green  group-hover:text-leaf transition-colors">
                                                             {item.title}
                                                         </h4>
                                                         <span className="text-[10px] font-black uppercase tracking-widest text-leaf/60 bg-leaf/5 px-2 py-1 rounded-md">
@@ -129,7 +129,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                                 </div>
                             ) : query.trim() !== "" ? (
                                 <div className="py-12 text-center">
-                                    <div className="w-16 h-16 bg-earth/5 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <div className="w-16 h-16 bg-earth/5  rounded-full flex items-center justify-center mx-auto mb-4">
                                         <Search className="w-8 h-8 text-foreground/20" />
                                     </div>
                                     <h3 className="text-xl font-bold text-foreground/60">No results found for &quot;{query}&quot;</h3>
@@ -143,7 +143,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                                             <button
                                                 key={tag}
                                                 onClick={() => setQuery(tag)}
-                                                className="px-4 py-2 bg-earth/5 dark:bg-white/5 hover:bg-leaf/10 hover:text-leaf rounded-full text-sm font-bold transition-all"
+                                                className="px-4 py-2 bg-earth/5  hover:bg-leaf/10 hover:text-leaf rounded-full text-sm font-bold transition-all"
                                             >
                                                 {tag}
                                             </button>
@@ -154,7 +154,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                         </div>
 
                         {/* Footer */}
-                        <div className="p-4 bg-earth/5 dark:bg-white/5 flex items-center justify-between border-t border-earth/5 dark:border-white/5">
+                        <div className="p-4 bg-earth/5  flex items-center justify-between border-t border-earth/5 ">
                             <div className="flex items-center gap-4">
                                 {!isTouchDevice ? (
                                     <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
@@ -163,7 +163,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                                 ) : (
                                     <button
                                         onClick={onClose}
-                                        className="px-4 py-2 bg-earth/10 dark:bg-white/10 rounded-xl text-[10px] font-black text-foreground/60 uppercase tracking-widest active:scale-95 transition-all"
+                                        className="px-4 py-2 bg-earth/10  rounded-xl text-[10px] font-black text-foreground/60 uppercase tracking-widest active:scale-95 transition-all"
                                     >
                                         Cancel
                                     </button>
@@ -185,3 +185,4 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
 };
 
 export default GlobalSearch;
+

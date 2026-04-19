@@ -44,7 +44,7 @@ export default function ContactPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-5xl lg:text-7xl font-black text-deep-green dark:text-white mb-8 tracking-tighter"
+                        className="text-5xl lg:text-7xl font-black text-deep-green  mb-8 tracking-tighter"
                     >
                         Contact <br />
                         <span className="text-leaf">CCB Farms</span>
@@ -64,12 +64,12 @@ export default function ContactPage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
-                                    className="bg-white dark:bg-zinc-900 p-8 rounded-[40px] shadow-2xl shadow-black/5 border border-earth/5 dark:border-white/5 group hover:border-leaf/30 transition-all"
+                                    className="bg-white  p-8 rounded-[40px] shadow-2xl shadow-black/5 border border-earth/5  group hover:border-leaf/30 transition-all"
                                 >
                                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${method.color} bg-opacity-10`}>
                                         <method.icon className={`w-7 h-7 ${method.color.replace('bg-', 'text-')}`} />
                                     </div>
-                                    <h3 className="text-xl font-black text-deep-green dark:text-white mb-2">{method.title}</h3>
+                                    <h3 className="text-xl font-black text-deep-green  mb-2">{method.title}</h3>
                                     <p className="font-bold text-foreground/80 mb-2">{method.value}</p>
                                     <p className="text-xs font-bold text-foreground/30 uppercase tracking-widest">{method.desc}</p>
                                 </motion.div>
@@ -102,18 +102,18 @@ export default function ContactPage() {
 
                         <div className="bg-leaf/5 p-10 rounded-[50px] border border-leaf/10">
                             <div className="flex gap-6 mb-8">
-                                <div className="w-16 h-16 rounded-3xl bg-white dark:bg-zinc-900 shadow-xl flex items-center justify-center shrink-0">
+                                <div className="w-16 h-16 rounded-3xl bg-white  shadow-xl flex items-center justify-center shrink-0">
                                     <MapPin className="w-8 h-8 text-leaf" />
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-black text-deep-green dark:text-leaf mb-2">Our Location</h3>
+                                    <h3 className="text-2xl font-black text-deep-green  mb-2">Our Location</h3>
                                     <p className="text-lg text-foreground/60 leading-relaxed font-medium">
                                         Ogun State and Lagos State, <br />
                                         Nigeria.
                                     </p>
                                 </div>
                             </div>
-                            <button className="w-full bg-white dark:bg-zinc-900 border border-earth/10 dark:border-white/10 text-deep-green dark:text-leaf py-5 rounded-2xl font-black uppercase tracking-[0.2em] hover:bg-leaf hover:text-white transition-all">
+                            <button className="w-full bg-white  border border-earth/10  text-deep-green  py-5 rounded-2xl font-black uppercase tracking-[0.2em] hover:bg-leaf hover:text-white transition-all">
                                 GET DIRECTIONS ON GOOGLE MAPS
                             </button>
                         </div>
@@ -124,21 +124,21 @@ export default function ContactPage() {
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="bg-white dark:bg-zinc-900 p-10 md:p-14 rounded-[60px] shadow-2xl shadow-earth/5 border-2 border-earth/5 dark:border-white/5"
+                        className="bg-white  p-10 md:p-14 rounded-[60px] shadow-2xl shadow-earth/5 border-2 border-earth/5 "
                     >
-                        <h2 className="text-3xl font-black text-deep-green dark:text-white mb-10 tracking-tight">Send Message</h2>
+                        <h2 className="text-3xl font-black text-deep-green  mb-10 tracking-tight">Send Message</h2>
                         <form className="space-y-8" onSubmit={(e) => { e.preventDefault(); alert("Message Sent!"); }}>
                             <div className="space-y-4">
                                 <label className="text-xs font-black uppercase tracking-widest text-foreground/30 ml-2">Full Name</label>
-                                <input required type="text" className="w-full bg-earth/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf focus:bg-white dark:focus:bg-black rounded-3xl py-5 px-8 outline-none transition-all font-bold" placeholder="How should we address you?" />
+                                <input required type="text" className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-3xl py-5 px-8 outline-none transition-all font-bold" placeholder="How should we address you?" />
                             </div>
                             <div className="space-y-4">
                                 <label className="text-xs font-black uppercase tracking-widest text-foreground/30 ml-2">Email Address</label>
-                                <input required type="email" className="w-full bg-earth/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf focus:bg-white dark:focus:bg-black rounded-3xl py-5 px-8 outline-none transition-all font-bold" placeholder="your@email.com" />
+                                <input required type="email" className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-3xl py-5 px-8 outline-none transition-all font-bold" placeholder="your@email.com" />
                             </div>
                             <div className="space-y-4">
                                 <label className="text-xs font-black uppercase tracking-widest text-foreground/30 ml-2">Subject</label>
-                                <select className="w-full bg-earth/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf focus:bg-white dark:focus:bg-black rounded-3xl py-5 px-8 outline-none transition-all font-bold appearance-none">
+                                <select className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-3xl py-5 px-8 outline-none transition-all font-bold appearance-none">
                                     <option>Product Inquiry</option>
                                     <option>Training Enrolment</option>
                                     <option>Partnership</option>
@@ -147,7 +147,7 @@ export default function ContactPage() {
                             </div>
                             <div className="space-y-4">
                                 <label className="text-xs font-black uppercase tracking-widest text-foreground/30 ml-2">Message</label>
-                                <textarea required className="w-full bg-earth/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf focus:bg-white dark:focus:bg-black rounded-3xl py-5 px-8 outline-none transition-all font-bold min-h-[150px]" placeholder="Tell us what you need help with..." />
+                                <textarea required className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-3xl py-5 px-8 outline-none transition-all font-bold min-h-[150px]" placeholder="Tell us what you need help with..." />
                             </div>
                             <button type="submit" className="w-full bg-leaf hover:bg-leaf-dark text-white py-6 rounded-3xl font-black text-xl uppercase tracking-widest shadow-2xl shadow-leaf/30 transition-all hover:scale-[1.02] flex items-center justify-center gap-4">
                                 SEND MESSAGE
@@ -171,7 +171,7 @@ export default function ContactPage() {
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-bold mb-6 uppercase tracking-widest">
                             Help Center
                         </div>
-                        <h2 className="text-4xl lg:text-5xl font-black text-deep-green dark:text-white mb-6 tracking-tight">Frequently Asked Questions</h2>
+                        <h2 className="text-4xl lg:text-5xl font-black text-deep-green  mb-6 tracking-tight">Frequently Asked Questions</h2>
                     </div>
 
                     <div className="max-w-4xl mx-auto space-y-6">
@@ -199,9 +199,9 @@ export default function ContactPage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.1 }}
-                                className="bg-white dark:bg-zinc-900 border-2 border-earth/5 dark:border-white/5 rounded-3xl p-8 hover:border-leaf/20 transition-all cursor-help group"
+                                className="bg-white  border-2 border-earth/5  rounded-3xl p-8 hover:border-leaf/20 transition-all cursor-help group"
                             >
-                                <h3 className="text-xl font-black text-deep-green dark:text-leaf mb-4 flex items-center gap-4">
+                                <h3 className="text-xl font-black text-deep-green  mb-4 flex items-center gap-4">
                                     <span className="w-8 h-8 rounded-full bg-leaf/10 text-leaf flex items-center justify-center text-xs">Q</span>
                                     {faq.q}
                                 </h3>
@@ -216,3 +216,4 @@ export default function ContactPage() {
         </div>
     );
 }
+

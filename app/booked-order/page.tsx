@@ -134,7 +134,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl lg:text-8xl font-black text-deep-green dark:text-white mb-8 tracking-tighter leading-[0.9]"
+                        className="text-5xl lg:text-8xl font-black text-deep-green  mb-8 tracking-tighter leading-[0.9]"
                     >
                         Seamless <br />
                         <span className="text-leaf">Catfish Ordering</span>
@@ -158,7 +158,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
                             onSubmit={handleSubmit}
-                            className="bg-white dark:bg-zinc-900 shadow-2xl shadow-black/5 border-2 border-earth/5 dark:border-white/5 p-8 md:p-14 rounded-3xl space-y-12 relative overflow-hidden"
+                            className="bg-white  shadow-2xl shadow-black/5 border-2 border-earth/5  p-8 md:p-14 rounded-3xl space-y-12 relative overflow-hidden"
                         >
                             <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 rounded-bl-[100px] -z-0" />
 
@@ -168,7 +168,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                     <div className="w-10 h-10 rounded-xl bg-leaf flex items-center justify-center text-white shadow-lg shadow-leaf/20">
                                         <User className="w-5 h-5" />
                                     </div>
-                                    <h2 className="text-2xl font-black text-deep-green dark:text-leaf uppercase tracking-tight">Customer Information</h2>
+                                    <h2 className="text-2xl font-black text-deep-green  uppercase tracking-tight">Customer Information</h2>
                                 </div>
                                 <div className="grid md:grid-cols-2 gap-8">
                                     <div className="space-y-4">
@@ -176,7 +176,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                         <input
                                             required
                                             type="text"
-                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
                                             placeholder="John Doe"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -187,7 +187,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                         <input
                                             required
                                             type="tel"
-                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
                                             placeholder="0909 300 9400"
                                             value={formData.phone}
                                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -198,7 +198,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                     <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Email (Optional)</label>
                                     <input
                                         type="email"
-                                        className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-sm py-5 px-8 outline-none transition-all font-bold"
+                                        className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-sm py-5 px-8 outline-none transition-all font-bold"
                                         placeholder="john@example.com"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -212,7 +212,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                     <div className="w-10 h-10 rounded-xl bg-leaf flex items-center justify-center text-white shadow-lg shadow-leaf/20">
                                         <ShoppingBag className="w-5 h-5" />
                                     </div>
-                                    <h2 className="text-2xl font-black text-deep-green dark:text-leaf uppercase tracking-tight">Product Selection</h2>
+                                    <h2 className="text-2xl font-black text-deep-green  uppercase tracking-tight">Product Selection</h2>
                                 </div>
 
                                 <div className="space-y-6">
@@ -240,7 +240,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                     <p className={`font-black uppercase tracking-wider text-[10px] mb-1 ${formData.category === id ? "text-leaf" : "text-foreground/40"}`}>
                                                         {id.replace('-', ' ')}
                                                     </p>
-                                                    <p className="font-black text-deep-green dark:text-white leading-tight text-sm">{group.name}</p>
+                                                    <p className="font-black text-deep-green  leading-tight text-sm">{group.name}</p>
                                                 </div>
                                                 {formData.category === id && (
                                                     <div className="text-leaf shrink-0">
@@ -269,7 +269,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                     onClick={() => setFormData({ ...formData, subCategory: opt.label })}
                                                     className={`p-5 rounded-xl border-2 transition-all text-left flex items-center justify-between ${formData.subCategory === opt.label
                                                         ? "border-leaf bg-leaf/5 text-leaf"
-                                                        : "border-leaf/10 dark:border-white/5 hover:border-leaf/40"
+                                                        : "border-leaf/10  hover:border-leaf/40"
                                                         }`}
                                                 >
                                                     <span className="font-bold">{opt.label}</span>
@@ -288,7 +288,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                         <input
                                             required
                                             type="text"
-                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
                                             placeholder={`e.g. 1000 ${categoryGroups[formData.category as keyof typeof categoryGroups].unit}`}
                                             value={formData.quantity}
                                             onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
@@ -303,7 +303,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                     <div className="w-10 h-10 rounded-xl bg-leaf flex items-center justify-center text-white shadow-lg shadow-leaf/20">
                                         <Truck className="w-5 h-5" />
                                     </div>
-                                    <h2 className="text-2xl font-black text-deep-green dark:text-leaf uppercase tracking-tight">Delivery Details</h2>
+                                    <h2 className="text-2xl font-black text-deep-green  uppercase tracking-tight">Delivery Details</h2>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -314,7 +314,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                             onClick={() => setFormData({ ...formData, deliveryOption: opt })}
                                             className={`p-5 rounded-xl border-2 transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
                                                 ? "border-leaf bg-leaf text-white"
-                                                : "border-leaf/10 dark:border-white/5 hover:border-leaf/30"
+                                                : "border-leaf/10  hover:border-leaf/30"
                                                 }`}
                                         >
                                             {opt}
@@ -330,7 +330,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                         <input
                                             required={formData.deliveryOption !== "Pickup"}
                                             type="text"
-                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
                                             placeholder={
                                                 formData.deliveryOption === "Pickup"
                                                     ? "e.g. Near Sagamu Interchange"
@@ -344,7 +344,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                     <div className="space-y-4">
                                         <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">State</label>
                                         <select
-                                            className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold appearance-none"
+                                            className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold appearance-none"
                                             value={formData.state}
                                             onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                                         >
@@ -360,7 +360,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                             <input
                                                 required={formData.deliveryOption !== "Pickup"}
                                                 type="text"
-                                                className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
+                                                className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold"
                                                 placeholder="e.g. Ikeja"
                                                 value={formData.city}
                                                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
@@ -379,7 +379,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                             <div className="space-y-4">
                                 <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Additional Notes (Optional)</label>
                                 <textarea
-                                    className="w-full bg-leaf/5 dark:bg-white/5 border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold min-h-[100px]"
+                                    className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold min-h-[100px]"
                                     placeholder="Special size requests, bulk discounts, event orders, etc."
                                     value={formData.notes}
                                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -396,12 +396,12 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                     <div className="space-y-8 sticky top-32">
                         <div className="bg-leaf/5 rounded-3xl p-10 border border-leaf/10 border-dashed relative overflow-hidden">
                             <div className="absolute -top-10 -right-10 w-32 h-32 bg-leaf/10 rounded-full blur-3xl" />
-                            <h3 className="text-3xl font-black text-deep-green dark:text-leaf mb-10 leading-none">Order <br /> Summary</h3>
+                            <h3 className="text-3xl font-black text-deep-green  mb-10 leading-none">Order <br /> Summary</h3>
 
                             <div className="space-y-6">
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Category</p>
-                                    <p className="font-black text-deep-green dark:text-white uppercase text-lg">
+                                    <p className="font-black text-deep-green  uppercase text-lg">
                                         {categoryGroups[formData.category as keyof typeof categoryGroups].name}
                                     </p>
                                 </div>
@@ -415,18 +415,18 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
 
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Quantity</p>
-                                    <p className="font-black text-deep-green dark:text-white text-lg uppercase">
+                                    <p className="font-black text-deep-green  text-lg uppercase">
                                         {formData.quantity ? `${formData.quantity} ${categoryGroups[formData.category as keyof typeof categoryGroups].unit}` : "—"}
                                     </p>
                                 </div>
 
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Delivery</p>
-                                    <p className="font-black text-deep-green dark:text-white text-lg uppercase">{formData.deliveryOption}</p>
+                                    <p className="font-black text-deep-green  text-lg uppercase">{formData.deliveryOption}</p>
                                 </div>
 
                                 <div className="pt-8 border-t border-leaf/10">
-                                    <div className="flex items-start gap-4 p-4 bg-white/50 dark:bg-black/20 rounded-xl border border-leaf/5">
+                                    <div className="flex items-start gap-4 p-4 bg-white/50  rounded-xl border border-leaf/5">
                                         <Info className="w-5 h-5 text-leaf shrink-0 mt-0.5" />
                                         <p className="text-xs text-foreground/50 font-medium leading-relaxed italic">
                                             Prices may vary based on market conditions. Final quote will be shared during confirmation.
@@ -451,12 +451,12 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                 { title: "Expert Care", desc: "Hygienic processing", icon: Check },
                                 { title: "Fast Support", desc: "24h Response guaranteed", icon: Phone },
                             ].map((item, i) => (
-                                <div key={i} className="flex gap-4 items-center bg-white/50 dark:bg-white/5 p-6 rounded-2xl border border-earth/5 dark:border-white/5 backdrop-blur-sm">
+                                <div key={i} className="flex gap-4 items-center bg-white/50  p-6 rounded-2xl border border-earth/5  backdrop-blur-sm">
                                     <div className="w-12 h-12 rounded-xl bg-leaf/10 flex items-center justify-center shrink-0">
                                         <item.icon className="w-6 h-6 text-leaf" />
                                     </div>
                                     <div>
-                                        <h4 className="font-black text-deep-green dark:text-white text-sm uppercase tracking-tight">{item.title}</h4>
+                                        <h4 className="font-black text-deep-green  text-sm uppercase tracking-tight">{item.title}</h4>
                                         <p className="text-[10px] text-foreground/30 font-black uppercase tracking-widest">{item.desc}</p>
                                     </div>
                                 </div>
@@ -468,3 +468,4 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
         </div>
     );
 }
+

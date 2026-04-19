@@ -42,26 +42,26 @@ const categories = [
     {
         id: "broodstock",
         name: "Broodstock",
-        description: "High-quality broodstock selected for breeding and hatchery use. Proven genetics and high fertility rates for serious fish farmers.",
+        description: "High-quality broodstock selected for commercial breeding and genetic improvement. Proven genetics and high fertility rates for serious fish farmers.",
         image: "/assets/bgImages/broodstock.png",
         specs: ["Weight: 1.5kg - 3kg+", "Fertility: High", "Genetics: Proven"],
         price: "₦4,000 – ₦10,000 per fish",
     },
 ];
 
-export default function CategoryPage() {
+export default function CategoryListingPage() {
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24 overflow-x-hidden">
+        <div className="min-h-screen bg-background pt-12 pb-24 overflow-x-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <header className="mb-16">
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="text-4xl sm:text-6xl lg:text-7xl font-black text-deep-green dark:text-white mb-8 tracking-tighter"
+                        className="text-4xl sm:text-6xl lg:text-7xl font-black text-deep-green  mb-8 tracking-tighter"
                     >
-                        Organic Catfish <br className="hidden sm:block" />
-                        <span className="text-leaf">Categories</span>
+                        CCB Farms <br className="hidden sm:block" />
+                        Official <span className="text-leaf">Category</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -81,22 +81,22 @@ export default function CategoryPage() {
                             initial={{ opacity: 0, y: 30 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true, margin: "-10%" }}
-                            className="grid lg:grid-cols-2 gap-12 items-center p-6 md:p-12 rounded-[40px] md:rounded-[60px] border-2 border-earth/5 dark:border-white/5 bg-white/50 dark:bg-white/5 backdrop-blur-sm group hover:border-leaf/20 transition-all scroll-mt-32"
+                            className="grid lg:grid-cols-2 gap-12 items-center p-6 md:p-12 rounded-[20px] md:rounded-[20px] border-2 border-earth/5  bg-white/50  backdrop-blur-sm group hover:border-leaf/20 transition-all scroll-mt-32"
                         >
                             <div className={`w-full max-w-[500px] lg:max-w-none mx-auto ${idx % 2 === 1 ? "lg:order-2" : ""}`}>
-                                <div className="relative aspect-[4/3] rounded-[30px] md:rounded-[40px] overflow-hidden shadow-2xl group-hover:scale-[1.02] transition-transform duration-700">
+                                <Link href={`/${cat.id}`} className="relative block aspect-[4/3] rounded-[20px] md:rounded-[20px] overflow-hidden shadow-2xl group-hover:scale-[1.02] transition-transform duration-700">
                                     <Image
                                         src={cat.image}
                                         alt={cat.name}
                                         fill
                                         className="object-cover"
                                     />
-                                </div>
+                                </Link>
                             </div>
 
                             <div className={`space-y-8 flex flex-col items-center lg:items-start text-center lg:text-left ${idx % 2 === 1 ? "lg:order-1" : ""}`}>
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
-                                    <h2 className="text-3xl md:text-4xl font-black text-deep-green dark:text-leaf">{cat.name}</h2>
+                                    <h2 className="text-3xl md:text-4xl font-black text-deep-green ">{cat.name}</h2>
                                     <span className="bg-leaf text-white px-4 py-2 rounded-full text-xs font-black whitespace-normal sm:whitespace-nowrap w-fit mx-auto sm:mx-0">
                                         {cat.price}
                                     </span>
@@ -110,19 +110,19 @@ export default function CategoryPage() {
                                     {cat.specs.map((spec, sIdx) => (
                                         <div key={sIdx} className="flex items-center justify-center lg:justify-start gap-2 bg-leaf/5 px-3 md:px-4 py-2 md:py-3 rounded-xl md:rounded-2xl border border-leaf/10">
                                             <ShieldCheck className="w-4 h-4 text-leaf shrink-0" />
-                                            <span className="text-[10px] md:text-xs font-bold text-deep-green dark:text-leaf-dark uppercase tracking-wider">{spec}</span>
+                                            <span className="text-[10px] md:text-xs font-bold text-deep-green  uppercase tracking-wider">{spec}</span>
                                         </div>
                                     ))}
                                 </div>
 
                                 <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">
-                                    <Link href={`/booked-order?cat=${cat.id}`} className="bg-leaf hover:bg-leaf-dark text-white px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all">
+                                    <Link href={`/booked-order?cat=${cat.id}`} className="bg-leaf hover:bg-leaf-dark text-white px-8 py-2.5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all">
                                         Order {cat.name}
                                         <ShoppingBag className="w-5 h-5" />
                                     </Link>
-                                    <button className="border-2 border-earth/20 dark:border-white/10 hover:border-leaf text-foreground px-8 py-4 rounded-2xl font-bold transition-all">
+                                    <Link href={`/${cat.id}`} className="border-2 border-earth/20  hover:border-leaf text-foreground px-8 py-2.5 rounded-2xl font-bold transition-all flex items-center justify-center">
                                         Learn More
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         </motion.div>
@@ -149,17 +149,17 @@ export default function CategoryPage() {
                         }
                     ].map((trust, i) => (
                         <div key={i} className="bg-leaf/5 rounded-3xl p-10 border-2 border-leaf/10 text-center">
-                            <div className="w-16 h-16 bg-white dark:bg-zinc-900 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl text-leaf">
+                            <div className="w-16 h-16 bg-white  rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl text-leaf">
                                 <trust.icon className="w-8 h-8" />
                             </div>
-                            <h3 className="text-xl font-black text-deep-green dark:text-leaf mb-3">{trust.title}</h3>
+                            <h3 className="text-xl font-black text-deep-green  mb-3">{trust.title}</h3>
                             <p className="text-foreground/60 font-medium text-sm leading-relaxed">{trust.desc}</p>
                         </div>
                     ))}
                 </div>
 
                 <div className="mt-24 text-center">
-                    <h3 className="text-3xl font-black text-deep-green dark:text-white mb-6 tracking-tight uppercase">Ready to Start Your Order?</h3>
+                    <h3 className="text-3xl font-black text-deep-green  mb-6 tracking-tight uppercase">Ready to Explore Categories?</h3>
                     <Link href="/booked-order" className="inline-flex items-center gap-3 bg-leaf hover:bg-leaf-dark text-white px-12 py-6 rounded-2xl font-black text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/30 uppercase tracking-[0.2em]">
                         GO TO CHECKOUT
                         <ShoppingBag className="w-6 h-6" />
@@ -169,3 +169,4 @@ export default function CategoryPage() {
         </div>
     );
 }
+

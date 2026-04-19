@@ -16,43 +16,37 @@ export const searchableItems: SearchItem[] = [
         title: "Fingerlings",
         description: "Strong, healthy fingerlings with high survival rates. Size: 5-30g.",
         category: "Produce",
-        href: "/category#fingerlings",
+        href: "/fingerlings",
     },
     {
         id: "juveniles",
         title: "Juveniles",
         description: "Well-developed juveniles ready for rapid growth. Size: 50-300g.",
         category: "Produce",
-        href: "/category#juveniles",
+        href: "/juveniles",
     },
     {
         id: "table-size",
         title: "Fresh Table-Size",
         description: "Freshly harvested, hygienically handled catfish. Weight: 0.5kg - 2kg+.",
         category: "Produce",
-        href: "/category#table-size",
+        href: "/table-size",
     },
     {
         id: "smoked",
         title: "Smoked Catfish",
         description: "Richly smoked catfish with long shelf life. No preservatives.",
         category: "Produce",
-        href: "/category#smoked",
+        href: "/smoked",
     },
     {
         id: "broodstock",
         title: "Broodstock",
         description: "High-quality broodstock for breeding. Proven genetics.",
         category: "Produce",
-        href: "/category#broodstock",
+        href: "/broodstock",
     },
-    {
-        id: "hatchery",
-        title: "Hatchery Services",
-        description: "Professional hatchery services for scalable farm expansion.",
-        category: "Produce",
-        href: "/category#hatchery",
-    },
+
 
     // Training Modules
     {
@@ -62,13 +56,7 @@ export const searchableItems: SearchItem[] = [
         category: "Training",
         href: "/training",
     },
-    {
-        id: "training-hatchery",
-        title: "Advanced Hatchery Operations",
-        description: "Master induced breeding, egg incubation, and fingerling management.",
-        category: "Training",
-        href: "/training",
-    },
+
     {
         id: "training-management",
         title: "Sustainable Farm Management",

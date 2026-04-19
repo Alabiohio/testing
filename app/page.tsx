@@ -24,6 +24,7 @@ export default async function Home() {
     originalPrice: p.price_range || "",
     unit: p.unit,
     category: p.category,
+    tags: [] as string[],
     rating: 4.9, // Default rating
     reviews: 10, // Default reviews
     badge: p.available ? "In Stock" : "Out of Stock",

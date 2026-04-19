@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, Star, ShieldCheck, Clock, Search, SlidersHorizontal, ArrowUpDown, ChevronDown, Check } from "lucide-react";
@@ -23,6 +23,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
     const [minRating, setMinRating] = useState(0);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const router = useRouter();
+    const [, startTransition] = useTransition();
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -43,7 +44,9 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
             message: `You're about to proceed to the secure checkout for ${name}. Would you like to continue?`,
             onConfirm: () => {
                 setConfirmModal(prev => ({ ...prev, isOpen: false }));
-                router.push(link);
+                startTransition(() => {
+                    router.push(link);
+                });
             },
         });
     };

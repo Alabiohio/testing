@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useTransition } from 'react';
 import { Search, X, ShoppingBag, BookOpen, FileText, ArrowRight, Info } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { searchableItems, SearchItem } from '@/lib/search-data';
@@ -18,6 +18,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
     const [isTouchDevice, setIsTouchDevice] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const router = useRouter();
+    const [, startTransition] = useTransition();
 
     useEffect(() => {
         setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
@@ -47,7 +48,9 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
     const handleSelect = (href: string) => {
         onClose();
         setQuery("");
-        router.push(href);
+        startTransition(() => {
+            router.push(href);
+        });
     };
 
     return (

@@ -9,6 +9,8 @@ import {
   Shield, Truck, Clock, Star, ArrowRight, CheckCircle,
   Zap, Tag, Phone, MapPin, Users, Leaf, Package, Heart
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import ConfirmModal from "./ConfirmModal";
 
 // Countdown Timer Hook
 function useCountdown(targetHours: number) {
@@ -51,6 +53,31 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeTypeFilter, setActiveTypeFilter] = useState("All Fish");
   const countdown = useCountdown(11);
+  const router = useRouter();
+
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
+
+  const handleOrderConfirm = (link: string, name: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: `Confirm Order: ${name}`,
+      message: `You're about to proceed to the secure checkout for ${name}. Would you like to continue?`,
+      onConfirm: () => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        router.push(link);
+      },
+    });
+  };
 
   const products = initialProducts;
 
@@ -61,13 +88,15 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
   
   const filteredByType = products.filter(p => {
     if (activeTypeFilter === "All Fish") return true;
-    const nameL = p.name.toLowerCase();
-    if (activeTypeFilter === "Fingerlings") return nameL.includes("fingerling");
-    if (activeTypeFilter === "Juvenile") return nameL.includes("juvenil");
-    if (activeTypeFilter === "Broodstock") return nameL.includes("broodstock");
-    if (activeTypeFilter === "Table Size") return nameL.includes("table size") || nameL.includes("table-size");
-    if (activeTypeFilter === "Smoked") return nameL.includes("smoke");
-    return true;
+    
+    const searchString = `${p.name} ${p.id} ${p.category} ${p.desc}`.toLowerCase();
+    
+    if (activeTypeFilter === "Fingerlings") return searchString.includes("fingerling");
+    if (activeTypeFilter === "Juvenile") return searchString.includes("juvenil");
+    if (activeTypeFilter === "Broodstock") return searchString.includes("broodstock");
+    if (activeTypeFilter === "Table Size") return searchString.includes("table size") || searchString.includes("table-size") || searchString.includes("table_size");
+    if (activeTypeFilter === "Smoked") return searchString.includes("smoke");
+    return false;
   });
 
   const renderProductCard = (product: ProductProps, idx: number) => (
@@ -90,7 +119,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
         />
         {/* Badge */}
         {product.badge && (
-          <div className={`absolute top-3 left-3 ${product.badgeColor} text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-md`}>
+          <div className={`absolute top-3 left-3 ${product.badgeColor} text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-md`}>
             {product.badge}
           </div>
         )}
@@ -120,15 +149,16 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
 
         {/* Name */}
         <h3 className="font-black text-base sm:text-lg text-gray-900  mb-1 tracking-tight truncate sm:whitespace-normal">{product.name}</h3>
-        <p className="text-[11px] sm:text-sm text-gray-500  font-medium mb-3 line-clamp-2">{product.desc}</p>
+        <p className="text-[11px] sm:text-sm text-gray-500  font-medium mb-2 line-clamp-2">{product.desc}</p>
 
-        {/* Tags */}
-        <div className="hidden sm:flex flex-wrap gap-1.5 mb-4">
-          {product.tags.slice(0, 2).map((tag, tIdx) => (
-            <span key={tIdx} className="text-[10px] font-bold bg-leaf/8 text-leaf  px-2.5 py-1 rounded-lg border border-leaf/15 uppercase tracking-wide">
-              {tag}
-            </span>
-          ))}
+        {/* Category Badge */}
+        <div className="mb-3">
+          <Link 
+            href={`/${product.category}`}
+            className="inline-block text-[10px] font-black bg-leaf/10 text-leaf hover:bg-leaf hover:text-white px-3 py-1.5 rounded-full uppercase tracking-widest transition-all duration-300 shadow-sm hover:shadow-md active:scale-90"
+          >
+            {product.category}
+          </Link>
         </div>
 
         {/* Price & CTA */}
@@ -140,13 +170,13 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
               <span className="text-[9px] sm:text-[10px] font-bold text-gray-400">per {product.unit}</span>
             </div>
           </div>
-          <Link
-            href={`/booked-order?cat=${product.id}`}
-            className="flex items-center justify-center gap-1.5 bg-leaf hover:bg-leaf-dark text-white p-2 sm:px-4 sm:py-2.5 rounded-xl font-bold text-sm transition-all hover:shadow-lg hover:shadow-leaf/25 active:scale-95"
+          <button
+            onClick={() => handleOrderConfirm(`/booked-order?cat=${product.id}`, product.name)}
+            className="flex items-center justify-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white p-2 sm:px-4 sm:py-2.5 rounded-xl font-bold text-sm transition-all hover:shadow-lg hover:shadow-amber-500/25 active:scale-95 cursor-pointer"
           >
             <ShoppingCart className="w-4 h-4" />
             <span className="hidden sm:inline">Order</span>
-          </Link>
+          </button>
         </div>
       </div>
     </motion.div>
@@ -188,6 +218,16 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300 relative overflow-x-clip">
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        type="info"
+        confirmText="Yes, Proceed"
+        cancelText="Maybe Later"
+      />
       {/* Background Grid */}
       <div className="absolute top-0 left-0 w-full h-[900px] bg-[radial-gradient(#bbf7d0_1px,transparent_1px)] [background-size:36px_36px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,#000_60%,transparent_100%)] opacity-30  -z-10" />
       <div className="absolute top-0 right-0 w-full h-[700px] bg-gradient-to-b from-leaf/5 to-transparent -z-10" />
@@ -383,7 +423,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
       </section>
 
       {/* ===== PRODUCT GRID BY CATEGORY ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+      <section id="shop-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10">
           <div>
@@ -393,9 +433,6 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
             </div>
             <h2 className="text-3xl md:text-4xl font-black text-deep-green  tracking-tight">Our Shop</h2>
           </div>
-          <Link href="/shop" className="inline-flex items-center gap-1.5 text-leaf font-bold text-sm hover:underline underline-offset-4">
-            View Shop Overview <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
 
         {/* Filters */}
@@ -502,6 +539,126 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
         </div>
       </section>
 
+      {/* ===== GROWTH STAGES / SELECTION GUIDE ===== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl md:text-5xl font-black text-deep-green tracking-tight mb-4">From Hatchery to Harvest</h2>
+          <p className="text-gray-500 font-medium max-w-2xl mx-auto">
+            Technical specifications for each growth stage, ensuring you select the right fit for your farming objectives.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            { 
+              title: "Fingerlings", 
+              size: "2–5 cm", 
+              age: "1–2 weeks", 
+              desc: "Healthy Start, High Survival", 
+              img: "/assets/bgImages/fingerlings.png",
+              color: "leaf",
+              link: "/booked-order?cat=fingerlings"
+            },
+            { 
+              title: "Juveniles", 
+              size: "5–15 cm", 
+              age: "3–6 weeks", 
+              desc: "Fast Growth, Uniform Quality", 
+              img: "/assets/bgImages/juveniles.png",
+              color: "leaf",
+              link: "/booked-order?cat=juveniles"
+            },
+            { 
+              title: "Broodstock", 
+              size: "30 cm+", 
+              age: "6+ months", 
+              desc: "Breeding Stock, Strong Genetics", 
+              img: "/assets/bgImages/broodstock.png",
+              color: "leaf",
+              link: "/booked-order?cat=broodstock"
+            },
+          ].map((item, idx) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.1, duration: 0.7 }}
+              className="relative group p-8 sm:p-12 bg-white border border-gray-100 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-700 text-center flex flex-col items-center overflow-hidden"
+            >
+              {/* Background Glow */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 rounded-bl-[100px] -z-0" />
+              
+              {/* Image Container */}
+              <div className="relative w-48 h-48 mb-10">
+                <div className="absolute inset-0 bg-leaf/10 rounded-full scale-110 group-hover:scale-125 transition-transform duration-700" />
+                <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-white shadow-2xl z-10">
+                  <Image 
+                    src={item.img} 
+                    alt={item.title} 
+                    fill 
+                    className="object-cover scale-110 group-hover:scale-100 transition-transform duration-1000"
+                  />
+                </div>
+                
+                {/* Title Badge */}
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-deep-green text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.25em] shadow-xl z-20 whitespace-nowrap">
+                    {item.title}
+                </div>
+              </div>
+
+              {/* Specifications */}
+              <div className="space-y-6 relative z-10 w-full">
+                <div className="flex flex-col gap-2">
+                   <div className="flex items-center justify-center gap-3">
+                      <div className="w-8 h-[2px] bg-leaf/20" />
+                      <span className="text-leaf font-black text-[10px] uppercase tracking-widest px-3 py-1 bg-leaf/5 rounded-full border border-leaf/10">Technical Specs</span>
+                      <div className="w-8 h-[2px] bg-leaf/20" />
+                   </div>
+                   
+                   <div className="grid grid-cols-1 gap-2 pt-2">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Standard Size</span>
+                            <span className="text-2xl font-black text-deep-green tracking-tight">{item.size}</span>
+                        </div>
+                        <div className="flex flex-col pt-2 border-t border-gray-50">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Standard Age</span>
+                            <span className="text-2xl font-black text-deep-green tracking-tight">{item.age}</span>
+                        </div>
+                   </div>
+                </div>
+                
+                <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 italic font-bold text-[11px] text-gray-500">
+                  "{item.desc}"
+                </div>
+
+                <div className="pt-4">
+                    <button
+                      onClick={() => handleOrderConfirm(item.link, item.title)}
+                      className="inline-flex items-center justify-center gap-2 w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-2xl font-black text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95 group/btn cursor-pointer"
+                    >
+                        Order {item.title}
+                        <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        
+        {/* Footer Tagline */}
+        <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mt-16 text-center"
+        >
+            <p className="text-lg md:text-2xl font-black text-deep-green tracking-tight italic">
+                From Hatchery to Harvest — <span className="text-transparent bg-clip-text bg-gradient-to-r from-leaf to-deep-green">We&apos;ve Got You Covered</span>
+            </p>
+        </motion.div>
+      </section>
+
       {/* ===== ABOUT + VALUES ===== */}
       <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -565,36 +722,94 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
           </p>
         </div>
 
-        <div className="flex flex-col gap-4">
-          {products.slice(0, 5).map((item, idx) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[
+            { 
+              name: "Fingerlings", 
+              range: "₦80 – ₦150", 
+              unit: "piece", 
+              desc: "Healthy start for commercial farming.", 
+              img: "/assets/bgImages/fingerlings.png", 
+              id: "fingerlings",
+              badge: "Farming" 
+            },
+            { 
+              name: "Juvenile Catfish", 
+              range: "₦300 – ₦700", 
+              unit: "piece", 
+              desc: "Fast growth and high feed response.", 
+              img: "/assets/bgImages/juveniles.png", 
+              id: "juveniles",
+              badge: "Farming"
+            },
+            { 
+              name: "Broodstock", 
+              range: "₦4,000 – ₦10,000", 
+              unit: "fish", 
+              desc: "Elite genetics for professional hatcheries.", 
+              img: "/assets/bgImages/broodstock.png", 
+              id: "broodstock",
+              badge: "Breeding"
+            },
+            { 
+              name: "Fresh Table-Size", 
+              range: "₦1,500 – ₦3,500", 
+              unit: "kg", 
+              desc: "Hygienically handled for home & retail.", 
+              img: "/assets/bgImages/tablesize.png", 
+              id: "table-size",
+              badge: "Consumption"
+            },
+            { 
+              name: "Smoked Catfish", 
+              range: "₦4,000 – ₦8,000", 
+              unit: "kg", 
+              desc: "Premium flavor with long shelf life.", 
+              img: "/assets/bgImages/smoked.png", 
+              id: "smoked",
+              badge: "Premium"
+            },
+          ].map((item, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.07 }}
-              className="group bg-white  border border-gray-100  hover:border-leaf/30 rounded-2xl p-4 flex flex-col md:flex-row items-center gap-4 md:gap-6 shadow-sm hover:shadow-md transition-all overflow-hidden relative"
+              transition={{ delay: idx * 0.1 }}
+              className="group bg-white border border-gray-100 hover:border-amber-500/30 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col items-center text-center overflow-hidden relative"
             >
-              <div className="relative w-full md:w-32 h-44 md:h-24 rounded-xl overflow-hidden shrink-0 bg-gray-50  border border-gray-100 ">
-                <Image src={item.img || "/hero.png"} alt={item.name} fill className="object-cover group-hover:scale-105 transition-all duration-500" />
-              </div>
-              <div className="flex-grow text-center md:text-left w-full md:w-auto">
-                <h3 className="text-xl font-black text-gray-900  tracking-tight">{item.name}</h3>
-                <p className="text-sm font-medium text-gray-400 ">{item.desc}</p>
-                <span className="inline-block mt-1.5 text-[10px] font-black uppercase tracking-widest text-leaf bg-leaf/8 px-2.5 py-1 rounded-lg border border-leaf/15">per {item.unit}</span>
-              </div>
-              <div className="flex flex-col items-center md:items-end gap-3 w-full md:w-auto pt-3 md:pt-0 border-t md:border-t-0 border-gray-50 ">
-                <div className="text-center md:text-right">
-                  <p className="font-black text-leaf text-2xl md:text-3xl whitespace-nowrap">{item.price}</p>
-                  {item.badge && <span className="text-[10px] font-black text-amber-500 bg-amber-50  px-2 py-0.5 rounded-full">{item.badge}</span>}
+              {/* Image Circle */}
+              <div className="relative w-28 h-28 mb-6">
+                <div className="absolute inset-0 bg-leaf/5 rounded-full scale-110 group-hover:scale-125 transition-transform duration-700" />
+                <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-white shadow-lg overflow-hidden">
+                  <Image src={item.img} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                 </div>
-                <Link
-                  href={`/booked-order?cat=${item.id}`}
-                  className="bg-gray-50  hover:bg-leaf text-gray-700  hover:text-white px-6 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 border border-gray-200  hover:border-leaf hover:shadow-md hover:shadow-leaf/20 whitespace-nowrap"
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  Order Now
-                </Link>
+                {/* Badge */}
+                <span className="absolute -top-1 -right-1 text-[8px] font-black uppercase tracking-widest text-white bg-deep-green px-2 py-1 rounded-full shadow-md z-20">
+                  {item.badge}
+                </span>
+              </div>
+              
+              <div className="flex-grow">
+                <h3 className="text-xl font-black text-gray-900 tracking-tight mb-2 group-hover:text-amber-500 transition-colors">{item.name}</h3>
+                <p className="text-xs font-semibold text-gray-400 mb-4 line-clamp-2">{item.desc}</p>
+              </div>
+
+              <div className="w-full pt-4 border-t border-gray-50 mt-auto">
+                 <div className="mb-4">
+                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-[0.2em] mb-1">Standard Range</p>
+                    <p className="text-2xl font-black text-leaf tracking-tight">
+                        {item.range}
+                        <span className="text-[10px] font-bold text-gray-400 ml-1">/ {item.unit}</span>
+                    </p>
+                 </div>
+                 <button
+                    onClick={() => handleOrderConfirm(`/booked-order?cat=${item.id}`, item.name)}
+                    className="w-full bg-gray-50 hover:bg-amber-500 text-gray-700 hover:text-white py-3 rounded-2xl font-black text-xs transition-all flex items-center justify-center gap-2 border border-gray-100 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-500/20 active:scale-95 group/btn"
+                 >
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                    Order Now
+                 </button>
               </div>
             </motion.div>
           ))}

@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export default async function Home() {
   let dbProducts: Product[] = [];
   try {
-     dbProducts = await db.select().from(productsTable).orderBy(desc(productsTable.createdAt));
+    dbProducts = await db.select().from(productsTable).orderBy(desc(productsTable.createdAt));
   } catch (error) {
     console.error("Failed to fetch products from database:", error);
   }
@@ -24,7 +24,6 @@ export default async function Home() {
     originalPrice: p.price_range || "",
     unit: p.unit,
     category: p.category,
-    tags: ["Quality Assured", "Farm Fresh"], // Default tags as DB doesn't have them yet
     rating: 4.9, // Default rating
     reviews: 10, // Default reviews
     badge: p.available ? "In Stock" : "Out of Stock",

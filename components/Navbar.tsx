@@ -36,7 +36,6 @@ const Navbar = () => {
 
     const menuItems = [
         { name: 'Home', href: '/' },
-        { name: 'Shop', href: '/shop' },
         { name: 'Category', href: '/category' },
         { name: 'Training', href: '/training' },
         { name: 'My Orders', href: '/booked-order' },

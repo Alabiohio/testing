@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, Star, ShieldCheck, Clock, Search, SlidersHorizontal, ArrowUpDown, ChevronDown, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
+import ConfirmModal from "./ConfirmModal";
 
 import { type Product } from "@/lib/db/schema";
 
@@ -20,6 +22,31 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
     const [sortBy, setSortBy] = useState<"price-asc" | "price-desc" | "name" | "newest">("newest");
     const [minRating, setMinRating] = useState(0);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const router = useRouter();
+
+    const [confirmModal, setConfirmModal] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+    }>({
+        isOpen: false,
+        title: "",
+        message: "",
+        onConfirm: () => { },
+    });
+
+    const handleOrderConfirm = (link: string, name: string) => {
+        setConfirmModal({
+            isOpen: true,
+            title: `Confirm Order: ${name}`,
+            message: `You're about to proceed to the secure checkout for ${name}. Would you like to continue?`,
+            onConfirm: () => {
+                setConfirmModal(prev => ({ ...prev, isOpen: false }));
+                router.push(link);
+            },
+        });
+    };
 
     // Derived values for the price range slider
     const maxProductPrice = useMemo(() => {
@@ -32,8 +59,8 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
 
         // Search filter
         if (searchQuery) {
-            result = result.filter(p => 
-                p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            result = result.filter(p =>
+                p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase()))
             );
         }
@@ -63,17 +90,27 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
         });
 
         return result;
-    }, [products, searchQuery, priceRange, onlyAvailable, sortBy]);
+    }, [products, searchQuery, priceRange, onlyAvailable, sortBy, minRating]);
 
     return (
         <div className="space-y-8">
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={confirmModal.onConfirm}
+                title={confirmModal.title}
+                message={confirmModal.message}
+                type="info"
+                confirmText="Yes, Proceed"
+                cancelText="Maybe Later"
+            />
             {/* Control Bar */}
             <div className="bg-white rounded-[1rem] p-4 shadow-sm border border-gray-100 flex flex-col lg:flex-row items-center gap-4">
                 {/* Search */}
                 <div className="relative flex-grow w-full lg:w-auto">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input 
-                        type="text" 
+                    <input
+                        type="text"
                         placeholder={`Search ${displayTitle.toLowerCase()}...`}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -83,20 +120,20 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
 
                 <div className="flex items-center gap-3 w-full lg:w-auto">
                     {/* Filter Toggle */}
-                    <button 
+                    <button
                         onClick={() => setIsFilterOpen(!isFilterOpen)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-bold transition-all border ${isFilterOpen ? 'bg-leaf text-white border-leaf' : 'bg-white text-gray-700 border-gray-100 hover:border-leaf/30'}`}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-bold transition-all border ${isFilterOpen ? 'bg-amber-500 text-white border-amber-500' : 'bg-white text-gray-700 border-gray-100 hover:border-amber-500/30'}`}
                     >
                         <SlidersHorizontal className="w-4 h-4" />
                         Filters
-                        { (priceRange[0] > 0 || priceRange[1] < maxProductPrice || onlyAvailable) && (
+                        {(priceRange[0] > 0 || priceRange[1] < maxProductPrice || onlyAvailable) && (
                             <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                         )}
                     </button>
 
                     {/* Sort Dropdown */}
                     <div className="relative group flex-grow lg:flex-grow-0">
-                        <select 
+                        <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value as any)}
                             className="appearance-none w-full bg-gray-50 border border-transparent hover:border-gray-200 px-6 py-2 pr-12 rounded-2xl font-bold text-gray-700 outline-none cursor-pointer transition-all"
@@ -114,7 +151,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
             {/* Filter Panel */}
             <AnimatePresence>
                 {isFilterOpen && (
-                    <motion.div 
+                    <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
@@ -129,14 +166,14 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                         ₦{priceRange[0].toLocaleString()} - ₦{priceRange[1].toLocaleString()}
                                     </span>
                                 </div>
-                                <input 
-                                    type="range" 
-                                    min="0" 
-                                    max={maxProductPrice} 
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max={maxProductPrice}
                                     step="100"
                                     value={priceRange[1]}
                                     onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                                    className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-leaf"
+                                    className="w-full h-2 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-amber-500"
                                 />
                                 <div className="flex justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest pt-1">
                                     <span>min</span>
@@ -148,9 +185,9 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                             <div className="space-y-4">
                                 <h4 className="font-black text-deep-green uppercase tracking-widest text-xs">Availability</h4>
                                 <label className="flex items-center gap-3 cursor-pointer group">
-                                    <div 
+                                    <div
                                         onClick={() => setOnlyAvailable(!onlyAvailable)}
-                                        className={`w-12 h-6 rounded-full transition-all relative ${onlyAvailable ? 'bg-leaf' : 'bg-gray-200'}`}
+                                        className={`w-12 h-6 rounded-full transition-all relative ${onlyAvailable ? 'bg-amber-500' : 'bg-gray-200'}`}
                                     >
                                         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${onlyAvailable ? 'left-7' : 'left-1'}`} />
                                     </div>
@@ -177,7 +214,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                             {/* Quick Presets */}
                             <div className="space-y-4">
                                 <h4 className="font-black text-deep-green uppercase tracking-widest text-xs">Quick Reset</h4>
-                                <button 
+                                <button
                                     onClick={() => {
                                         setPriceRange([0, maxProductPrice]);
                                         setOnlyAvailable(false);
@@ -199,28 +236,28 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
             {filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-8">
                     {filteredProducts.map((product, idx) => (
-                        <motion.div 
+                        <motion.div
                             layout
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            key={product.id} 
+                            key={product.id}
                             className="group bg-white rounded-[1.4rem] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
                         >
                             <div className="relative aspect-[4/3] bg-gray-50 overflow-hidden">
-                                <Image 
-                                    src={product.imageUrl || "/assets/bgImages/fingerlings.png"} 
+                                <Image
+                                    src={product.imageUrl || "/assets/bgImages/fingerlings.png"}
                                     alt={product.name}
                                     fill
                                     className="object-cover group-hover:scale-110 transition-transform duration-1000"
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                
+
                                 {product.available ? (
-                                    <div className="absolute top-6 left-6 bg-leaf text-white text-[10px] font-black uppercase tracking-[0.15em] px-4 py-2 rounded-xl shadow-lg">
-                                        Available Now
+                                    <div className="absolute top-3 left-3 bg-amber-500 text-white text-[9px] font-black uppercase tracking-[0.15em] px-2 py-0.5 rounded-full shadow-lg">
+                                        Available
                                     </div>
                                 ) : (
-                                    <div className="absolute top-6 left-6 bg-gray-400 text-white text-[10px] font-black uppercase tracking-[0.15em] px-4 py-2 rounded-xl shadow-lg">
+                                    <div className="absolute top-4 left-4 bg-gray-400 text-white text-[9px] font-black uppercase tracking-[0.15em] px-3 py-1 rounded-full shadow-lg">
                                         Out of Stock
                                     </div>
                                 )}
@@ -234,18 +271,28 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                     </div>
                                     <span className="text-xs font-black text-gray-900/40 tracking-wider">4.9 / 5.0</span>
                                 </div>
-                                
-                                <h3 className="text-base sm:text-2xl font-black text-deep-green mb-1 sm:mb-2 group-hover:text-leaf transition-colors leading-tight truncate sm:whitespace-normal">{product.name}</h3>
-                                <p className="text-gray-500 text-[11px] sm:text-sm font-medium mb-4 sm:mb-8 leading-relaxed line-clamp-2">{product.description}</p>
-                                
-                                
+
+                                <h3 className="text-base sm:text-2xl font-black text-deep-green mb-1 sm:mb-2 group-hover:text-amber-500 transition-colors leading-tight truncate sm:whitespace-normal">{product.name}</h3>
+                                <p className="text-gray-500 text-[11px] sm:text-sm font-medium mb-3 leading-relaxed line-clamp-2">{product.description}</p>
+
+                                {/* Category Badge */}
+                                <div className="mb-4">
+                                    <Link 
+                                        href={`/${product.category}`}
+                                        className="inline-block text-[10px] font-black bg-leaf/10 text-leaf hover:bg-leaf hover:text-white px-3 py-1.5 rounded-full uppercase tracking-widest transition-all duration-300 shadow-sm hover:shadow-md"
+                                    >
+                                        {product.category}
+                                    </Link>
+                                </div>
+
+
                                 <div className="hidden sm:grid grid-cols-2 gap-3 mb-8">
                                     <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-100">
-                                        <ShieldCheck className="w-3.5 h-3.5 text-leaf" />
+                                        <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
                                         <span className="text-[10px] font-black text-gray-500 uppercase">Certified</span>
                                     </div>
                                     <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-100">
-                                        <Clock className="w-3.5 h-3.5 text-leaf" />
+                                        <Clock className="w-3.5 h-3.5 text-amber-500" />
                                         <span className="text-[10px] font-black text-gray-500 uppercase">Fast Delivery</span>
                                     </div>
                                 </div>
@@ -258,12 +305,12 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                             <span className="text-[10px] sm:text-xs font-bold text-gray-400 ml-1">/{product.unit}</span>
                                         </p>
                                     </div>
-                                    <Link
-                                        href={`/booked-order?cat=${product.id}`}
-                                        className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 bg-leaf hover:bg-leaf-dark text-white rounded-xl sm:rounded-2xl shadow-lg shadow-leaf/25 active:scale-90 transition-all"
+                                    <button
+                                        onClick={() => handleOrderConfirm(`/booked-order?cat=${product.id}`, product.name)}
+                                        className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-xl sm:rounded-2xl shadow-lg shadow-amber-500/25 active:scale-90 transition-all cursor-pointer border-none"
                                     >
                                         <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
-                                    </Link>
+                                    </button>
                                 </div>
                             </div>
                         </motion.div>
@@ -278,7 +325,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                         </div>
                         <h3 className="text-2xl font-black text-deep-green mb-2">No items match your filters</h3>
                         <p className="text-gray-500 font-medium mb-8">Try adjusting your price range or search terms to find what you're looking for.</p>
-                        <button 
+                        <button
                             onClick={() => {
                                 setPriceRange([0, maxProductPrice]);
                                 setOnlyAvailable(false);

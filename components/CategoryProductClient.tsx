@@ -288,18 +288,6 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                     </Link>
                                 </div>
 
-
-                                <div className="hidden sm:grid grid-cols-2 gap-3 mb-8">
-                                    <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-100">
-                                        <ShieldCheck className="w-3.5 h-3.5 text-amber-500" />
-                                        <span className="text-[10px] font-black text-gray-500 uppercase">Certified</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-100">
-                                        <Clock className="w-3.5 h-3.5 text-amber-500" />
-                                        <span className="text-[10px] font-black text-gray-500 uppercase">Fast Delivery</span>
-                                    </div>
-                                </div>
-
                                 <div className="flex items-center justify-between pt-6 border-t border-gray-50">
                                     <div>
                                         <p className="text-[10px] sm:text-sm font-black text-gray-400 uppercase tracking-widest leading-none mb-1">Price</p>

@@ -139,7 +139,7 @@ export default function CategoryListingPage() {
                                         Order {cat.name}
                                         <ShoppingBag className="w-5 h-5" />
                                     </button>
-                                    <Link href={`/shop?category=${cat.id}`} className="border-2 border-earth/20 hover:border-leaf text-foreground px-8 py-2.5 rounded-2xl font-bold transition-all flex items-center justify-center">
+                                    <Link href={`/${cat.id}`} className="border-2 border-earth/20 hover:border-leaf text-foreground px-8 py-2.5 rounded-2xl font-bold transition-all flex items-center justify-center">
                                         Learn More
                                     </Link>
                                 </div>

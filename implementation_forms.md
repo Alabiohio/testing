@@ -17,7 +17,7 @@ This document outlines the current structure and the recommended implementation 
 - **Validation:** Basic HTML5 `required` attributes.
 - **Behavior:** Currently triggers a generic browser `alert("Message Sent!")`.
 
-### 2.2. Booked Order Form (`/app/booked-order/page.tsx`)
+### 2.2. Booked Order Form (`/app/book-order/page.tsx`)
 - **Type:** Complex dynamic client-side form.
 - **State Management:** Controlled inputs using `useState`.
 - **Dynamic Logic:** 

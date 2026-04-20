@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ConfirmModal from "./ConfirmModal";
+import { useCart } from "@/lib/cart-context";
 
 // Countdown Timer Hook
 function useCountdown(targetHours: number) {
@@ -45,6 +46,8 @@ interface ProductProps {
   reviews: number;
   badge: string;
   badgeColor: string;
+  rawPrice: number | null;
+  rawPriceRange: string | null;
 }
 
 export default function HomeClient({ initialProducts }: { initialProducts: ProductProps[] }) {
@@ -68,20 +71,26 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
     onConfirm: () => { },
   });
 
-  const handleOrderConfirm = (link: string, name: string) => {
+  const { addItem } = useCart();
+
+  const handleOrderConfirm = (product: ProductProps) => {
     setConfirmModal({
       isOpen: true,
-      title: `Confirm Order: ${name}`,
-      message: `You're about to proceed to the secure checkout for ${name}. Would you like to continue?`,
+      title: `Add to Cart: ${product.name}`,
+      message: `Would you like to add ${product.name} to your cart and proceed?`,
       onConfirm: () => {
-        // Close modal first, then navigate after React commits the DOM change.
-        // Calling router.push() synchronously inside a setState callback causes
-        // a race condition where History.pushState fires on a null document
-        // (Next.js 16 + Turbopack bug). startTransition defers the navigation
-        // until after React has fully flushed the state update.
         setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        addItem({
+          id: product.id,
+          name: product.name,
+          price: product.rawPrice,
+          price_range: product.rawPriceRange,
+          unit: product.unit,
+          category: product.category,
+          imageUrl: product.img
+        }, 1);
         startTransition(() => {
-          router.push(link);
+          router.push("/cart");
         });
       },
     });
@@ -179,7 +188,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
             </div>
           </div>
           <button
-            onClick={() => handleOrderConfirm(`/booked-order?cat=${product.id}`, product.name)}
+            onClick={() => handleOrderConfirm(product)}
             className="flex items-center justify-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white p-2 sm:px-4 sm:py-2.5 rounded-xl font-bold text-sm transition-all hover:shadow-lg hover:shadow-amber-500/25 active:scale-95 cursor-pointer"
           >
             <ShoppingCart className="w-4 h-4" />
@@ -419,12 +428,31 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
                   ))}
                 </div>
               </div>
-              <Link
-                href="/booked-order?cat=table-size"
+              <button
+                onClick={() => {
+                  const product = products.find(p => p.name.includes('Table-Size')) || {
+                    id: "table-size",
+                    name: "Fresh Table-Size",
+                    desc: "",
+                    img: "",
+                    price: "",
+                    originalPrice: "",
+                    unit: "kg",
+                    category: "Consumption",
+                    tags: [],
+                    rating: 5,
+                    reviews: 0,
+                    badge: "",
+                    badgeColor: "",
+                    rawPrice: null,
+                    rawPriceRange: null
+                  };
+                  handleOrderConfirm(product);
+                }}
                 className="bg-white text-red-600 px-6 py-3 rounded-xl font-black text-sm hover:bg-yellow-50 transition-all hover:-translate-y-0.5 shadow-lg active:scale-95 whitespace-nowrap uppercase tracking-wide"
               >
                 Grab Deal →
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -565,7 +593,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
               desc: "Healthy Start, High Survival",
               img: "/assets/bgImages/fingerlings.png",
               color: "leaf",
-              link: "/booked-order?cat=fingerlings"
+              link: "/book-order?cat=fingerlings"
             },
             {
               title: "Juveniles",
@@ -574,7 +602,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
               desc: "Fast Growth, Uniform Quality",
               img: "/assets/bgImages/juveniles.png",
               color: "leaf",
-              link: "/booked-order?cat=juveniles"
+              link: "/book-order?cat=juveniles"
             },
             {
               title: "Broodstock",
@@ -583,7 +611,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
               desc: "Breeding Stock, Strong Genetics",
               img: "/assets/bgImages/broodstock.png",
               color: "leaf",
-              link: "/booked-order?cat=broodstock"
+              link: "/book-order?cat=broodstock"
             },
           ].map((item, idx) => (
             <motion.div
@@ -642,7 +670,26 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
 
                 <div className="pt-4">
                   <button
-                    onClick={() => handleOrderConfirm(item.link, item.title)}
+                    onClick={() => {
+                      const product = products.find(p => p.name.includes(item.title)) || {
+                        id: item.link.split("=")[1] || item.title,
+                        name: item.title,
+                        desc: item.desc,
+                        img: item.img,
+                        price: "Contant",
+                        originalPrice: "",
+                        unit: item.title === "Broodstock" ? "fish" : "piece",
+                        category: "Farming",
+                        tags: [],
+                        rating: 5,
+                        reviews: 0,
+                        badge: "",
+                        badgeColor: "",
+                        rawPrice: null,
+                        rawPriceRange: null
+                      };
+                      handleOrderConfirm(product);
+                    }}
                     className="inline-flex items-center justify-center gap-2 w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-2xl font-black text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95 group/btn cursor-pointer"
                   >
                     Order {item.title}
@@ -812,7 +859,26 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
                   </p>
                 </div>
                 <button
-                  onClick={() => handleOrderConfirm(`/booked-order?cat=${item.id}`, item.name)}
+                  onClick={() => {
+                    const product = products.find(p => p.id === item.id) || {
+                      id: item.id,
+                      name: item.name,
+                      desc: item.desc,
+                      img: item.img,
+                      price: "",
+                      originalPrice: "",
+                      unit: item.unit,
+                      category: item.badge,
+                      tags: [],
+                      rating: 5,
+                      reviews: 0,
+                      badge: "",
+                      badgeColor: "",
+                      rawPrice: null,
+                      rawPriceRange: null
+                    };
+                    handleOrderConfirm(product);
+                  }}
                   className="w-full bg-gray-50 hover:bg-amber-500 text-gray-700 hover:text-white py-3 rounded-2xl font-black text-xs transition-all flex items-center justify-center gap-2 border border-gray-100 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-500/20 active:scale-95 group/btn"
                 >
                   <ShoppingCart className="w-3.5 h-3.5" />
@@ -1071,7 +1137,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
               Place your order today or speak with our team for the best recommendation.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/booked-order" className="bg-white text-leaf hover:bg-gray-50 px-8 py-4 rounded-xl font-black text-base transition-all hover:-translate-y-0.5 shadow-xl shadow-black/20 text-center tracking-wide">
+              <Link href="/book-order" className="bg-white text-leaf hover:bg-gray-50 px-8 py-4 rounded-xl font-black text-base transition-all hover:-translate-y-0.5 shadow-xl shadow-black/20 text-center tracking-wide">
                 Place Order Now
               </Link>
               <Link href="/contact" className="bg-white/15 hover:bg-white/25 text-white border-2 border-white/25 px-8 py-4 rounded-xl font-bold text-base transition-all hover:-translate-y-0.5 text-center tracking-wide">

@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import ConfirmModal from "./ConfirmModal";
 
 import { type Product } from "@/lib/db/schema";
+import { useCart } from "@/lib/cart-context";
 
 interface CategoryProductClientProps {
     products: Product[];
@@ -37,15 +38,27 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
         onConfirm: () => { },
     });
 
-    const handleOrderConfirm = (link: string, name: string) => {
+    const { addItem } = useCart();
+
+    const handleOrderConfirm = (product: Product) => {
         setConfirmModal({
             isOpen: true,
-            title: `Confirm Order: ${name}`,
-            message: `You're about to proceed to the secure checkout for ${name}. Would you like to continue?`,
+            title: `Add to Cart: ${product.name}`,
+            message: `Would you like to add ${product.name} to your cart and proceed?`,
             onConfirm: () => {
                 setConfirmModal(prev => ({ ...prev, isOpen: false }));
+                addItem({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    price_range: product.price_range,
+                    unit: product.unit,
+                    category: product.category,
+                    imageUrl: product.imageUrl
+                }, 1);
+                
                 startTransition(() => {
-                    router.push(link);
+                    router.push("/cart");
                 });
             },
         });
@@ -297,7 +310,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                         </p>
                                     </div>
                                     <button
-                                        onClick={() => handleOrderConfirm(`/booked-order?cat=${product.id}`, product.name)}
+                                        onClick={() => handleOrderConfirm(product)}
                                         className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-xl sm:rounded-2xl shadow-lg shadow-amber-500/25 active:scale-90 transition-all cursor-pointer border-none"
                                     >
                                         <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Truck, User, Phone, MapPin, Mail, ChevronRight, Info, ShieldCheck, Check } from "lucide-react";
+import { createOrder } from "../actions/order";
 
 const categoryGroups: Record<string, CategoryGroup> = {
     fingerlings: {
@@ -80,14 +81,37 @@ export default function BookedOrderPage() {
         notes: "",
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        alert("Thank you! Your order has been placed successfully. Our team will contact you within 24 hours.");
+        setIsSubmitting(true);
+        const result = await createOrder(formData);
+        setIsSubmitting(false);
+
+        if (result.success) {
+            alert("Thank you! Your order has been placed successfully. Our team will contact you within 24 hours.");
+            setFormData({
+                name: "",
+                email: "",
+                phone: "",
+                streetAddress: "",
+                city: "",
+                state: "Lagos",
+                category: "fingerlings",
+                subCategory: "",
+                quantity: "",
+                deliveryOption: "Home Delivery",
+                notes: "",
+            });
+        } else {
+            alert(result.error || "Something went wrong. Please try again.");
+        }
     };
 
     return (
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-black text-leaf">Loading...</div>}>
-            <OrderFormContent formData={formData} setFormData={setFormData} categoryGroups={categoryGroups} deliveryOptions={deliveryOptions} handleSubmit={handleSubmit} />
+            <OrderFormContent formData={formData} setFormData={setFormData} categoryGroups={categoryGroups} deliveryOptions={deliveryOptions} handleSubmit={handleSubmit} isSubmitting={isSubmitting} />
         </Suspense>
     );
 }
@@ -110,9 +134,10 @@ interface OrderFormContentProps {
     categoryGroups: Record<string, CategoryGroup>;
     deliveryOptions: string[];
     handleSubmit: (e: React.FormEvent) => void;
+    isSubmitting: boolean;
 }
 
-function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptions, handleSubmit }: OrderFormContentProps) {
+function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptions, handleSubmit, isSubmitting }: OrderFormContentProps) {
     const searchParams = useSearchParams();
     const catParam = searchParams.get("cat");
 
@@ -130,7 +155,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <header className="mb-16 text-center">
-                   
+
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -229,10 +254,10 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                     }`}
                                             >
                                                 <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border border-leaf/10">
-                                                    <Image 
-                                                        src={group.image} 
-                                                        alt={group.name} 
-                                                        fill 
+                                                    <Image
+                                                        src={group.image}
+                                                        alt={group.name}
+                                                        fill
                                                         className="object-cover group-hover:scale-110 transition-transform duration-500"
                                                     />
                                                 </div>
@@ -439,9 +464,10 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                         <button
                             form="order-form"
                             type="submit"
-                            className="w-full bg-leaf hover:bg-leaf-dark text-white py-6 rounded-2xl font-black text-xl uppercase tracking-widest shadow-2xl shadow-leaf/40 transition-all hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-4"
+                            disabled={isSubmitting}
+                            className={`w-full ${isSubmitting ? "bg-leaf/50" : "bg-leaf hover:bg-leaf-dark hover:scale-[1.02]"} text-white py-6 rounded-2xl font-black text-xl uppercase tracking-widest shadow-2xl shadow-leaf/40 transition-all active:scale-95 flex items-center justify-center gap-4`}
                         >
-                            PLACE ORDER
+                            {isSubmitting ? "PLACING ORDER..." : "PLACE ORDER"}
                             <ChevronRight className="w-6 h-6" />
                         </button>
 

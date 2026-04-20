@@ -78,6 +78,6 @@ export const searchableItems: SearchItem[] = [
         title: "Booked Order",
         description: "Place your order online for any of our products.",
         category: "Pages",
-        href: "/booked-order",
+        href: "/book-order",
     },
 ];

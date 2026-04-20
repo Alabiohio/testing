@@ -38,7 +38,7 @@ const Navbar = () => {
         { name: 'Home', href: '/' },
         { name: 'Category', href: '/category' },
         { name: 'Training', href: '/training' },
-        { name: 'My Orders', href: '/booked-order' },
+        { name: 'Book Order', href: '/book-order' },
         { name: 'Contact', href: '/contact' },
     ];
 
@@ -192,7 +192,7 @@ const Navbar = () => {
 
                             {/* Cart Icon */}
                             <Link
-                                href="/booked-order"
+                                href="/book-order"
                                 className="relative p-2.5 rounded-xl transition-all hover:bg-leaf/10 active:scale-95 group"
                                 aria-label="Shopping Cart"
                             >
@@ -206,7 +206,7 @@ const Navbar = () => {
 
                             {/* Shop CTA - Desktop */}
                             <Link
-                                href="/booked-order"
+                                href="/book-order"
                                 className="hidden md:inline-flex items-center gap-2 bg-leaf hover:bg-leaf-dark text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 shadow-lg shadow-leaf/25 active:scale-95 tracking-wide"
                             >
                                 Order Now
@@ -373,7 +373,7 @@ const Navbar = () => {
                             {/* Footer CTA */}
                             <div className="p-5 border-t border-gray-100">
                                 <Link
-                                    href="/booked-order"
+                                    href="/book-order"
                                     onClick={() => setIsOpen(false)}
                                     className="w-full bg-leaf hover:bg-leaf-dark text-white py-4 rounded-xl font-black text-base shadow-lg shadow-leaf/25 active:scale-95 transition-all flex items-center justify-center gap-2 tracking-wide"
                                 >

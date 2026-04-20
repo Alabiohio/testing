@@ -12,7 +12,7 @@ For the current Next.js stack, **Supabase** is the recommended database solution
 ## 2. Database Schema (PostgreSQL)
 
 ### 2.1. `orders` Table
-Stores all product orders from the `/booked-order` page.
+Stores all product orders from the `/book-order` page.
 
 ```sql
 CREATE TABLE orders (

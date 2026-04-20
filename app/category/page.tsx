@@ -5,6 +5,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ChevronRight, ShoppingBag, ShieldCheck, TrendingUp, Info } from "lucide-react";
 import Link from "next/link";
+import { useCart } from "@/lib/cart-context";
+import { useRouter } from "next/navigation";
 
 const categories = [
     {
@@ -50,6 +52,9 @@ const categories = [
 ];
 
 export default function CategoryListingPage() {
+    const { addItem } = useCart();
+    const router = useRouter();
+
     return (
         <div className="min-h-screen bg-background pt-12 pb-24 overflow-x-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -116,11 +121,25 @@ export default function CategoryListingPage() {
                                 </div>
 
                                 <div className="flex flex-col sm:flex-row gap-4 pt-4 w-full sm:w-auto">
-                                    <Link href={`/booked-order?cat=${cat.id}`} className="bg-leaf hover:bg-leaf-dark text-white px-8 py-2.5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all">
+                                    <button 
+                                        onClick={() => {
+                                            addItem({
+                                                id: cat.id,
+                                                name: cat.name,
+                                                price: null,
+                                                price_range: cat.price,
+                                                unit: cat.id === "broodstock" ? "fish" : (cat.id === "table-size" || cat.id === "smoked" ? "kg" : "piece"),
+                                                category: cat.id,
+                                                imageUrl: cat.image
+                                            }, 1);
+                                            router.push('/cart');
+                                        }}
+                                        className="bg-leaf hover:bg-leaf-dark text-white px-8 py-2.5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all"
+                                    >
                                         Order {cat.name}
                                         <ShoppingBag className="w-5 h-5" />
-                                    </Link>
-                                    <Link href={`/${cat.id}`} className="border-2 border-earth/20  hover:border-leaf text-foreground px-8 py-2.5 rounded-2xl font-bold transition-all flex items-center justify-center">
+                                    </button>
+                                    <Link href={`/shop?category=${cat.id}`} className="border-2 border-earth/20 hover:border-leaf text-foreground px-8 py-2.5 rounded-2xl font-bold transition-all flex items-center justify-center">
                                         Learn More
                                     </Link>
                                 </div>
@@ -159,9 +178,9 @@ export default function CategoryListingPage() {
                 </div>
 
                 <div className="mt-24 text-center">
-                    <h3 className="text-3xl font-black text-deep-green  mb-6 tracking-tight uppercase">Ready to Explore Categories?</h3>
-                    <Link href="/booked-order" className="inline-flex items-center gap-3 bg-leaf hover:bg-leaf-dark text-white px-12 py-6 rounded-2xl font-black text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/30 uppercase tracking-[0.2em]">
-                        GO TO CHECKOUT
+                    <h3 className="text-3xl font-black text-deep-green mb-6 tracking-tight uppercase">Ready to Explore Categories?</h3>
+                    <Link href="/shop" className="inline-flex items-center gap-3 bg-leaf hover:bg-leaf-dark text-white px-12 py-6 rounded-2xl font-black text-xl transition-all hover:-translate-y-1 shadow-2xl shadow-leaf/30 uppercase tracking-[0.2em]">
+                        START SHOPPING
                         <ShoppingBag className="w-6 h-6" />
                     </Link>
                 </div>

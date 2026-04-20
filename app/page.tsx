@@ -29,6 +29,8 @@ export default async function Home() {
     reviews: 10, // Default reviews
     badge: p.available ? "In Stock" : "Out of Stock",
     badgeColor: p.available ? "bg-leaf" : "bg-gray-400",
+    rawPrice: p.price ?? null,
+    rawPriceRange: p.price_range ?? null,
   })) : [
     {
       id: "fingerlings",
@@ -44,6 +46,8 @@ export default async function Home() {
       reviews: 128,
       badge: "Best Seller",
       badgeColor: "bg-amber-500",
+      rawPrice: 80,
+      rawPriceRange: "₦80 – ₦150",
     },
     {
       id: "juveniles",
@@ -59,6 +63,8 @@ export default async function Home() {
       reviews: 94,
       badge: "Popular",
       badgeColor: "bg-blue-500",
+      rawPrice: 300,
+      rawPriceRange: "₦300 – ₦700",
     },
     {
       id: "table-size",
@@ -74,6 +80,8 @@ export default async function Home() {
       reviews: 215,
       badge: "Flash Deal",
       badgeColor: "bg-red-500",
+      rawPrice: 1500,
+      rawPriceRange: "₦1,500 – ₦3,500",
     },
     {
       id: "smoked",
@@ -89,6 +97,8 @@ export default async function Home() {
       reviews: 77,
       badge: "Premium",
       badgeColor: "bg-deep-green",
+      rawPrice: 4000,
+      rawPriceRange: "₦4,000 – ₦8,000",
     },
     {
       id: "broodstock",
@@ -104,6 +114,8 @@ export default async function Home() {
       reviews: 42,
       badge: "Expert Pick",
       badgeColor: "bg-purple-600",
+      rawPrice: 4000,
+      rawPriceRange: "₦4,000 – ₦10,000",
     },
   ];
 

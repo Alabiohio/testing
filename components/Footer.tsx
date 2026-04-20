@@ -15,13 +15,13 @@ const Footer = () => {
             { name: 'Table-Size Catfish', href: '/table-size' },
             { name: 'Smoked Catfish', href: '/smoked' },
             { name: 'Broodstock', href: '/broodstock' },
-            { name: 'Bulk Orders', href: '/booked-order' },
+            { name: 'Bulk Orders', href: '/book-order' },
         ],
         company: [
             { name: 'About Us', href: '/#about' },
             { name: 'Training Programs', href: '/training' },
             { name: 'Contact Us', href: '/contact' },
-            { name: 'My Orders', href: '/booked-order' },
+            { name: 'Book Order', href: '/book-order' },
         ],
         legal: [
             { name: 'Privacy Policy', href: '/privacy' },

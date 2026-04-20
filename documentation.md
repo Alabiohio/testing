@@ -42,7 +42,7 @@ A catalog of catfish products categorized by growth stage and use:
 - **Smoked Catfish:** Processed fish for long shelf life.
 - **Broodstock:** High-fertility fish for breeding.
 
-### 3.4. Booked Order (/booked-order)
+### 3.4. Booked Order (/book-order)
 A comprehensive dynamic order form that includes:
 - **Category Selection:** Users can select specific sizes and quantities.
 - **Dynamic Pricing Display:** Contextual information about price ranges.

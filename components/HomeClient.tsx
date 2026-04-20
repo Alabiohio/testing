@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ShoppingBag, ShoppingCart, ChevronRight, ChevronDown,
   Shield, Truck, Clock, Star, ArrowRight, CheckCircle,
-  Zap, Tag, Phone, MapPin, Users, Leaf, Package, Heart
+  Zap, Tag, Phone, MapPin, Users, Leaf, Package, Heart, Activity, Brain
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ConfirmModal from "./ConfirmModal";
@@ -717,7 +717,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
       {/* ===== ABOUT + VALUES ===== */}
       <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Image */}
+          {/* Image 
           <div className="relative order-2 lg:order-1">
             <div className="aspect-[4/5] relative rounded-3xl overflow-hidden border-4 border-white  shadow-2xl">
               <Image src="/event.png" alt="Our Farm" fill className="object-cover" />
@@ -727,7 +727,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
               <p className="text-xs font-bold uppercase tracking-widest opacity-80">Premium Supply</p>
             </div>
           </div>
-
+*/}
           {/* Text */}
           <div className="order-1 lg:order-2">
             <h2 className="text-3xl lg:text-4xl font-black text-deep-green  mb-6 leading-tight">
@@ -1040,7 +1040,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
         </div>
       </section>
 
-      {/* ===== GALLERY / EVENTS ===== */}
+      {/* ===== GALLERY / EVENTS ===== 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -1073,7 +1073,9 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
               </div>
             ))}
           </div>
-          {/* Progress Dots */}
+
+          
+ 
           <div className="flex justify-center gap-2 mt-2">
             {galleryImages.map((_, i) => (
               <button
@@ -1088,6 +1090,125 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
                 className={`h-1.5 rounded-full transition-all duration-400 ${i === activeGalleryIndex ? 'bg-leaf w-8' : 'bg-gray-200  w-1.5 hover:bg-leaf/40'}`}
               />
             ))}
+          </div>
+        </div>
+      </section>
+*/}
+
+      {/* ===== HEALTH BENEFITS SECTION ===== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 scroll-mt-24" id="health-benefits">
+        <div className="bg-white rounded-[3rem] p-8 md:p-16 border border-gray-100 shadow-2xl shadow-leaf/5 relative overflow-hidden">
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-leaf/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl -z-0" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-3xl -z-0" />
+
+          <div className="relative z-10 grid lg:grid-cols-2 gap-16 items-center">
+            {/* Visual Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <div className="aspect-[4/3] relative rounded-[2.5rem] overflow-hidden shadow-2xl border-8 border-white group">
+                <Image
+                  src="/assets/bgImages/tablesize.png"
+                  alt="Healthy Catfish"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-1000"
+                />
+                <div className="absolute inset-0 bg-gradient-to-tr from-deep-green/40 to-transparent flex items-end p-8">
+                  <div className="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-xl w-full">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 bg-leaf rounded-xl flex items-center justify-center text-white">
+                        <Star className="w-5 h-5 fill-current" />
+                      </div>
+                      <h4 className="font-black text-deep-green tracking-tight">Superfood Choice</h4>
+                    </div>
+                    <p className="text-gray-500 text-xs font-bold leading-relaxed uppercase tracking-wider">
+                      High Protein • Omega-3 • Vitamin B12
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {/* Floating Stat */}
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-6 -right-6 bg-amber-500 text-white p-6 rounded-3xl shadow-xl z-20 border-4 border-white hidden md:block"
+              >
+                <p className="text-3xl font-black mb-0.5">100%</p>
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-90">Nutritional Density</p>
+              </motion.div>
+            </motion.div>
+
+            {/* Textual Content */}
+            <div>
+              <div className="section-label mb-6">
+                <Heart className="w-3.5 h-3.5 fill-leaf text-leaf" />
+                Health & Wellness
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-deep-green mb-8 tracking-tight leading-tight">
+                The Health Benefits of<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-leaf to-deep-green">Eating Catfish</span>
+              </h2>
+
+              <p className="text-gray-500 font-medium mb-10 leading-relaxed max-w-lg">
+                Catfish is more than just a tasty meal—it&apos;s a nutritional powerhouse. High in protein yet low in calories, it provides essential fatty acids and vitamins that are vital for your longevity and daily energy.
+              </p>
+
+              <div className="grid sm:grid-cols-2 gap-x-8 gap-y-6">
+                {[
+                  {
+                    title: "Heart Health",
+                    desc: "Excellent source of Omega-3 fatty acids that lower blood pressure and protect against heart disease.",
+                    icon: Activity,
+                    color: "text-red-500",
+                    bgColor: "bg-red-50"
+                  },
+                  {
+                    title: "Regulates Sugar",
+                    desc: "An ideal protein source for managing Type 2 Diabetes by helping to maintain stable blood sugar levels.",
+                    icon: Zap,
+                    color: "text-amber-500",
+                    bgColor: "bg-amber-50"
+                  },
+                  {
+                    title: "Joint Care",
+                    desc: "Natural anti-inflammatory properties help reduce joint pain, stiffness, and chronic inflammation.",
+                    icon: Shield,
+                    color: "text-blue-500",
+                    bgColor: "bg-blue-50"
+                  },
+                  {
+                    title: "Liver Vitality",
+                    desc: "Supplies crucial B-vitamins and minerals that support liver detoxification and overall metabolic health.",
+                    icon: Brain,
+                    color: "text-leaf",
+                    bgColor: "bg-leaf/10"
+                  },
+                ].map((item, idx) => (
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: idx * 0.1 }}
+                    className="group"
+                  >
+                    <div className="flex gap-4 p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+                      <div className={`w-12 h-12 shrink-0 ${item.bgColor} rounded-xl flex items-center justify-center shadow-inner`}>
+                        <item.icon className={`w-6 h-6 ${item.color}`} />
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-deep-green text-sm mb-1">{item.title}</h4>
+                        <p className="text-[11px] text-gray-400 leading-relaxed font-medium line-clamp-2 md:line-clamp-none">{item.desc}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>

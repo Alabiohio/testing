@@ -168,6 +168,46 @@ const Footer = () => {
                     </div>
                 </div>
 
+                {/* Official Partner Section */}
+                <div className="border-t border-white/5 py-16 mb-6 text-center relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(34,197,94,0.05),transparent_70%)]" />
+                    
+                    <div className="relative z-10">
+                        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mb-8">Official Partner</p>
+                        
+                        <div className="flex flex-col items-center">
+                            <div className="relative">
+                                {/* Glow Effect */}
+                                <div className="absolute -inset-10 bg-leaf/20 blur-[60px] rounded-full opacity-40 group-hover:opacity-70 transition-opacity duration-1000" />
+                                
+                                <div className="relative flex flex-col items-center">
+                                    <h4 className="text-3xl md:text-6xl font-black italic tracking-tightest leading-none select-none">
+                                        <span className="bg-clip-text text-transparent bg-gradient-to-b from-gray-100 via-gray-400 to-gray-600 drop-shadow-[0_0_15px_rgba(34,197,94,0.4)]">
+                                            TECHGROW
+                                        </span>
+                                    </h4>
+                                    
+                                    <div className="flex items-center gap-4 my-2">
+                                        <div className="h-[2px] w-12 md:w-20 bg-gradient-to-r from-transparent via-leaf to-leaf/20" />
+                                        <div className="flex gap-2">
+                                            <div className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_10px_rgba(220,38,38,1)]" />
+                                            <div className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_10px_rgba(220,38,38,1)]" />
+                                            <div className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_10px_rgba(220,38,38,1)]" />
+                                        </div>
+                                        <div className="h-[2px] w-12 md:w-20 bg-gradient-to-l from-transparent via-leaf to-leaf/20" />
+                                    </div>
+                                    
+                                    <h5 className="text-xl md:text-3xl font-black tracking-[0.25em] text-white/90 drop-shadow-lg">
+                                        FARMS
+                                    </h5>
+                                </div>
+                                
+                                <div className="w-full h-8 mt-4 bg-gradient-to-t from-white/5 to-transparent blur-sm rounded-full opacity-10 transform -scale-y-100" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Trust Badges */}
                 <div className="border-t border-white/5 py-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
                     {[

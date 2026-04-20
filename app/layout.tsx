@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     description: "Quality catfish supply and expert agricultural training. Fingerlings, Juveniles, Table-size, and Smoked Catfish.",
     images: [
       {
-        url: "/ccbLogo.png", // Using the logo as a fallback OG image
+        url: "/ccbLg.png", // Using the logo as a fallback OG image
         width: 1200,
         height: 630,
         alt: "CCB Farms Logo",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CCB Farms - Premium Catfish & Sustainable Agriculture",
     description: "Quality catfish supply and expert agricultural training.",
-    images: ["/ccbLogo.png"],
+    images: ["/ccbLg.png"],
   },
   icons: {
     icon: "/favicon.ico",

@@ -66,7 +66,7 @@ const Footer = () => {
                     <div className="col-span-2 md:col-span-1 space-y-6">
                         <Link href="/" className="inline-block relative w-44 h-44">
                             <Image
-                                src="/ccb.png"
+                                src="/ccbLg.png"
                                 alt="CCB Farms Logo"
                                 fill
                                 className="object-contain"

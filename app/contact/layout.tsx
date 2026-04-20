@@ -6,7 +6,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Contact Us | CCB Farms",
         description: "Reach out to CCB Farms for all your catfish and agricultural needs.",
-        images: ["/ccbLogo.png"],
+        images: ["/ccbLg.png"],
     },
 };
 

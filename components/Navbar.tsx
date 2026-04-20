@@ -126,12 +126,12 @@ const Navbar = () => {
                     <div className="flex justify-between h-[72px] items-center">
                         {/* Logo */}
                         <Link href="/" className="flex items-center gap-2 group shrink-0">
-                            <div className="relative w-44 h-44 flex items-center justify-center overflow-hidden">
+                            <div className="relative w-32 h-32 flex items-center justify-center overflow-hidden">
                                 <Image
-                                    src="/ccb.png"
+                                    src="/ccbLg.png"
                                     alt="CCB Farms Logo"
-                                    width={180}
-                                    height={180}
+                                    width={128}
+                                    height={128}
                                     className="object-contain"
                                 />
                             </div>
@@ -296,7 +296,7 @@ const Navbar = () => {
                             <div className="p-5 flex items-center justify-between border-b border-gray-100">
                                 <div className="relative w-24 h-10">
                                     <Image
-                                        src="/ccbLogo.png"
+                                        src="/ccbLg.png"
                                         alt="CCB Farms Logo"
                                         width={80}
                                         height={80}

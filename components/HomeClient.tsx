@@ -7,26 +7,43 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ShoppingBag, ShoppingCart, ChevronRight, ChevronDown,
   Shield, Truck, Clock, Star, ArrowRight, CheckCircle,
-  Zap, Tag, Phone, MapPin, Users, Leaf, Package, Heart, Activity, Brain
+  Zap, Tag, Phone, MapPin, Users, Leaf, Package, Heart, Activity, Brain, MessageSquare
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ConfirmModal from "./ConfirmModal";
 import { useCart } from "@/lib/cart-context";
+import { getPriceCatalog } from "@/app/actions/price-catalog";
+import { PriceCatalogItem } from "@/lib/db/schema";
+
+
+
+
+
 
 // Countdown Timer Hook
-function useCountdown(targetHours: number) {
-  const [time, setTime] = useState({ h: targetHours, m: 59, s: 59 });
+function useCountdown(targetDate?: Date | string) {
+  const [time, setTime] = useState({ h: 0, m: 0, s: 0 });
+
   useEffect(() => {
+    const calculateTimeLeft = () => {
+      if (!targetDate) return { h: 11, m: 59, s: 59 };
+      const target = typeof targetDate === 'string' ? new Date(targetDate) : targetDate;
+      const difference = target.getTime() - new Date().getTime();
+      if (difference <= 0) return { h: 0, m: 0, s: 0 };
+      return {
+        h: Math.floor((difference / (1000 * 60 * 60))),
+        m: Math.floor((difference / 1000 / 60) % 60),
+        s: Math.floor((difference / 1000) % 60),
+      };
+    };
+
+    setTime(calculateTimeLeft());
     const t = setInterval(() => {
-      setTime(prev => {
-        if (prev.s > 0) return { ...prev, s: prev.s - 1 };
-        if (prev.m > 0) return { ...prev, m: prev.m - 1, s: 59 };
-        if (prev.h > 0) return { h: prev.h - 1, m: 59, s: 59 };
-        return { h: targetHours, m: 59, s: 59 };
-      });
+      setTime(calculateTimeLeft());
     }, 1000);
     return () => clearInterval(t);
-  }, [targetHours]);
+  }, [targetDate]);
+
   return time;
 }
 
@@ -50,12 +67,34 @@ interface ProductProps {
   rawPriceRange: string | null;
 }
 
-export default function HomeClient({ initialProducts }: { initialProducts: ProductProps[] }) {
+export default function HomeClient({
+  initialProducts,
+  initialFlashDeal,
+  activeFlashDeals = [],
+  globalSettings,
+  initialTestimonials = [],
+  initialPriceCatalog = []
+}: {
+  initialProducts: ProductProps[],
+  initialFlashDeal?: any,
+  activeFlashDeals?: any[],
+  globalSettings?: any,
+  initialTestimonials?: any[],
+  initialPriceCatalog?: PriceCatalogItem[]
+}) {
   const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
   const galleryRef = useRef<HTMLDivElement>(null);
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeTypeFilter, setActiveTypeFilter] = useState("All Fish");
-  const countdown = useCountdown(11);
+
+  const heroCountdown = useCountdown(initialFlashDeal?.endTime);
+
+  // Use global settings for slider if available, otherwise find earliest
+  const sliderEndTime = globalSettings?.endTime || (activeFlashDeals.length > 0
+    ? [...activeFlashDeals].sort((a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime())[0]?.endTime
+    : null);
+  const sliderCountdown = useCountdown(sliderEndTime);
+
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -72,6 +111,10 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
   });
 
   const { addItem } = useCart();
+  const [catalogItems, setCatalogItems] = useState<PriceCatalogItem[]>(initialPriceCatalog || []);
+
+
+
 
   const handleOrderConfirm = (product: ProductProps) => {
     setConfirmModal({
@@ -140,29 +183,14 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
             {product.badge}
           </div>
         )}
-        {/* Discount */}
-        {product.originalPrice && product.originalPrice !== product.price && (
-          <div className="absolute top-3 right-3 bg-white  text-red-500 text-[10px] font-black px-2.5 py-1.5 rounded-full border border-red-100  shadow-sm">
-            -{Math.round((1 - parseInt(product.price.replace(/[^0-9]/g, '')) / parseInt(product.originalPrice.replace(/[^0-9]/g, ''))) * 100)}%
-          </div>
-        )}
-        {/* Wishlist */}
-        <button className="absolute bottom-3 right-3 p-2 bg-white  rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-all hover:text-red-500 text-gray-400 border border-gray-100 ">
-          <Heart className="w-4 h-4" />
-        </button>
+
+
       </div>
 
       {/* Content */}
       <div className="p-3 sm:p-5">
         {/* Rating */}
-        <div className="flex items-center gap-1.5 mb-2">
-          <div className="flex items-center gap-0.5">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(product.rating) ? 'fill-amber-400 text-amber-400' : 'text-gray-200 '}`} />
-            ))}
-          </div>
-          <span className="text-xs font-bold text-gray-500 ">{product.rating} ({product.reviews})</span>
-        </div>
+       
 
         {/* Name */}
         <h3 className="font-black text-base sm:text-lg text-gray-900  mb-1 tracking-tight truncate sm:whitespace-normal">{product.name}</h3>
@@ -199,32 +227,6 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
     </motion.div>
   );
 
-  const testimonials = [
-    {
-      name: "Adeola Okafor",
-      role: "Commercial Fish Farmer, Lagos",
-      review: "CCB Farms has been my top supplier for 3 years. The fingerlings are always healthy and the survival rate is outstanding — consistently above 95%.",
-      rating: 5,
-      img: null,
-      initials: "AO",
-    },
-    {
-      name: "Blessing Nwosu",
-      role: "Restaurant Owner, Abuja",
-      review: "I order the table-size catfish every week. Freshness is guaranteed and delivery is always on time. My customers love the quality.",
-      rating: 5,
-      img: null,
-      initials: "BN",
-    },
-    {
-      name: "Emeka Taiwo",
-      role: "Fish Retailer, Ogun State",
-      review: "The smoked catfish is excellent — rich flavor, long shelf life. I resell them and my customers keep coming back. Highly recommended!",
-      rating: 5,
-      img: null,
-      initials: "ET",
-    },
-  ];
 
   const galleryImages = [
     { title: "Annual Catfish Fry & Tour", type: "Event", image: "/event.png" },
@@ -245,125 +247,81 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
         confirmText="Yes, Proceed"
         cancelText="Maybe Later"
       />
-      {/* Background Grid */}
-      <div className="absolute top-0 left-0 w-full h-[900px] bg-[radial-gradient(#bbf7d0_1px,transparent_1px)] [background-size:36px_36px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_30%,#000_60%,transparent_100%)] opacity-30  -z-10" />
-      <div className="absolute top-0 right-0 w-full h-[700px] bg-gradient-to-b from-leaf/5 to-transparent -z-10" />
+
 
       {/* ===== HERO ===== */}
-      <section className="w-full mb-20 relative heroDiv pt-10 lg:pt-18">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+      <section className="w-full mb-20 relative overflow-hidden">
+        {/* Video Background */}
+        <div className="absolute inset-0 z-0">
+          <video
+            src="/assets/bgVid/hero.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="object-cover w-full h-full"
+          />
+          <div className="absolute inset-0 bg-black/40 via-black/20 to-black/40" />
+        </div>
+
+        {/* Search Bar */}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-18 mb-12 relative z-10">
           <div
             className="relative group cursor-pointer"
             onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
           >
-            <div className="w-full h-10 pl-14 pr-6 rounded-xl border-2 border-gray-200  focus-within:border-leaf bg-white  shadow-sm hover:shadow-md transition-all flex items-center">
-              <span className="text-gray-400  text-sm font-medium">Search for catfish, fingerlings...</span>
+            <div className="w-full h-10 pl-14 pr-6 rounded-xl border-2 border-white/20 focus-within:border-leaf bg-white/10 backdrop-blur-md shadow-sm hover:shadow-md transition-all flex items-center">
+              <span className="text-white/60 text-sm font-medium">Search for catfish, fingerlings...</span>
             </div>
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-leaf" />
             <div className="absolute right-5 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-2">
-              <span className="text-[11px] font-bold text-gray-400 bg-gray-100  px-2.5 py-1 rounded-lg uppercase tracking-widest border border-gray-200 ">⌘K</span>
+              <span className="text-[11px] font-bold text-white/50 bg-white/10 px-2.5 py-1 rounded-lg uppercase tracking-widest border border-white/15">⌘K</span>
             </div>
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left Column */}
-            <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
-            >
+        {/* Hero Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24 lg:pb-32 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="max-w-3xl"
+          >
+            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight mb-6 leading-[1.05] text-white">
+              Premium Catfish<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-leaf to-emerald-300">Direct from Farm</span>
+            </h1>
 
+            <p className="text-lg text-white/70 mb-10 max-w-xl leading-relaxed font-medium">
+              Healthy. Fresh. Responsibly Raised. — Supplying high-quality catfish across all growth stages to farmers, retailers, restaurants & households within Lagos & Ogun State.
+            </p>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight mb-6 leading-[1.05] text-deep-green ">
-                Premium Catfish<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-leaf to-deep-green">Direct from Farm</span>
-              </h1>
+            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              <Link href="/category" className="inline-flex items-center justify-center gap-2.5 bg-leaf hover:bg-leaf-dark text-white px-8 py-2.5 rounded-xl font-bold text-base transition-all hover:-translate-y-0.5 shadow-lg shadow-leaf/30 active:scale-95 tracking-wide">
+                <ShoppingCart className="w-5 h-5" />
+                Explore Categories
+              </Link>
+              <Link href="/contact" className="inline-flex items-center justify-center gap-2 border-2 border-white/25 hover:border-white text-white px-8 py-2.5 rounded-xl font-bold transition-all hover:bg-white/10 text-base backdrop-blur-md">
+                <Phone className="w-5 h-5 text-white" />
+                Talk to an Expert
+              </Link>
+            </div>
 
-              <p className="text-md text-gray-500  mb-8 max-w-lg leading-relaxed font-medium">
-                Healthy. Fresh. Responsibly Raised. — Supplying high-quality catfish across all growth stages to farmers, retailers, restaurants & households nationwide.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 mb-10">
-                <Link href="/category" className="inline-flex items-center justify-center gap-2.5 bg-leaf hover:bg-leaf-dark text-white px-8 py-2 rounded-xl font-bold text-base transition-all hover:-translate-y-0.5 shadow-lg shadow-leaf/30 active:scale-95 tracking-wide">
-                  <ShoppingCart className="w-5 h-5" />
-                  Explore Categories
-                </Link>
-                <Link href="/contact" className="inline-flex items-center justify-center gap-2 border-2 border-gray-200  hover:border-leaf text-gray-700  px-8 py-2 rounded-xl font-bold transition-all hover:bg-leaf/5 text-base">
-                  <Phone className="w-5 h-5 text-leaf" />
-                  Talk to an Expert
-                </Link>
-              </div>
-
-              {/* Trust Proof */}
-              <div className="flex flex-wrap items-center gap-6">
-                <div className="flex -space-x-3">
-                  {['AO', 'BN', 'ET', 'FK'].map((init, i) => (
-                    <div key={i} className={`w-9 h-9 rounded-full border-2 border-white  bg-gradient-to-br from-leaf to-deep-green flex items-center justify-center text-white text-[10px] font-black`}>
-                      {init}
-                    </div>
-                  ))}
+            {/* Quick Stats */}
+            <div className="flex items-center gap-8 lg:gap-12 border-t border-white/15 pt-8">
+              {[
+                { value: "₦80", label: "From / Piece" },
+                { value: "100%", label: "Organic Feed" },
+                { value: "24h", label: "Farm to Table" },
+              ].map(s => (
+                <div key={s.label}>
+                  <p className="text-2xl font-black text-leaf">{s.value}</p>
+                  <p className="text-xs font-bold text-white/40 uppercase tracking-wider mt-0.5">{s.label}</p>
                 </div>
-                <div>
-                  <div className="flex items-center gap-1 mb-0.5">
-                    {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />)}
-                    <span className="font-black text-sm text-gray-700  ml-1">4.9</span>
-                  </div>
-                  <p className="text-xs text-gray-500  font-medium">Trusted by 500+ farmers & buyers</p>
-                </div>
-              </div>
-
-              {/* Quick Stats */}
-              <div className="mt-10 grid grid-cols-3 gap-6 border-t border-gray-100  pt-8">
-                {[
-                  { value: "500+", label: "Happy Customers" },
-                  { value: "100%", label: "Organic Feed" },
-                  { value: "24h", label: "Farm to Table" },
-                ].map(s => (
-                  <div key={s.label}>
-                    <p className="text-2xl font-black text-leaf">{s.value}</p>
-                    <p className="text-xs font-bold text-gray-400  uppercase tracking-wider mt-0.5">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Right Column: Hero Visual */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.9, ease: "easeOut" }}
-              className="relative"
-            >
-              <div className="aspect-square relative rounded-[48px] overflow-hidden shadow-[0_40px_80px_-20px_rgba(0,0,0,0.25)] border-4 border-white  group">
-                <video
-                  src="/assets/bgVid/hero.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="object-cover w-full h-full absolute inset-0 group-hover:scale-105 transition-transform duration-1000"
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-deep-green/30 to-transparent" />
-
-                {/* Floating Price Badge */}
-                <div className="absolute -bottom-5 -left-5 bg-white  p-5 rounded-2xl shadow-xl border border-gray-100  animate-bounce-slow">
-                  <p className="text-leaf font-black text-2xl leading-none">₦80<span className="text-sm font-bold text-gray-400">/pc</span></p>
-                  <p className="text-gray-500  text-xs font-bold uppercase tracking-widest mt-1">From Fingerlings</p>
-                </div>
-
-                {/* Floating Rating */}
-                <div className="absolute -top-4 -right-4 bg-white  px-4 py-3 rounded-2xl shadow-xl border border-gray-100  flex items-center gap-2">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  <span className="font-black text-gray-800 ">4.9/5</span>
-                </div>
-              </div>
-
-              {/* Shadow outline */}
-              <div className="absolute -z-10 -bottom-3 -right-3 w-full h-full border-2 border-leaf/15 rounded-[48px]" />
-            </motion.div>
-          </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -371,9 +329,9 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { icon: Truck, title: "Free Delivery", sub: "On orders above ₦50,000" },
+            { icon: Truck, title: "Lagos & Ogun", sub: "Reliable delivery across both states" },
             { icon: Shield, title: "Quality Assured", sub: "100% disease-free fish" },
-            { icon: Clock, title: "48h Fulfilment", sub: "Nationwide express delivery" },
+            { icon: Clock, title: "48h Fulfilment", sub: "Lagos & Ogun express delivery" },
             { icon: Phone, title: "Expert Support", sub: "Call/WhatsApp 09093009400" },
           ].map(({ icon: Icon, title, sub }) => (
             <motion.div
@@ -395,68 +353,201 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
         </div>
       </section>
 
-      {/* ===== FLASH DEAL BANNER ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div className="relative bg-gradient-to-r from-red-600 via-red-500 to-orange-500 rounded-3xl overflow-hidden p-8 md:p-12">
-          <div className="absolute inset-0 opacity-10 bg-[url('/hero.png')] bg-cover bg-center" />
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Zap className="w-5 h-5 text-yellow-300" />
-                <span className="text-yellow-200 font-black text-sm uppercase tracking-widest">Flash Sale — Today Only</span>
+      {/* ===== MULTIPLE FLASH DEALS SLIDER ===== */}
+      {activeFlashDeals.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+          <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-black/5">
+            {/* Red Banner Header */}
+            <div className="bg-[#E61601] text-white px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2 md:gap-3">
+                <Zap className="w-5 h-5 text-yellow-300 fill-current" />
+                <span className="font-bold text-lg md:text-2xl tracking-tight">Flash Sales</span>
               </div>
-              <h2 className="text-white font-black text-3xl md:text-4xl mb-2">Up to 30% Off<br />Fresh Table-Size Catfish</h2>
-              <p className="text-white/80 font-medium">Freshly harvested. Hygienic. Same-day delivery available.</p>
-            </div>
-            <div className="flex items-center gap-4 shrink-0">
-              {/* Countdown */}
-              <div className="text-center">
-                <p className="text-[10px] text-white/70 font-bold uppercase tracking-widest mb-2">Ends in</p>
-                <div className="flex items-center gap-2">
-                  {[
-                    { val: countdown.h, label: 'h' },
-                    { val: countdown.m, label: 'm' },
-                    { val: countdown.s, label: 's' },
-                  ].map(({ val, label }, i) => (
-                    <div key={label} className="flex items-center gap-2">
-                      <div className="bg-white/20 backdrop-blur-sm rounded-xl px-3 py-2 min-w-[52px] text-center border border-white/20">
-                        <p className="text-white font-black text-2xl leading-none">{pad(val)}</p>
-                        <p className="text-white/60 text-[9px] font-bold uppercase tracking-wider">{label}</p>
-                      </div>
-                      {i < 2 && <span className="text-white/60 font-black text-xl">:</span>}
-                    </div>
-                  ))}
+              <div className="hidden md:flex items-center gap-2">
+                <span className="text-sm font-medium">Time Left:</span>
+                <div className="flex items-center gap-1 font-bold text-xl tabular-nums tracking-wide" suppressHydrationWarning>
+                  <span>{pad(sliderCountdown.h)}h</span>
+                  <span>:</span>
+                  <span>{pad(sliderCountdown.m)}m</span>
+                  <span>:</span>
+                  <span>{pad(sliderCountdown.s)}s</span>
                 </div>
               </div>
-              <button
-                onClick={() => {
-                  const product = products.find(p => p.name.includes('Table-Size')) || {
-                    id: "table-size",
-                    name: "Fresh Table-Size",
-                    desc: "",
-                    img: "",
-                    price: "",
-                    originalPrice: "",
-                    unit: "kg",
-                    category: "Consumption",
-                    tags: [],
-                    rating: 5,
-                    reviews: 0,
-                    badge: "",
-                    badgeColor: "",
-                    rawPrice: null,
-                    rawPriceRange: null
-                  };
-                  handleOrderConfirm(product);
-                }}
-                className="bg-white text-red-600 px-6 py-3 rounded-xl font-black text-sm hover:bg-yellow-50 transition-all hover:-translate-y-0.5 shadow-lg active:scale-95 whitespace-nowrap uppercase tracking-wide"
-              >
-                Grab Deal →
-              </button>
+              <Link href="#shop-categories" className="text-sm md:text-base font-medium hover:text-white/80 flex items-center gap-1">
+                See All <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
+              </Link>
+            </div>
+            {/* Mobile Countdown Row */}
+            <div className="md:hidden bg-[#CC1300] text-white px-4 py-1.5 flex items-center justify-center gap-2 text-xs">
+              <span className="font-medium">Time Left:</span>
+              <div className="flex items-center gap-1 font-bold tabular-nums" suppressHydrationWarning>
+                <span>{pad(sliderCountdown.h)}h</span>
+                <span>:</span>
+                <span>{pad(sliderCountdown.m)}m</span>
+                <span>:</span>
+                <span>{pad(sliderCountdown.s)}s</span>
+              </div>
+            </div>
+
+            {/* Products Horizontal List */}
+            <div className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide p-4 gap-4 md:gap-6">
+              {activeFlashDeals.map((deal, idx) => {
+                const product = products.find(p => p.id === deal.productId);
+                if (!product) return null;
+
+                return (
+                  <div
+                    key={deal.id || idx}
+                    className="shrink-0 w-[140px] md:w-[200px] snap-start group relative flex flex-col cursor-pointer transition-transform hover:-translate-y-1"
+                    onClick={() => handleOrderConfirm(product)}
+                  >
+                    <div className="relative aspect-square mb-3 bg-white rounded-lg overflow-hidden shrink-0 border border-black/5 flex items-center justify-center">
+                      <Image
+                        src={deal.imageUrl || product.img}
+                        alt={deal.title || product.name}
+                        fill
+                        className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
+                      />
+                      {deal.discount && (
+                        <div className="absolute top-0 right-0 bg-orange-50 text-orange-500 font-medium text-xs px-1.5 py-0.5 rounded-bl-lg">
+                          {deal.discount.startsWith('-') ? deal.discount : `-${deal.discount}`}
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="text-sm text-foreground/80 font-medium line-clamp-1 mb-1" title={product.name}>{product.name}</h3>
+                    <div className="font-black text-lg text-foreground mb-0.5">
+                      {deal.flashPrice ? `₦${Number(deal.flashPrice).toLocaleString()}` : product.price}
+                    </div>
+                    {deal.flashPrice && (
+                      <div className="text-xs text-foreground/40 line-through mb-2">₦{Number(product.rawPrice).toLocaleString()}</div>
+                    )}
+
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* ===== SINGLE FLASH DEAL BANNER ===== */}
+      {initialFlashDeal && (() => {
+        const dealProduct = products.find(p => p.id === initialFlashDeal.productId);
+        return (
+          <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+            {/* Section Header */}
+            <div className="flex items-center gap-2 mb-4">
+              <h2 className="text-lg font-black text-deep-green uppercase tracking-tight">{initialFlashDeal.title}</h2>
+              <div className="flex items-center gap-1.5 ml-auto text-xs font-bold text-foreground/40 uppercase tracking-widest">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Ends in</span>
+                <div className="flex items-center gap-2 ml-1 font-black text-deep-green tabular-nums" suppressHydrationWarning>
+                  <div className="flex items-center gap-1">
+                    <span className="bg-deep-green text-white px-1.5 py-0.5 rounded text-[11px]">{pad(heroCountdown.h)}</span>
+                    <span className="text-[9px] text-foreground/30 font-bold lowercase">h</span>
+                  </div>
+                  <span className="text-foreground/10">:</span>
+                  <div className="flex items-center gap-1">
+                    <span className="bg-deep-green text-white px-1.5 py-0.5 rounded text-[11px]">{pad(heroCountdown.m)}</span>
+                    <span className="text-[9px] text-foreground/30 font-bold lowercase">m</span>
+                  </div>
+                  <span className="text-foreground/10">:</span>
+                  <div className="flex items-center gap-1">
+                    <span className="bg-deep-green text-white px-1.5 py-0.5 rounded text-[11px]">{pad(heroCountdown.s)}</span>
+                    <span className="text-[9px] text-foreground/30 font-bold lowercase">s</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Deal Card */}
+            <div className="bg-white border border-black/5 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+              <div className="flex flex-col md:flex-row">
+                {/* Product Image */}
+                <div className="relative w-full md:w-[280px] h-[200px] md:h-[240px] bg-zinc-50 shrink-0 overflow-hidden group">
+                  {initialFlashDeal.imageUrl ? (
+                    <Image
+                      src={initialFlashDeal.imageUrl}
+                      alt={initialFlashDeal.subtitle || "Flash deal"}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : dealProduct?.img ? (
+                    <Image
+                      src={dealProduct.img}
+                      alt={dealProduct.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-leaf/5 to-deep-green/5 flex items-center justify-center">
+                      <Package className="w-16 h-16 text-leaf/20" />
+                    </div>
+                  )}
+                  {/* Discount Badge */}
+                  {initialFlashDeal.discount && (
+                    <div className="absolute top-4 left-4 bg-amber-500 text-white px-3 py-1.5 rounded-lg font-black text-sm shadow-lg">
+                      {initialFlashDeal.discount}
+                    </div>
+                  )}
+                </div>
+
+                {/* Deal Info */}
+                <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
+                  <p className="text-[10px] font-bold text-leaf uppercase tracking-widest mb-1.5">{dealProduct?.category || "Special Offer"}</p>
+                  <h3 className="text-xl md:text-2xl font-black text-deep-green leading-snug mb-2">
+                    {initialFlashDeal.subtitle}
+                  </h3>
+                  <p className="text-foreground/50 text-xs leading-relaxed mb-4 max-w-sm">
+                    {dealProduct?.desc || "Premium quality, freshly sourced. Grab this exclusive deal before it expires."}
+                  </p>
+
+                  {/* Price */}
+                  {dealProduct && (
+                    <div className="flex items-baseline gap-2 mb-4">
+                      <span className="text-2xl font-black text-deep-green">
+                        {initialFlashDeal.flashPrice ? `₦${Number(initialFlashDeal.flashPrice).toLocaleString()}` : dealProduct.price}
+                      </span>
+                      {initialFlashDeal.flashPrice && (
+                        <span className="text-sm text-foreground/40 line-through">₦{Number(dealProduct.rawPrice).toLocaleString()}</span>
+                      )}
+                      <span className="text-[10px] text-foreground/40 font-bold uppercase tracking-wider">/ {dealProduct.unit}</span>
+                    </div>
+                  )}
+
+                  {/* CTA */}
+                  <div className="flex flex-col gap-1.5 mb-5 max-w-xs">
+                    <div className="flex justify-between items-center text-[9px] font-bold uppercase tracking-widest">
+                      <span className="text-red-600">Sold: {initialFlashDeal.stockSold}</span>
+                      <span className="text-foreground/30">Total: {initialFlashDeal.stockTotal}</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-black/5 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-red-600 rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(220,38,38,0.2)]"
+                        style={{ width: `${Math.min(Math.max((initialFlashDeal.stockSold / (initialFlashDeal.stockTotal || 100)) * 100, 5), 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => {
+                        if (dealProduct) handleOrderConfirm(dealProduct);
+                      }}
+                      className="bg-leaf hover:bg-leaf-dark text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-lg shadow-leaf/15 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-2 group/btn"
+                    >
+                      <ShoppingCart className="w-3.5 h-3.5" />
+                      Add to Cart
+                      <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
+                    </button>
+                    <span className="text-[10px] text-foreground/30 font-medium hidden sm:block">Free delivery in Lagos</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* ===== PRODUCT GRID BY CATEGORY ===== */}
       <section id="shop-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32">
@@ -488,7 +579,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
         <div className="min-h-[400px]">
           <AnimatePresence mode="popLayout">
             {filteredByCategory.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                 {filteredByCategory.map((product, idx) => renderProductCard(product, idx))}
               </div>
             ) : (
@@ -542,7 +633,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
           <div className="min-h-[400px]">
             <AnimatePresence mode="popLayout">
               {filteredByType.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
                   {filteredByType.map((product, idx) => renderProductCard(product, idx))}
                 </div>
               ) : (
@@ -620,7 +711,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1, duration: 0.7 }}
-              className="relative group p-8 sm:p-12 bg-white border border-gray-100 rounded-[3rem] shadow-sm hover:shadow-2xl transition-all duration-700 text-center flex flex-col items-center overflow-hidden"
+              className="relative group p-8 sm:p-12 bg-white border border-gray-100 rounded-[1rem] shadow-sm hover:shadow-2xl transition-all duration-700 text-center flex flex-col items-center overflow-hidden"
             >
               {/* Background Glow */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 rounded-bl-[100px] -z-0" />
@@ -715,160 +806,141 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
       </section>
 
       {/* ===== ABOUT + VALUES ===== */}
-      <section id="about" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Image 
-          <div className="relative order-2 lg:order-1">
-            <div className="aspect-[4/5] relative rounded-3xl overflow-hidden border-4 border-white  shadow-2xl">
-              <Image src="/event.png" alt="Our Farm" fill className="object-cover" />
+      <section id="about" className="bg-gradient-to-b from-leaf/[0.04] via-leaf/[0.06] to-leaf/[0.03] py-24 mb-24 relative overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(#166534_1px,transparent_1px)] [background-size:24px_24px]" />
+        <div className="absolute top-20 left-10 w-80 h-80 bg-leaf/8 rounded-full blur-[120px]" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-leaf/5 rounded-full blur-[100px]" />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Centered Header */}
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <div className="inline-flex items-center gap-2 px-5 py-2 bg-leaf/15 text-leaf border border-leaf/20 rounded-full text-xs font-black uppercase tracking-[0.2em] mb-8">
+              <Shield className="w-3.5 h-3.5" />
+              Our Commitment
             </div>
-            <div className="absolute -bottom-6 -right-6 bg-leaf text-white p-7 rounded-2xl shadow-xl hidden md:block">
-              <p className="text-3xl font-black mb-0.5">3+ Yrs</p>
-              <p className="text-xs font-bold uppercase tracking-widest opacity-80">Premium Supply</p>
-            </div>
-          </div>
-*/}
-          {/* Text */}
-          <div className="order-1 lg:order-2">
-            <h2 className="text-3xl lg:text-4xl font-black text-deep-green  mb-6 leading-tight">
+            <h2 className="text-4xl lg:text-6xl font-black text-deep-green mb-8 leading-[1.05] tracking-tight">
               Quality, Consistency &<br />
               <span className="text-leaf">Customer Satisfaction</span>
             </h2>
-            <p className="text-base text-gray-500  mb-6 leading-relaxed font-medium">
-              We are a trusted catfish supplier committed to quality, consistency, and customer satisfaction. Our fish are raised under controlled conditions with proper feeding, clean water systems, and expert handling to ensure fast growth, high survival rates, and excellent taste.
+            <p className="text-lg text-gray-500 leading-relaxed font-medium max-w-2xl mx-auto">
+              A trusted catfish supplier raising fish under controlled conditions with expert handling, proper feeding, and clean water systems for the highest standards.
             </p>
+          </div>
 
-            <div className="grid sm:grid-cols-2 gap-4 mb-8">
-              {[
-                { title: "Hygienic Bio-Security", sub: "Rigorous disease-control standards.", icon: Shield },
-                { title: "Expert Support", sub: "Professional guidance for farmers.", icon: Users },
-                { title: "Organic Feed Only", sub: "No hormones. No chemicals.", icon: Leaf },
-                { title: "Timely Delivery", sub: "Fast, reliable nationwide logistics.", icon: Truck },
-              ].map(({ title, sub, icon: Icon }) => (
-                <div key={title} className="flex items-start gap-3 p-4 bg-gray-50  rounded-xl border border-gray-100 ">
-                  <div className="w-9 h-9 rounded-xl bg-leaf/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <Icon className="w-4.5 h-4.5 text-leaf" />
+          {/* 4 Feature Pillars */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-16">
+            {[
+              { title: "Hygienic Bio-Security", sub: "Rigorous disease-control standards for every batch.", icon: Shield },
+              { title: "Expert Support", sub: "Professional guidance at every growth stage.", icon: Users },
+              { title: "Organic Feed Only", sub: "Zero hormones or chemicals. Pure nutrition.", icon: Leaf },
+              { title: "Timely Delivery", sub: "Reliable Lagos & Ogun logistics you can count on.", icon: Truck },
+            ].map(({ title, sub, icon: Icon }) => (
+              <motion.div
+                key={title}
+                whileHover={{ y: -6 }}
+                className="group bg-white border border-gray-100 rounded-3xl p-6 lg:p-8 shadow-sm hover:shadow-xl hover:border-leaf/20 transition-all duration-500"
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-leaf/15 border border-leaf/20 flex items-center justify-center group-hover:bg-leaf/25 transition-colors duration-500">
+                    <Icon className="w-5 h-5 text-leaf" />
                   </div>
-                  <div>
-                    <h4 className="font-bold text-gray-800  text-sm mb-0.5">{title}</h4>
-                    <p className="text-xs text-gray-400  font-medium">{sub}</p>
+                </div>
+                <h4 className="font-black text-gray-900 text-base lg:text-lg mb-3 tracking-tight leading-snug">{title}</h4>
+                <p className="text-sm text-gray-400 leading-relaxed font-medium">{sub}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Bottom Bar: Stats + CTA */}
+          <div className="bg-deep-green rounded-3xl p-6 lg:p-4 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-xl">
+            {/* Stats */}
+            <div className="flex items-center gap-6 lg:gap-10 flex-wrap justify-center lg:justify-start">
+              {[
+                { val: "100%", label: "Organic Feed", highlight: true },
+                { val: "24/7", label: "Expert Support" },
+                { val: "48h", label: "Delivery Time" },
+              ].map(({ val, label, highlight }, i) => (
+                <div key={label} className="flex items-center gap-4">
+                  {i > 0 && <div className="w-px h-8 bg-white/15 hidden lg:block" />}
+                  <div className="text-center lg:text-left px-2">
+                    <p className={`text-2xl font-black ${highlight ? 'text-leaf' : 'text-white'} mb-0.5 tracking-tight`}>{val}</p>
+                    <p className="text-[9px] font-bold text-white/35 uppercase tracking-[0.2em]">{label}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <Link href="/category" className="inline-flex items-center gap-2.5 bg-leaf hover:bg-leaf-dark text-white px-7 py-2.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 shadow-lg shadow-leaf/25 active:scale-95 tracking-wide">
-              Shop Our Products <ArrowRight className="w-4 h-4" />
+            <Link
+              href="/category"
+              className="inline-flex items-center gap-3 bg-leaf hover:bg-leaf-dark text-white px-8 py-4 rounded-2xl font-black text-sm transition-all hover:shadow-2xl hover:shadow-leaf/30 hover:-translate-y-0.5 active:scale-95 group shrink-0"
+            >
+              Shop Our Products
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
       </section>
 
       {/* ===== PRICE CATALOGUE ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-        <div className="text-center mb-10">
-          <div className="section-label mx-auto w-fit mb-4">
-            <Tag className="w-3.5 h-3.5" />
-            Pricing
+      {catalogItems.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+            <div className="max-w-2xl">
+              <div className="section-label mb-4">
+                <Tag className="w-3.5 h-3.5" />
+                Price Guide
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-black text-deep-green tracking-tight leading-tight">
+                Transparent & <br />
+                <span className="text-leaf">Competitive Pricing</span>
+              </h2>
+              <p className="text-gray-500 mt-4 text-lg font-medium leading-relaxed">
+                We provide honest market rates for our premium stock. No hidden fees, just pure value for your investment.
+              </p>
+            </div>
+            <div className="hidden lg:block shrink-0 pb-2">
+              <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                <div className="px-6 py-4 text-center">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Updated</p>
+                  <p className="text-sm font-black text-deep-green">Daily 8:00 AM</p>
+                </div>
+                <div className="w-px h-8 bg-gray-200" />
+                <div className="px-6 py-4 text-center">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                  <div className="flex items-center gap-2 justify-center">
+                    <div className="w-2 h-2 rounded-full bg-leaf animate-pulse" />
+                    <p className="text-sm font-black text-leaf">Live Catalog</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <h2 className="text-3xl md:text-4xl font-black text-deep-green  tracking-tight">Transparent Pricing</h2>
-          <p className="text-gray-500  mt-3 text-base font-medium max-w-xl mx-auto">
-            Competitive, honest pricing for all our premium catfish categories.
-          </p>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[
-            {
-              name: "Fingerlings",
-              range: "₦80 – ₦150",
-              unit: "piece",
-              desc: "Healthy start for commercial farming.",
-              img: "/assets/bgImages/fingerlings.png",
-              id: "fingerlings",
-              badge: "Farming"
-            },
-            {
-              name: "Juvenile Catfish",
-              range: "₦300 – ₦700",
-              unit: "piece",
-              desc: "Fast growth and high feed response.",
-              img: "/assets/bgImages/juveniles.png",
-              id: "juveniles",
-              badge: "Farming"
-            },
-            {
-              name: "Broodstock",
-              range: "₦4,000 – ₦10,000",
-              unit: "fish",
-              desc: "Elite genetics for professional hatcheries.",
-              img: "/assets/bgImages/broodstock.png",
-              id: "broodstock",
-              badge: "Breeding"
-            },
-            {
-              name: "Fresh Table-Size",
-              range: "₦1,500 – ₦3,500",
-              unit: "kg",
-              desc: "Hygienically handled for home & retail.",
-              img: "/assets/bgImages/tablesize.png",
-              id: "table-size",
-              badge: "Consumption"
-            },
-            {
-              name: "Smoked Catfish",
-              range: "₦4,000 – ₦8,000",
-              unit: "kg",
-              desc: "Premium flavor with long shelf life.",
-              img: "/assets/bgImages/smoked.png",
-              id: "smoked",
-              badge: "Premium"
-            },
-          ].map((item, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="group bg-white border border-gray-100 hover:border-amber-500/30 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col items-center text-center overflow-hidden relative"
-            >
-              {/* Image Circle */}
-              <div className="relative w-28 h-28 mb-6">
-                <div className="absolute inset-0 bg-leaf/5 rounded-full scale-110 group-hover:scale-125 transition-transform duration-700" />
-                <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-white shadow-lg overflow-hidden">
-                  <Image src={item.img} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-                </div>
-                {/* Badge */}
-                <span className="absolute -top-1 -right-1 text-[8px] font-black uppercase tracking-widest text-white bg-deep-green px-2 py-1 rounded-full shadow-md z-20">
-                  {item.badge}
-                </span>
-              </div>
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+            {catalogItems.map((item, idx) => {
+              const accentClasses = "bg-leaf/5 border-leaf/10 text-leaf";
 
-              <div className="flex-grow">
-                <h3 className="text-xl font-black text-gray-900 tracking-tight mb-2 group-hover:text-amber-500 transition-colors">{item.name}</h3>
-                <p className="text-xs font-semibold text-gray-400 mb-4 line-clamp-2">{item.desc}</p>
-              </div>
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className={`group relative bg-white border border-gray-100 p-0 rounded-[1rem] md:rounded-[1rem] shadow-sm hover:shadow-2xl transition-all duration-700 overflow-hidden cursor-pointer`}
 
-              <div className="w-full pt-4 border-t border-gray-50 mt-auto">
-                <div className="mb-4">
-                  <p className="text-[10px] uppercase font-black text-gray-400 tracking-[0.2em] mb-1">Standard Range</p>
-                  <p className="text-2xl font-black text-leaf tracking-tight">
-                    {item.range}
-                    <span className="text-[10px] font-bold text-gray-400 ml-1">/ {item.unit}</span>
-                  </p>
-                </div>
-                <button
-                  onClick={() => {
+                  
+                 /* onClick={() => {
                     const product = products.find(p => p.id === item.id) || {
                       id: item.id,
                       name: item.name,
-                      desc: item.desc,
-                      img: item.img,
+                      desc: item.description || "",
+                      img: item.imageUrl || "",
                       price: "",
                       originalPrice: "",
                       unit: item.unit,
-                      category: item.badge,
+                      category: "Pricing",
                       tags: [],
                       rating: 5,
                       reviews: 0,
@@ -878,17 +950,56 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
                       rawPriceRange: null
                     };
                     handleOrderConfirm(product);
-                  }}
-                  className="w-full bg-gray-50 hover:bg-amber-500 text-gray-700 hover:text-white py-3 rounded-2xl font-black text-xs transition-all flex items-center justify-center gap-2 border border-gray-100 hover:border-amber-500 hover:shadow-lg hover:shadow-amber-500/20 active:scale-95 group/btn"
+                  }}*/
                 >
-                  <ShoppingCart className="w-3.5 h-3.5" />
-                  Order Now
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+                  
+                  {/* Image Section */}
+                  {item.imageUrl ? (
+                    <div className="relative h-32 md:h-48 w-full overflow-hidden">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                    </div>
+                  ) : (
+                    <div className="px-6 md:px-10 pt-6 md:pt-10">
+                      <div className={`w-12 h-12 md:w-16 md:h-16 rounded-xl ${accentClasses} border flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}>
+                        <Tag className="w-6 h-6 md:w-8 md:h-8" />
+                      </div>
+                    </div>
+                  )}
+
+
+                  <div className="px-6 md:px-10 pb-6 md:pb-10 pt-3 md:pt-3 relative z-10">
+                    <h3 className="text-lg md:text-2xl font-black text-gray-900 tracking-tight">{item.name}</h3>
+                    <p className="text-[10px] md:text-sm font-medium text-gray-400 leading-relaxed line-clamp-2">{item.description}</p>
+
+
+                    <div className="pt-4 md:pt-8 border-t border-gray-50">
+                      <p className="text-[8px] md:text-[10px] uppercase font-black text-gray-400 tracking-[0.2em] md:tracking-[0.25em] mb-1 md:mb-3">Price Range</p>
+                      <div className="flex flex-wrap items-baseline gap-1">
+                        <span className="text-sm md:text-xl font-black text-deep-green tracking-tighter">{item.priceRange}</span>
+                        <span className="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">/ {item.unit}</span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* Hover Backdrop decoration (only if no image) */}
+                  {!item.imageUrl && (
+                    <div className={`absolute top-0 right-0 w-32 h-32 ${accentClasses} rounded-bl-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-0`} />
+                  )}
+
+
+                </motion.div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* ===== WHY CHOOSE US ===== */}
       <section className="bg-deep-green py-20 mb-20 relative overflow-hidden">
@@ -905,7 +1016,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
             {[
               { title: "Healthy & Disease-Free", desc: "Strict bio-security controls ensure robust health and zero disease in every batch.", icon: Shield },
               { title: "Consistent Quality", desc: "Guaranteed uniform sizes and excellent feeding response across all categories.", icon: CheckCircle },
-              { title: "Reliable Supply", desc: "Consistent supply and timely nationwide delivery to your farm or home.", icon: Truck },
+              { title: "Reliable Supply", desc: "Consistent supply and timely delivery within Lagos & Ogun to your farm or home.", icon: Truck },
               { title: "Competitive Pricing", desc: "Premium quality at the most competitive prices for maximum value.", icon: Tag },
               { title: "Hygienic Processing", desc: "Professional packaging for both live and smoked catfish products.", icon: Leaf },
               { title: "Expert Support", desc: "Technical guidance and professional support for maximum yield and success.", icon: Users },
@@ -937,7 +1048,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
             { step: "01", title: "Browse & Select", desc: "Choose from Fingerlings, Juveniles, Table-size, Smoked, or Broodstock.", icon: Search },
             { step: "02", title: "Place Your Order", desc: "Order online or WhatsApp us at 09093009400 for bulk inquiries.", icon: ShoppingCart },
             { step: "03", title: "We Prepare It", desc: "Your order is carefully packaged with hygiene and precision.", icon: Package },
-            { step: "04", title: "Fast Delivery", desc: "Nationwide express delivery or farm pickup — your choice.", icon: Truck },
+            { step: "04", title: "Fast Delivery", desc: "Lagos & Ogun express delivery or farm pickup — your choice.", icon: Truck },
           ].map((item, idx) => (
             <div key={idx} className="relative">
               {idx < 3 && (
@@ -962,50 +1073,41 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-        <div className="text-center mb-12">
-          <div className="section-label mx-auto w-fit mb-4">
-            <Star className="w-3.5 h-3.5 fill-current" />
-            Reviews
-          </div>
-          <h2 className="text-3xl md:text-4xl font-black text-deep-green  tracking-tight">What Our Customers Say</h2>
-          <div className="flex items-center justify-center gap-2 mt-4">
-            <div className="flex items-center gap-0.5">
-              {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />)}
+      {initialTestimonials.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+          <div className="text-center mb-12">
+            <div className="section-label mx-auto w-fit mb-4">
+              <MessageSquare className="w-3.5 h-3.5" />
+              Reviews
             </div>
-            <span className="font-black text-gray-800  text-lg">4.9 / 5</span>
-            <span className="text-sm text-gray-400 font-medium">— 500+ verified buyers</span>
+            <h2 className="text-3xl md:text-4xl font-black text-deep-green tracking-tight">What Our Customers Say</h2>
           </div>
-        </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {testimonials.map((t, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="bg-white  border border-gray-100  rounded-2xl p-7 shadow-sm hover:shadow-md hover:border-leaf/20 transition-all"
-            >
-              <div className="flex items-center gap-0.5 mb-5">
-                {[...Array(t.rating)].map((_, i) => <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />)}
-              </div>
-              <p className="text-gray-600  text-sm leading-relaxed font-medium mb-6 italic">"{t.review}"</p>
-              <div className="flex items-center gap-3 pt-5 border-t border-gray-50 ">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-leaf to-deep-green flex items-center justify-center text-white text-xs font-black shrink-0">
-                  {t.initials}
+          <div className="grid md:grid-cols-3 gap-6">
+            {initialTestimonials.map((t, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="bg-white border border-gray-100 rounded-2xl p-7 shadow-sm hover:shadow-md hover:border-leaf/20 transition-all"
+              >
+                <p className="text-gray-600 text-sm leading-relaxed font-medium mb-6 italic">"{t.review}"</p>
+                <div className="flex items-center gap-3 pt-5 border-t border-gray-50">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-leaf to-deep-green flex items-center justify-center text-white text-xs font-black shrink-0">
+                    {t.initials || (t.name?.split(' ').map((n: any) => n[0]).join('') || 'U')}
+                  </div>
+                  <div>
+                    <p className="font-bold text-gray-800 text-sm">{t.name}</p>
+                    <p className="text-xs text-gray-400 font-medium">{t.role}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-bold text-gray-800  text-sm">{t.name}</p>
-                  <p className="text-xs text-gray-400  font-medium">{t.role}</p>
-                </div>
-                <CheckCircle className="w-5 h-5 text-leaf ml-auto shrink-0" />
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ===== SERVING FARMERS & FAMILIES ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
@@ -1268,7 +1370,7 @@ export default function HomeClient({ initialProducts }: { initialProducts: Produ
             <div className="mt-12 flex flex-wrap justify-center gap-10 text-white/60 font-bold text-sm">
               <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> 09093009400</span>
               <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Ogun State & Lagos</span>
-              <span className="flex items-center gap-2"><Truck className="w-4 h-4" /> Nationwide Delivery</span>
+              <span className="flex items-center gap-2"><Truck className="w-4 h-4" /> Lagos & Ogun Delivery</span>
             </div>
           </div>
         </div>

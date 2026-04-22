@@ -158,7 +158,7 @@ export default function CategoryListingPage() {
                         },
                         {
                             title: "Fast Logistics",
-                            desc: "Nationwide delivery within 24-48 hours via climate-controlled vans.",
+                            desc: "Nationwide delivery available",
                             icon: TrendingUp
                         },
                         {

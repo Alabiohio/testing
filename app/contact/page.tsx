@@ -114,10 +114,7 @@ export default function ContactPage() {
                                         Nigeria.
                                     </p>
                                 </div>
-                            </div>
-                            <button className="w-full bg-white  border border-earth/10  text-deep-green  py-5 rounded-2xl font-black uppercase tracking-[0.2em] hover:bg-leaf hover:text-white transition-all">
-                                GET DIRECTIONS ON GOOGLE MAPS
-                            </button>
+                            </div>                
                         </div>
                     </div>
 
@@ -142,12 +139,9 @@ export default function ContactPage() {
                     </motion.div>
                 </div>
 
-                {/* FAQ Section */}
+                {/* FAQ Section 
                 <section className="mt-32">
                     <div className="text-center mb-16">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-leaf/10 text-leaf rounded-full text-sm font-bold mb-6 uppercase tracking-widest">
-                            Help Center
-                        </div>
                         <h2 className="text-4xl lg:text-5xl font-black text-deep-green  mb-6 tracking-tight">Frequently Asked Questions</h2>
                     </div>
 
@@ -155,7 +149,7 @@ export default function ContactPage() {
                         {[
                             {
                                 q: "Do you deliver nationwide?",
-                                a: "Yes, we deliver across all states in Nigeria using climate-controlled transport to ensure our live fish arrive healthy and vibrant."
+                                a: "Yes We currently provide reliable delivery services within Nationwide, using optimized transport to ensure our fish arrive healthy and vibrant."
                             },
                             {
                                 q: "What are your minimum order quantities?",
@@ -188,7 +182,7 @@ export default function ContactPage() {
                             </motion.div>
                         ))}
                     </div>
-                </section>
+                </section>*/}
             </div>
         </div>
     );

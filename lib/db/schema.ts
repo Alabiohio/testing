@@ -57,3 +57,57 @@ export const contacts = pgTable("contacts", {
 });
 
 export type Contact = typeof contacts.$inferSelect;
+
+export const flashDeals = pgTable("flash_deals", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  subtitle: text("subtitle"),
+  discount: text("discount"),
+  productId: uuid("product_id").references(() => products.id),
+  isActive: boolean("is_active").notNull().default(true),
+  isHero: boolean("is_hero").notNull().default(false),
+  imageUrl: text("image_url"),
+  endTime: timestamp("end_time", { mode: "date" }).notNull(),
+  stockTotal: integer("stock_total").notNull().default(100),
+  stockSold: integer("stock_sold").notNull().default(0),
+  flashPrice: text("flash_price"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const flashSaleSettings = pgTable("flash_sale_settings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  endTime: timestamp("end_time", { mode: "date" }).notNull(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const testimonials = pgTable("testimonials", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 255 }).notNull(),
+  role: varchar("role", { length: 255 }),
+  initials: varchar("initials", { length: 10 }),
+  review: text("review").notNull(),
+  rating: integer("rating").notNull().default(5),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type Testimonial = typeof testimonials.$inferSelect;
+
+export const priceCatalog = pgTable("price_catalog", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: text("name").notNull(),
+  description: text("description"),
+  priceRange: text("price_range").notNull(),
+  unit: text("unit").notNull(),
+  imageUrl: text("image_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+
+
+export type PriceCatalogItem = typeof priceCatalog.$inferSelect;
+
+

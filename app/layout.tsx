@@ -51,6 +51,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { SavedProvider } from "@/lib/saved-context";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -62,11 +64,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <CartProvider>
-          <Navbar />
-          <main>
-            {children}
-          </main>
-          <Footer />
+          <SavedProvider>
+            <Navbar />
+            <main>
+              {children}
+            </main>
+            <Footer />
+          </SavedProvider>
         </CartProvider>
       </body>
     </html>

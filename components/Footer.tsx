@@ -76,17 +76,6 @@ const Footer = () => {
                             Nigeria's trusted catfish supplier. From fingerlings to smoked catfish — premium quality, every time.
                         </p>
 
-                        {/* Ratings */}
-                        <div className="flex items-center gap-2.5 bg-white/5 border border-white/8 rounded-xl px-4 py-3 w-fit">
-                            <div className="flex items-center gap-0.5">
-                                {[...Array(5)].map((_, i) => <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />)}
-                            </div>
-                            <div>
-                                <p className="text-white font-black text-sm leading-none">4.9/5</p>
-                                <p className="text-white/40 text-[10px] font-medium mt-0.5">500+ reviews</p>
-                            </div>
-                        </div>
-
                         {/* Socials */}
                         <div className="flex gap-3">
                             {[
@@ -213,7 +202,6 @@ const Footer = () => {
                     {[
                         { icon: Shield, text: "Secure Ordering" },
                         { icon: Truck, text: "Nationwide Delivery" },
-                        { icon: Star, text: "4.9/5 Rating" },
                     ].map(({ icon: Icon, text }) => (
                         <div key={text} className="flex items-center gap-2 text-white/30 text-xs font-bold uppercase tracking-widest">
                             <Icon className="w-4 h-4 text-leaf" />

@@ -242,7 +242,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
 
                                 <div className="space-y-6">
                                     <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Select Main Category</label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                         {Object.entries(categoryGroups).map(([id, group]: [string, CategoryGroup]) => (
                                             <button
                                                 key={id}

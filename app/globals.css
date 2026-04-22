@@ -15,7 +15,7 @@
 }
 
 :root {
-  --background: #f9f9f9;
+  --background: #f9fcf6;
   --foreground: #0f172a;
   --primary: #22c55e;
   --primary-deep: #14532d;
@@ -99,7 +99,7 @@ nav.scrolled {
   transition: all 0.3s ease;
 }
 .product-card-glow:hover {
-  box-shadow: 0 0 0 2px #22c55e40, 0 20px 60px -10px rgba(34,197,94,0.2);
+  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.1);
   transform: translateY(-4px);
 }
 

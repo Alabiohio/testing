@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Search, ShoppingCart, ChevronDown, ArrowRight, Truck, ShieldCheck, RefreshCcw, Headphones } from 'lucide-react';
+import { Menu, X, Search, ShoppingCart, ArrowRight, Truck, ShieldCheck, RefreshCcw, Headphones } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlobalSearch from './GlobalSearch';
 import { usePathname } from 'next/navigation';
@@ -11,15 +11,10 @@ import { usePathname } from 'next/navigation';
 const Navbar = () => {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
-    const [isScrolled, setIsScrolled] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [showSearchButton, setShowSearchButton] = useState(false);
-    const [lastScrollY, setLastScrollY] = useState(0);
     const [promoVisible, setPromoVisible] = useState(true);
     const [cartCount] = useState(0);
     const headerRef = useRef<HTMLElement | null>(null);
-
-    const isHome = pathname === '/';
 
     // Body scroll lock
     useEffect(() => {
@@ -43,26 +38,6 @@ const Navbar = () => {
     ];
 
     useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            if (currentScrollY > 50) {
-                setIsScrolled(true);
-            } else {
-                setIsScrolled(false);
-            }
-            if (!isHome) {
-                setShowSearchButton(true);
-            } else if (currentScrollY > 150) {
-                setShowSearchButton(true);
-            } else {
-                setShowSearchButton(false);
-            }
-            setLastScrollY(currentScrollY);
-        };
-
-        handleScroll();
-        window.addEventListener('scroll', handleScroll, { passive: true });
-
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
@@ -75,11 +50,10 @@ const Navbar = () => {
         window.addEventListener('open-global-search', handleOpenSearch);
 
         return () => {
-            window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('open-global-search', handleOpenSearch);
         };
-    }, [isHome, lastScrollY]);
+    }, []);
 
     return (
         <>
@@ -91,15 +65,14 @@ const Navbar = () => {
                         exit={{ height: 0, opacity: 0 }}
                         className="promo-bar relative z-[105] overflow-hidden"
                     >
-                        {/* Ticker Content... */}
                         <div className="ticker-wrap py-2.5">
                             <div className="ticker-content">
-                                {['🎉 FREE delivery on orders above ₦50,000', '🐟 Fresh harvest every Monday & Thursday', '⭐ Trusted by 500+ farmers across Nigeria', '📦 Bulk order discounts available — Call 09093009400', '🚚 Nationwide delivery within 48 hours', '🌿 100% organic feed — no hormones, no preservatives'].map((msg, i) => (
+                                {['📦 Bulk order discounts available — Call 09093009400', '🚚 Nationwide delivery available', '🌿 100% organic feed — no hormones, no preservatives'].map((msg, i) => (
                                     <span key={i} className="inline-flex items-center text-white font-bold text-sm px-12 opacity-95">
                                         {msg}
                                     </span>
                                 ))}
-                                {['🎉 FREE delivery on orders above ₦50,000', '🐟 Fresh harvest every Monday & Thursday', '⭐ Trusted by 500+ farmers across Nigeria', '📦 Bulk order discounts available — Call 09093009400', '🚚 Nationwide delivery within 48 hours', '🌿 100% organic feed — no hormones, no preservatives'].map((msg, i) => (
+                                {['📦 Bulk order discounts available — Call 09093009400', '🚚 Nationwide delivery available', '🌿 100% organic feed — no hormones, no preservatives'].map((msg, i) => (
                                     <span key={`r-${i}`} className="inline-flex items-center text-white font-bold text-sm px-12 opacity-95">
                                         {msg}
                                     </span>
@@ -117,9 +90,9 @@ const Navbar = () => {
                 )}
             </AnimatePresence>
 
-            {/* Main Navbar - Now Sticky on its own */}
+            {/* Main Navbar - Statically Sticky */}
             <nav
-                className={`sticky top-0 z-[100] w-full transition-all duration-300 ${isScrolled ? 'scrolled bg-white' : 'bg-white/80 backdrop-blur-md'}`}
+                className="sticky top-0 z-[100] w-full transition-all duration-300 bg-white/95 backdrop-blur-xl shadow-md border-b border-gray-200"
                 ref={headerRef}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,24 +144,16 @@ const Navbar = () => {
                         {/* Right Actions */}
                         <div className="flex items-center gap-3">
                             {/* Search */}
-                            <AnimatePresence>
-                                {showSearchButton && (
-                                    <motion.button
-                                        initial={{ opacity: 0, scale: 0.8 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        exit={{ opacity: 0, scale: 0.8 }}
-                                        onClick={() => setIsSearchOpen(true)}
-                                        className={`hidden md:flex items-center gap-2 px-3 py-2 rounded-xl border transition-all text-sm font-medium ${isScrolled
-                                            ? 'bg-gray-100 border-gray-200 text-gray-500 hover:border-leaf/30 hover:text-leaf'
-                                            : 'bg-black/5 border-white/20 text-gray-600 hover:border-white/30'
-                                            }`}
-                                    >
-                                        <Search className="w-4 h-4" />
-                                        <span className="text-xs opacity-60 hidden lg:block">Search</span>
-                                        <span className="text-[10px] font-black opacity-30 bg-foreground/5 px-1.5 py-0.5 rounded-md hidden lg:block">⌘K</span>
-                                    </motion.button>
-                                )}
-                            </AnimatePresence>
+                            <motion.button
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                onClick={() => setIsSearchOpen(true)}
+                                className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 hover:border-leaf/30 hover:text-leaf transition-all text-sm font-medium"
+                            >
+                                <Search className="w-4 h-4" />
+                                <span className="text-xs opacity-60 hidden lg:block">Search</span>
+                                <span className="text-[10px] font-black opacity-30 bg-foreground/5 px-1.5 py-0.5 rounded-md hidden lg:block">⌘K</span>
+                            </motion.button>
 
                             {/* Cart Icon */}
                             <Link
@@ -215,26 +180,17 @@ const Navbar = () => {
 
                             {/* Mobile Controls */}
                             <div className="md:hidden flex items-center gap-2">
-                                <AnimatePresence>
-                                    {showSearchButton && (
-                                        <motion.button
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.8 }}
-                                            onClick={() => setIsSearchOpen(true)}
-                                            className={`p-2.5 rounded-xl transition-all active:scale-90 ${isScrolled
-                                                ? 'bg-gray-100 text-gray-600'
-                                                : 'bg-black/5 text-gray-600'}`}
-                                        >
-                                            <Search className="w-5 h-5" />
-                                        </motion.button>
-                                    )}
-                                </AnimatePresence>
+                                <motion.button
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    onClick={() => setIsSearchOpen(true)}
+                                    className="p-2.5 rounded-xl bg-gray-100 text-gray-600 active:scale-90 transition-all"
+                                >
+                                    <Search className="w-5 h-5" />
+                                </motion.button>
                                 <button
                                     onClick={() => setIsOpen(!isOpen)}
-                                    className={`p-2.5 rounded-xl transition-all active:scale-90 ${isScrolled
-                                        ? 'bg-gray-100 text-gray-700'
-                                        : 'bg-black/5 text-gray-700'}`}
+                                    className="p-2.5 rounded-xl bg-gray-100 text-gray-700 active:scale-90 transition-all"
                                     aria-label="Toggle menu"
                                 >
                                     {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -243,32 +199,6 @@ const Navbar = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* Trust Bar — only when scrolled */}
-                <AnimatePresence>
-                    {isScrolled && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="trust-strip hidden lg:block overflow-hidden"
-                        >
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-center gap-12">
-                                {[
-                                    { icon: Truck, text: 'Free Delivery on ₦50k+' },
-                                    { icon: ShieldCheck, text: '100% Organic & Disease-Free' },
-                                    { icon: RefreshCcw, text: 'Quality Guarantee' },
-                                    { icon: Headphones, text: '24/7 Farmer Support' },
-                                ].map(({ icon: Icon, text }) => (
-                                    <div key={text} className="flex items-center gap-2 text-xs font-bold text-deep-green opacity-80">
-                                        <Icon className="w-3.5 h-3.5 text-leaf" />
-                                        {text}
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
             </nav>
 
             {/* Mobile Menu Side Drawer */}
@@ -399,4 +329,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

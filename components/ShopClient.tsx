@@ -286,7 +286,7 @@ const ShopClient = ({ products }: ShopClientProps) => {
                                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                                 transition={{ duration: 0.4, delay: idx * 0.05 }}
                                 key={product.id}
-                                className="group bg-white rounded-[2.5rem] overflow-hidden border border-earth/5 shadow-sm hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
+                                className="group bg-white rounded-[1rem] overflow-hidden border border-earth/5 shadow-sm hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
                             >
                                 <div className="relative aspect-[5/4] bg-earth/5 overflow-hidden">
                                     <Image
@@ -326,7 +326,6 @@ const ShopClient = ({ products }: ShopClientProps) => {
 
                                     <div className="flex items-center justify-between pt-4 sm:pt-8 border-t border-earth/5">
                                         <div>
-                                            <p className="text-[8px] sm:text-[10px] font-black text-foreground/20 uppercase tracking-[0.2em] leading-none mb-1 sm:mb-2">Investment</p>
                                             <p className="text-lg sm:text-2xl font-black text-deep-green tracking-tight">
                                                 {product.price ? `₦${product.price.toLocaleString()}` : (product.price_range || "Contact")}
                                                 <span className="text-[10px] sm:text-xs font-bold text-foreground/20 ml-1">/{product.unit}</span>

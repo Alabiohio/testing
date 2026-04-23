@@ -9,6 +9,7 @@ import { useCart } from "@/lib/cart-context";
 
 export default function CartPage() {
     const { items, updateQuantity, removeItem, totalPrice } = useCart();
+    const hasUndeterminedPrice = items.some(i => i.category === "Partner Ad" && !i.price);
 
     return (
         <div className="min-h-screen bg-background pt-32 pb-24 relative">
@@ -70,30 +71,44 @@ export default function CartPage() {
                                                     <Trash2 className="w-5 h-5" />
                                                 </button>
                                             </div>
-                                            <p className="text-xs font-bold uppercase tracking-widest text-leaf mb-3">{item.category}</p>
+                                            {item.category !== "Partner Ad" && (
+                                                <p className="text-xs font-bold uppercase tracking-widest text-leaf mb-3">{item.category}</p>
+                                            )}
 
                                             <div className="flex flex-wrap items-center gap-4 justify-between">
                                                 <div className="text-lg font-black text-gray-900">
-                                                    {item.price ? `₦${item.price.toLocaleString()}` : (item.price_range || "Contact for price")}
-                                                    <span className="text-xs text-gray-400 font-medium ml-1">/{item.unit}</span>
+                                                    {item.price ? (
+                                                        typeof item.price === 'number' ? `₦${item.price.toLocaleString()}` : item.price
+                                                    ) : (
+                                                        item.category === "Partner Ad" ? 
+                                                        <span className="text-sm text-leaf/80 font-bold">Price will be communicated via email or phone</span> : 
+                                                        (item.price_range || "Contact for price")
+                                                    )}
+                                                    {(!(item.category === "Partner Ad" && !item.price)) && (
+                                                        <span className="text-xs text-gray-400 font-medium ml-1">/{item.unit}</span>
+                                                    )}
                                                 </div>
 
                                                 {/* Quantity Selector */}
-                                                <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1 border border-gray-100">
-                                                    <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                        className="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center hover:border-amber-500 text-gray-600 hover:text-amber-600 transition-colors"
-                                                    >
-                                                        <Minus className="w-4 h-4" />
-                                                    </button>
-                                                    <span className="w-8 text-center font-bold text-gray-900">{item.quantity}</span>
-                                                    <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                        className="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center hover:border-leaf text-gray-600 hover:text-leaf transition-colors"
-                                                    >
-                                                        <Plus className="w-4 h-4" />
-                                                    </button>
-                                                </div>
+                                                {(!(item.category === "Partner Ad" && !item.price)) ? (
+                                                    <div className="flex items-center gap-3 bg-gray-50 rounded-lg p-1 border border-gray-100">
+                                                        <button
+                                                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                            className="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center hover:border-amber-500 text-gray-600 hover:text-amber-600 transition-colors"
+                                                        >
+                                                            <Minus className="w-4 h-4" />
+                                                        </button>
+                                                        <span className="w-8 text-center font-bold text-gray-900">{item.quantity}</span>
+                                                        <button
+                                                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                            className="w-8 h-8 rounded-md bg-white border border-gray-200 flex items-center justify-center hover:border-leaf text-gray-600 hover:text-leaf transition-colors"
+                                                        >
+                                                            <Plus className="w-4 h-4" />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-[10px] font-black text-leaf/50 uppercase tracking-[0.2em]">Quantity Pending Quote</div>
+                                                )}
                                             </div>
                                         </div>
                                     </motion.div>
@@ -108,7 +123,7 @@ export default function CartPage() {
                             <div className="space-y-4 mb-6 text-sm font-medium text-gray-600">
                                 <div className="flex items-center justify-between">
                                     <span>Subtotal</span>
-                                    <span className="font-bold text-gray-900">₦{totalPrice.toLocaleString()}</span>
+                                    <span className="font-bold text-gray-900">{hasUndeterminedPrice ? "Quote Pending" : `₦${totalPrice.toLocaleString()}`}</span>
                                 </div>
                                 <div className="flex items-center justify-between pb-4 border-b border-gray-100">
                                     <span>Shipping</span>
@@ -116,7 +131,7 @@ export default function CartPage() {
                                 </div>
                                 <div className="flex items-center justify-between text-lg">
                                     <span className="font-black text-deep-green">Estimated Total</span>
-                                    <span className="font-black text-amber-500">₦{totalPrice.toLocaleString()}</span>
+                                    <span className="font-black text-amber-500">{hasUndeterminedPrice ? "Price to be sent" : `₦${totalPrice.toLocaleString()}`}</span>
                                 </div>
                             </div>
 

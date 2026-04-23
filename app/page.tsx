@@ -166,6 +166,9 @@ export default async function Home() {
     console.error("Failed to fetch price catalog:", error);
   }
 
+  const { getActivePartnerAds } = await import("@/app/actions/partner-ads");
+  const initialPartnerAds = await getActivePartnerAds();
+
   return <HomeClient 
     initialProducts={mappedProducts} 
     initialFlashDeal={initialFlashDeal as any} 
@@ -173,6 +176,7 @@ export default async function Home() {
     globalSettings={globalSettings}
     initialTestimonials={initialTestimonials}
     initialPriceCatalog={initialPriceCatalog}
+    initialPartnerAds={initialPartnerAds}
   />;
 }
 

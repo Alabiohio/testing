@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, ArrowRight, MessageCircle, Shield, Truck, Star, ChevronRight } from 'lucide-react';
+import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, MessageCircle, Shield, Truck, ChevronRight, ArrowUpRight, ArrowRight } from 'lucide-react';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
@@ -31,53 +31,94 @@ const Footer = () => {
     };
 
     return (
-        <footer className="bg-[#050e05] border-t border-white/5 pt-16 pb-0">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <footer className="relative bg-[#111827] overflow-hidden">
 
-                {/* Top CTA Bar */}
-                <div className="bg-leaf/10 border border-leaf/20 rounded-2xl p-6 md:p-8 mb-16 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div>
-                        <h3 className="text-white font-black text-xl mb-1">Need help choosing?</h3>
-                        <p className="text-white/50 text-sm font-medium">Our catfish experts are available 7 days a week.</p>
+            {/* Subtle top green gradient accent */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] blur-md bg-[#22c55e]/30" />
+
+            <div className="relative z-10 flex justify-center items-center gap-6 bg-white/90 py-6 border-b border-black/10 shadow-sm">
+                <span className="text-black text-[11px] font-bold uppercase tracking-[0.3em] whitespace-nowrap">Official Partner</span>
+                <div className="h-px w-10 bg-black/40" />
+                <div className="inline-flex flex-col items-end opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm">
+                    <div className="relative flex justify-center items-center w-56">
+                        <Image
+                            src="/assets/images/techgrowTrans.png"
+                            alt="Techgrow Farms Logo"
+                            width={240}
+                            height={240}
+                            className="object-contain w-full h-auto"
+                        />
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-                        <a
-                            href="tel:+2349093009400"
-                            className="flex items-center gap-2.5 bg-white/10 hover:bg-white/15 text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all border border-white/10 whitespace-nowrap"
-                        >
-                            <Phone className="w-4 h-4 text-leaf" />
-                            Call Us
-                        </a>
-                        <a
-                            href="https://wa.me/2349093009400"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2.5 bg-leaf hover:bg-leaf-dark text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-lg shadow-leaf/25 whitespace-nowrap"
-                        >
-                            <MessageCircle className="w-4 h-4" />
-                            WhatsApp
-                        </a>
+                    <span className="text-black/60 text-[9px] font-bold tracking-widest uppercase mt-0.5 pr-1">
+                        RC: 8103767
+                    </span>
+                </div>
+            </div>
+
+            {/* Faint radial glow */}
+            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_20%_0%,rgba(34,197,94,0.06),transparent_55%)]" />
+
+            {/* === CTA Banner === */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-0">
+                <div className="relative rounded-2xl overflow-hidden mb-16 border border-white/8">
+                    {/* Card bg */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#22c55e]/10 via-[#22c55e]/5 to-transparent" />
+                    <div className="absolute inset-0 bg-[#161f2c]/60 backdrop-blur-sm" />
+
+                    <div className="relative px-8 py-7 flex flex-col sm:flex-row items-center justify-between gap-5">
+                        <div>
+                            <p className="text-[#22c55e] text-xs font-semibold uppercase tracking-widest mb-1">Expert Support</p>
+                            <h3 className="text-white font-bold text-lg leading-snug">Need help choosing the right product?</h3>
+                            <p className="text-white/45 text-sm mt-0.5">Our catfish experts are available 7 days a week.</p>
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                            <a
+                                href="tel:+2349093009400"
+                                className="flex items-center gap-2 bg-white/8 hover:bg-white/12 border border-white/10 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 whitespace-nowrap"
+                            >
+                                <Phone className="w-4 h-4 text-[#22c55e]" />
+                                Call Us
+                            </a>
+                            <a
+                                href="https://wa.me/2349093009400"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 bg-[#22c55e] hover:bg-[#16a34a] text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shadow-lg shadow-[#22c55e]/20 whitespace-nowrap"
+                            >
+                                <MessageCircle className="w-4 h-4" />
+                                WhatsApp
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                {/* Main Footer Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-14">
-                    {/* Brand Column */}
-                    <div className="col-span-2 md:col-span-1 space-y-6">
-                        <Link href="/" className="inline-block relative w-44 h-44">
-                            <Image
-                                src="/ccbLg.png"
-                                alt="CCB Farms Logo"
-                                fill
-                                className="object-contain"
-                            />
-                        </Link>
-                        <p className="text-white/40 text-sm leading-relaxed font-medium max-w-xs">
-                            Nigeria's trusted catfish supplier. From fingerlings to smoked catfish — premium quality, every time.
-                        </p>
+                {/* === Main Grid === */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 pb-14 border-b border-white/[0.06]">
 
-                        {/* Socials */}
-                        <div className="flex gap-3">
+                    {/* Brand */}
+                    <div className="col-span-2 md:col-span-1 space-y-5">
+                        <div className="inline-flex flex-col items-end w-36 -ml-2">
+                            <Link href="/" className="relative w-full">
+                                <div className="relative w-32 h-auto flex items-center justify-center overflow-hidden">
+                                    <Image
+                                        src="/ccbLg.png"
+                                        alt="CCB Farms Logo"
+                                        width={128}
+                                        height={128}
+                                        className="object-contain"
+                                    />
+                                </div>
+                            </Link>
+                            <span className="text-white/70 text-[9px] font-bold tracking-widest uppercase mt-0.5">
+                                RC: 3709222
+                            </span>
+                        </div>
+                        <p className="text-white/90 text-sm leading-relaxed max-w-[200px]">
+                            Nigeria&apos;s trusted catfish supplier — premium quality, every time.
+                        </p>
+                        {/* Social Icons */}
+                        <div className="flex gap-2.5 pt-1">
                             {[
                                 { Icon: Facebook, href: '#', label: 'Facebook' },
                                 { Icon: Instagram, href: '#', label: 'Instagram' },
@@ -87,7 +128,7 @@ const Footer = () => {
                                     key={label}
                                     href={href}
                                     aria-label={label}
-                                    className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white/50 hover:bg-leaf hover:text-white hover:border-leaf transition-all"
+                                    className="w-9 h-9 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-white/40 hover:text-white hover:bg-[#22c55e] hover:border-[#22c55e] transition-all duration-200"
                                 >
                                     <Icon className="w-4 h-4" />
                                 </a>
@@ -95,17 +136,17 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Shop */}
+                    {/* Shop Links */}
                     <div>
-                        <h3 className="text-white font-black text-xs uppercase tracking-widest mb-5">Category</h3>
+                        <h3 className="text-white/70 text-[11px] font-bold uppercase tracking-[0.15em] mb-5">Products</h3>
                         <ul className="space-y-3">
                             {footerLinks.shop.map((link) => (
                                 <li key={link.name}>
                                     <Link
                                         href={link.href}
-                                        className="text-white/40 hover:text-leaf transition-colors text-sm font-medium flex items-center gap-1.5 group"
+                                        className="text-white/90 hover:text-[#22c55e] transition-colors text-sm flex items-center gap-1.5 group"
                                     >
-                                        <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-all -ml-1 group-hover:ml-0 text-leaf" />
+                                        <ChevronRight className="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[#22c55e]" />
                                         {link.name}
                                     </Link>
                                 </li>
@@ -113,17 +154,17 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* Company */}
+                    {/* Company Links */}
                     <div>
-                        <h3 className="text-white font-black text-xs uppercase tracking-widest mb-5">Company</h3>
+                        <h3 className="text-white/70 text-[11px] font-bold uppercase tracking-[0.15em] mb-5">Company</h3>
                         <ul className="space-y-3">
                             {footerLinks.company.map((link) => (
                                 <li key={link.name}>
                                     <Link
                                         href={link.href}
-                                        className="text-white/40 hover:text-leaf transition-colors text-sm font-medium flex items-center gap-1.5 group"
+                                        className="text-white/90 hover:text-[#22c55e] transition-colors text-sm flex items-center gap-1.5 group"
                                     >
-                                        <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-all -ml-1 group-hover:ml-0 text-leaf" />
+                                        <ChevronRight className="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[#22c55e]" />
                                         {link.name}
                                     </Link>
                                 </li>
@@ -133,91 +174,79 @@ const Footer = () => {
 
                     {/* Contact */}
                     <div>
-                        <h3 className="text-white font-black text-xs uppercase tracking-widest mb-5">Get in Touch</h3>
+                        <h3 className="text-white/70 text-[11px] font-bold uppercase tracking-[0.15em] mb-5">Contact</h3>
                         <div className="space-y-4">
                             <div className="flex items-start gap-3">
-                                <div className="p-2 bg-white/5 rounded-lg border border-white/10 shrink-0 mt-0.5">
-                                    <MapPin className="w-3.5 h-3.5 text-leaf" />
+                                <div className="mt-0.5 w-7 h-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center shrink-0">
+                                    <MapPin className="w-3.5 h-3.5 text-[#22c55e]" />
                                 </div>
-                                <p className="text-white/40 text-sm font-medium leading-relaxed">Ogun State & Lagos,<br />Nigeria</p>
+                                <p className="text-white/90 text-sm leading-relaxed">Ogun State & Lagos,<br />Nigeria</p>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-white/5 rounded-lg border border-white/10 shrink-0">
-                                    <Phone className="w-3.5 h-3.5 text-leaf" />
+                                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center shrink-0">
+                                    <Phone className="w-3.5 h-3.5 text-[#22c55e]" />
                                 </div>
-                                <a href="tel:+2349093009400" className="text-white/40 hover:text-leaf text-sm font-medium transition-colors">0909 300 9400</a>
+                                <a href="tel:+2349093009400" className="text-white/90 hover:text-[#22c55e] text-sm transition-colors">0909 300 9400</a>
                             </div>
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-white/5 rounded-lg border border-white/10 shrink-0">
-                                    <Mail className="w-3.5 h-3.5 text-leaf" />
+                                <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center shrink-0">
+                                    <Mail className="w-3.5 h-3.5 text-[#22c55e]" />
                                 </div>
-                                <a href="mailto:hello@ccbfarms.com" className="text-white/40 hover:text-leaf text-sm font-medium transition-colors">hello@ccbfarms.com</a>
+                                <a href="mailto:hello@ccbfarms.com" className="text-white/90 hover:text-[#22c55e] text-sm transition-colors">hello@ccbfarms.com</a>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {/* Official Partner Section */}
-                <div className="border-t border-white/5 py-16 mb-6 text-center relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(34,197,94,0.05),transparent_70%)]" />
-                    
-                    <div className="relative z-10">
-                        <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] mb-8">Official Partner</p>
-                        
-                        <div className="flex flex-col items-center">
-                            <div className="relative">
-                                {/* Glow Effect */}
-                                <div className="absolute -inset-10 bg-leaf/20 blur-[60px] rounded-full opacity-40 group-hover:opacity-70 transition-opacity duration-1000" />
-                                
-                                <div className="relative flex flex-col items-center">
-                                    <h4 className="text-3xl md:text-6xl font-black italic tracking-tightest leading-none select-none">
-                                        <span className="bg-clip-text text-transparent bg-gradient-to-b from-gray-100 via-gray-400 to-gray-600 drop-shadow-[0_0_15px_rgba(34,197,94,0.4)]">
-                                            TECHGROW
-                                        </span>
-                                    </h4>
-                                    
-                                    <div className="flex items-center gap-4 my-2">
-                                        <div className="h-[2px] w-12 md:w-20 bg-gradient-to-r from-transparent via-leaf to-leaf/20" />
-                                        <div className="flex gap-2">
-                                            <div className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_10px_rgba(220,38,38,1)]" />
-                                            <div className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_10px_rgba(220,38,38,1)]" />
-                                            <div className="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_10px_rgba(220,38,38,1)]" />
-                                        </div>
-                                        <div className="h-[2px] w-12 md:w-20 bg-gradient-to-l from-transparent via-leaf to-leaf/20" />
-                                    </div>
-                                    
-                                    <h5 className="text-xl md:text-3xl font-black tracking-[0.25em] text-white/90 drop-shadow-lg">
-                                        FARMS
-                                    </h5>
-                                </div>
-                                
-                                <div className="w-full h-8 mt-4 bg-gradient-to-t from-white/5 to-transparent blur-sm rounded-full opacity-10 transform -scale-y-100" />
-                            </div>
-                        </div>
+                    {/* Newsletter */}
+                    <div className="col-span-2 md:col-span-1">
+                        <h3 className="text-white/70 text-[11px] font-bold uppercase tracking-[0.15em] mb-5">Newsletter</h3>
+                        <p className="text-white/90 text-sm leading-relaxed mb-4">
+                            Subscribe for updates and exclusive offers.
+                        </p>
+                        <form className="relative" onSubmit={(e) => e.preventDefault()}>
+                            <input
+                                type="email"
+                                placeholder="Email address"
+                                className="w-full bg-white/5 border border-white/10 rounded-xl pl-4 pr-10 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#22c55e]/50 focus:bg-white/10 transition-all shadow-inner"
+                            />
+                            <button
+                                type="submit"
+                                className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-[#22c55e] hover:bg-[#16a34a] text-white rounded-lg transition-colors cursor-pointer"
+                            >
+                                <ArrowRight className="w-4 h-4" />
+                            </button>
+                        </form>
                     </div>
                 </div>
 
-                {/* Trust Badges */}
-                <div className="border-t border-white/5 py-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
-                    {[
-                        { icon: Shield, text: "Secure Ordering" },
-                        { icon: Truck, text: "Nationwide Delivery" },
-                    ].map(({ icon: Icon, text }) => (
-                        <div key={text} className="flex items-center gap-2 text-white/30 text-xs font-bold uppercase tracking-widest">
-                            <Icon className="w-4 h-4 text-leaf" />
-                            {text}
-                        </div>
-                    ))}
+                {/* === Official Partner Bar === */}
+                <div className="py-10 border-b border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
+
+                    <div className="flex items-center gap-6">
+                        {[
+                            { icon: Shield, text: "Secure Ordering" },
+                            { icon: Truck, text: "Nationwide Delivery" },
+                        ].map(({ icon: Icon, text }) => (
+                            <div key={text} className="flex items-center gap-2 text-white/30 text-xs font-semibold uppercase tracking-wider">
+                                <Icon className="w-3.5 h-3.5 text-[#22c55e]" />
+                                {text}
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Bottom Bar */}
-                <div className="border-t border-white/5 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-white/25 text-xs font-medium">
+                {/* === Bottom Bar === */}
+                <div className="py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <p className="text-white/25 text-xs">
                         © {currentYear} CCB Farms. All rights reserved. Crafted with care in Nigeria 🇳🇬
                     </p>
-                    <div className="flex gap-6">
+                    <div className="flex items-center gap-6">
                         {footerLinks.legal.map((link) => (
-                            <Link key={link.name} href={link.href} className="text-white/25 hover:text-white/50 text-xs font-medium transition-colors">
+                            <Link
+                                key={link.name}
+                                href={link.href}
+                                className="text-white/25 hover:text-white/55 text-xs transition-colors"
+                            >
                                 {link.name}
                             </Link>
                         ))}
@@ -229,4 +258,3 @@ const Footer = () => {
 };
 
 export default Footer;
-

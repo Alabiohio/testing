@@ -66,7 +66,7 @@ export default function CategoryListingPage() {
                         className="text-4xl sm:text-6xl lg:text-7xl font-black text-deep-green  mb-8 tracking-tighter"
                     >
                         CCB Farms <br className="hidden sm:block" />
-                        Official <span className="text-leaf">Category</span>
+                        <span className="text-leaf">Category</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -78,7 +78,7 @@ export default function CategoryListingPage() {
                     </motion.p>
                 </header>
 
-                <div className="grid gap-12">
+                <div className="grid gap-12 max-w-5xl mx-auto">
                     {categories.map((cat, idx) => (
                         <motion.div
                             key={cat.id}

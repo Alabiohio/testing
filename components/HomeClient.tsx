@@ -73,16 +73,19 @@ export default function HomeClient({
   activeFlashDeals = [],
   globalSettings,
   initialTestimonials = [],
-  initialPriceCatalog = []
+  initialPriceCatalog = [],
+  initialPartnerAds = []
 }: {
   initialProducts: ProductProps[],
   initialFlashDeal?: any,
   activeFlashDeals?: any[],
   globalSettings?: any,
   initialTestimonials?: any[],
-  initialPriceCatalog?: PriceCatalogItem[]
+  initialPriceCatalog?: PriceCatalogItem[],
+  initialPartnerAds?: any[]
 }) {
   const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
+
   const galleryRef = useRef<HTMLDivElement>(null);
   const [activeFilter, setActiveFilter] = useState("All");
   const [activeTypeFilter, setActiveTypeFilter] = useState("All Fish");
@@ -115,6 +118,32 @@ export default function HomeClient({
 
 
 
+
+  const handleAdOrderConfirm = (ad: any) => {
+    setConfirmModal({
+      isOpen: true,
+      title: `Add to Cart: ${ad.title}`,
+      message: `Would you like to add this special offer (${ad.title}) to your cart and proceed?`,
+      onConfirm: () => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        const rawPrice = ad.price ? ad.price.toString().replace(/[^0-9.]/g, '') : '';
+        const parsedPrice = rawPrice ? parseFloat(rawPrice) : null;
+        
+        addItem({
+          id: ad.id,
+          name: ad.title,
+          price: parsedPrice,
+          price_range: parsedPrice ? null : "Special Offer",
+          unit: "offer",
+          category: "Partner Ad",
+          imageUrl: ad.imageUrl
+        }, 1);
+        startTransition(() => {
+          router.push("/cart");
+        });
+      },
+    });
+  };
 
   const handleOrderConfirm = (product: ProductProps) => {
     setConfirmModal({
@@ -548,6 +577,45 @@ export default function HomeClient({
           </section>
         );
       })()}
+      {/* ===== PARTNER AD BANNER ===== */}
+      {initialPartnerAds && initialPartnerAds.length > 0 && (
+        <section className="bg-transparent max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+          <div className="flex bg-transparent flex-nowrap md:flex-wrap overflow-x-auto md:overflow-x-visible justify-start md:justify-center gap-1 md:gap-8 pb-6 md:pb-0 px-2 md:px-0 snap-x snap-mandatory no-scrollbar">
+            {initialPartnerAds.map((ad: any, idx: number) => (
+              <div key={ad.id || idx} className="max-w-sm bg-transparent w-[85vw] md:w-full flex-shrink-0 snap-center">
+                {ad.linkUrl ? (
+                  <Link 
+                    href={ad.linkUrl} 
+                    target={ad.linkUrl.startsWith('http') ? "_blank" : "_self"}
+                    className="block bg-transparent rounded-2xl overflow-hidden hover:shadow-md border border-transparent cursor-pointer group aspect-[2/1]"
+                  >
+                    <Image
+                      src={ad.imageUrl}
+                      alt={ad.title || "Special offer from our partner"}
+                      width={900}
+                      height={450}
+                      className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-700"
+                    />
+                  </Link>
+                ) : (
+                  <div 
+                    onClick={() => handleAdOrderConfirm(ad)}
+                    className="block bg-transparent rounded-2xl overflow-hidden hover:shadow-md border border-transparent bg-transparent cursor-pointer group aspect-[2/1]"
+                  >
+                    <Image
+                      src={ad.imageUrl}
+                      alt={ad.title || "Special offer from our partner"}
+                      width={900}
+                      height={450}
+                      className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-700"
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ===== PRODUCT GRID BY CATEGORY ===== */}
       <section id="shop-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32">
@@ -1136,7 +1204,7 @@ export default function HomeClient({
               </div>
             </div>
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border-4 border-white ">
-              <Image src="/diary.png" alt="Happy Farmers" fill className="object-cover" />
+              <Image src="/happyFamily.png" alt="Happy Family eating at a dining table" fill className="object-cover" />
             </div>
           </div>
         </div>

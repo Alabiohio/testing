@@ -110,4 +110,15 @@ export const priceCatalog = pgTable("price_catalog", {
 
 export type PriceCatalogItem = typeof priceCatalog.$inferSelect;
 
+export const partnerAds = pgTable("partner_ads", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  imageUrl: text("image_url").notNull(),
+   linkUrl: text("link_url"),
+   price: text("price"),
+   isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
 
+export type PartnerAd = typeof partnerAds.$inferSelect;

@@ -17,6 +17,7 @@ const deliveryOptions = [
 
 export default function CheckoutPage() {
     const { items, totalPrice, clearCart } = useCart();
+    const hasUndeterminedPrice = items.some(i => i.category === "Partner Ad" && !i.price);
     const router = useRouter();
 
     const [formData, setFormData] = useState({
@@ -257,7 +258,9 @@ export default function CheckoutPage() {
                                         </div>
                                         <div className="flex-grow min-w-0">
                                             <p className="font-bold text-sm text-deep-green truncate">{item.name}</p>
-                                            <p className="text-xs text-foreground/50">Qty: {item.quantity}</p>
+                                            <p className="text-xs text-foreground/50">
+                                                {(!(item.category === "Partner Ad" && !item.price)) ? `Qty: ${item.quantity}` : 'Qty Pending'}
+                                            </p>
                                         </div>
                                         <div className="text-right">
                                             <p className="font-bold text-sm">{item.price ? `₦${item.price.toLocaleString()}` : 'Quote'}</p>
@@ -269,7 +272,7 @@ export default function CheckoutPage() {
                             <div className="pt-4 border-t border-leaf/10 space-y-3">
                                 <div className="flex justify-between text-sm font-bold text-gray-600">
                                     <span>Subtotal</span>
-                                    <span>₦{totalPrice.toLocaleString()}</span>
+                                    <span>{hasUndeterminedPrice ? "Quote Pending" : `₦${totalPrice.toLocaleString()}`}</span>
                                 </div>
                                 <div className="flex justify-between text-sm font-bold text-gray-600">
                                     <span>Shipping</span>
@@ -277,7 +280,7 @@ export default function CheckoutPage() {
                                 </div>
                                 <div className="flex justify-between text-lg font-black text-deep-green pt-2">
                                     <span>Total Value</span>
-                                    <span className="text-amber-600">₦{totalPrice.toLocaleString()}</span>
+                                    <span className="text-amber-600">{hasUndeterminedPrice ? "Price to be sent" : `₦${totalPrice.toLocaleString()}`}</span>
                                 </div>
                             </div>
                         </div>

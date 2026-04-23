@@ -37,20 +37,37 @@ const Footer = () => {
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#22c55e]/60 to-transparent" />
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[1px] blur-md bg-[#22c55e]/30" />
 
-            <div className="relative z-10 flex justify-center items-center gap-6 bg-white/90 py-6 border-b border-black/10 shadow-sm">
-                <span className="text-black text-[11px] font-bold uppercase tracking-[0.3em] whitespace-nowrap">Official Partner</span>
-                <div className="h-px w-10 bg-black/40" />
-                <div className="inline-flex flex-col items-end opacity-90 hover:opacity-100 transition-opacity drop-shadow-sm">
-                    <div className="relative flex justify-center items-center w-56">
+            <div className="relative z-10 flex justify-center items-center gap-4 sm:gap-10 bg-white/95 py-6 border-b border-black/10 shadow-sm overflow-hidden">
+                {/* CCB Farms */}
+                <div className="inline-flex flex-col items-end w-36 -ml-2">
+                    <div className="relative w-full h-auto flex items-center justify-center overflow-hidden px-1">
                         <Image
-                            src="/assets/images/techgrowTrans.png"
-                            alt="Techgrow Farms Logo"
-                            width={240}
-                            height={240}
+                            src="/ccbLg.png"
+                            alt="CCB Farms Logo"
+                            width={160}
+                            height={160}
                             className="object-contain w-full h-auto"
                         />
                     </div>
-                    <span className="text-black/60 text-[9px] font-bold tracking-widest uppercase mt-0.5 pr-1">
+                    <span className="text-black/70 text-[9px] font-bold tracking-widest uppercase mt-0.5">
+                        RC: 3709222
+                    </span>
+                </div>
+                {/* Vertical Divider */}
+                <div className="h-8 w-[1.5px] bg-black/10" />
+
+                {/* Techgrow Farms */}
+                 <div className="inline-flex flex-col items-end w-36 -ml-2">
+                    <div className="relative w-full h-auto flex items-center justify-center overflow-hidden">
+                        <Image
+                            src="/assets/images/techgrowTrans.png"
+                            alt="Techgrow Farms Logo"
+                            width={180}
+                            height={180}
+                            className="object-contain w-full h-auto"
+                        />
+                    </div>
+                    <span className="text-black/70 text-[9px] font-bold tracking-widest uppercase mt-0.5">
                         RC: 8103767
                     </span>
                 </div>

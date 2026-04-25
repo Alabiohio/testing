@@ -197,7 +197,7 @@ const Footer = () => {
                                 <div className="mt-0.5 w-7 h-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center shrink-0">
                                     <MapPin className="w-3.5 h-3.5 text-[#22c55e]" />
                                 </div>
-                                <p className="text-white/90 text-sm leading-relaxed">Ogun State & Lagos,<br />Nigeria</p>
+                                <p className="text-white/90 text-sm leading-relaxed">Lagos, Nationwide<br />& Internationally</p>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center shrink-0">

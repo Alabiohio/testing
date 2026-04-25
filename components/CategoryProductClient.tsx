@@ -211,22 +211,6 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                 </label>
                             </div>
 
-                            {/* Rating Selector */}
-                            <div className="space-y-4">
-                                <h4 className="font-black text-deep-green uppercase tracking-widest text-xs">Minimum Rating</h4>
-                                <div className="flex items-center gap-2">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                        <button
-                                            key={star}
-                                            onClick={() => setMinRating(star === minRating ? 0 : star)}
-                                            className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all ${star <= minRating ? 'bg-amber-400 text-white shadow-lg shadow-amber-400/20' : 'bg-gray-50 text-gray-300 border border-gray-100'}`}
-                                        >
-                                            <Star className={`w-4 h-4 ${star <= minRating ? 'fill-current' : ''}`} />
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
                             {/* Quick Presets */}
                             <div className="space-y-4">
                                 <h4 className="font-black text-deep-green uppercase tracking-widest text-xs">Quick Reset</h4>
@@ -234,7 +218,6 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                     onClick={() => {
                                         setPriceRange([0, maxProductPrice]);
                                         setOnlyAvailable(false);
-                                        setMinRating(0);
                                         setSearchQuery("");
                                     }}
                                     className="text-sm font-bold text-red-500 hover:text-red-700 flex items-center gap-2 group"
@@ -257,7 +240,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             key={product.id}
-                            className="group bg-white rounded-[1.4rem] overflow-hidden border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
+                            className="group bg-white rounded-[1.4rem] overflow-hidden border border-gray-100 shadow-sm hover:-translate-y-1 transition-all duration-500"
                         >
                             <div className="relative aspect-[4/3] bg-gray-50 overflow-hidden">
                                 <Image
@@ -265,9 +248,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                     alt={product.name}
                                     fill
                                     className="object-cover group-hover:scale-110 transition-transform duration-1000"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-
+                                />                             
                                 {product.available ? (
                                     <div className="absolute top-3 left-3 bg-amber-500 text-white text-[9px] font-black uppercase tracking-[0.15em] px-2 py-0.5 rounded-full shadow-lg">
                                         Available
@@ -279,25 +260,17 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                 )}
                             </div>
                             <div className="p-4 sm:p-8">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <div className="flex items-center gap-0.5">
-                                        {[...Array(5)].map((_, i) => (
-                                            <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                                        ))}
-                                    </div>
-                                    <span className="text-xs font-black text-gray-900/40 tracking-wider">4.9 / 5.0</span>
-                                </div>
-
+                            
                                 <h3 className="text-base sm:text-2xl font-black text-deep-green mb-1 sm:mb-2 group-hover:text-amber-500 transition-colors leading-tight truncate sm:whitespace-normal">{product.name}</h3>
                                 <p className="text-gray-500 text-[11px] sm:text-sm font-medium mb-3 leading-relaxed line-clamp-2">{product.description}</p>
 
                                 {/* Category Badge */}
-                                <div className="mb-4">
+                                <div>
                                     <Link 
                                         href={`/${product.category}`}
                                         className="inline-block text-[10px] font-black bg-leaf/10 text-leaf hover:bg-leaf hover:text-white px-3 py-1.5 rounded-full uppercase tracking-widest transition-all duration-300 shadow-sm hover:shadow-md"
                                     >
-                                        {product.category}
+                                        {product.category.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
                                     </Link>
                                 </div>
 
@@ -311,7 +284,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                     </div>
                                     <button
                                         onClick={() => handleOrderConfirm(product)}
-                                        className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-xl sm:rounded-2xl shadow-lg shadow-amber-500/25 active:scale-90 transition-all cursor-pointer border-none"
+                                        className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-xl sm:rounded-2xl active:scale-90 transition-all cursor-pointer border-none"
                                     >
                                         <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
                                     </button>

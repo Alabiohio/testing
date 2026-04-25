@@ -206,7 +206,8 @@ export default function CheckoutPage() {
                                             >
                                                 <option value="">Select State</option>
                                                 <option value="Lagos">Lagos State</option>
-                                                <option value="Ogun">Ogun State</option>
+                                                <option value="Nationwide">Other States (Nationwide)</option>
+                                                <option value="International">International</option>
                                             </select>
                                         </div>
                                         <div className="space-y-2">
@@ -224,7 +225,7 @@ export default function CheckoutPage() {
 
                                     {formData.deliveryOption === "Pickup" && (
                                         <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 ml-2">
-                                            📌 Note: Pickup points are available across Ogun State and Lagos.
+                                            📌 Note: Delivery and pickup points are available across Lagos, Nationwide and Internationally.
                                         </p>
                                     )}
                                 </div>

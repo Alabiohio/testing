@@ -21,7 +21,9 @@ interface OrderConfirmationEmailProps {
 export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
   orderData,
 }) => {
-  const items = orderData.items ? JSON.parse(orderData.items) : [];
+  const items = Array.isArray(orderData.items) 
+    ? orderData.items 
+    : (typeof orderData.items === 'string' ? JSON.parse(orderData.items) : []);
 
   return (
     <div style={{
@@ -62,21 +64,22 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr style={{ textAlign: 'left', fontSize: '12px', color: '#6b7280', textTransform: 'uppercase' }}>
-                    <th style={{ paddingBottom: '8px' }}>Item</th>
+                    <th style={{ paddingBottom: '8px' }}>Category</th>
+                    <th style={{ paddingBottom: '8px' }}>Size/Type</th>
                     <th style={{ paddingBottom: '8px', textAlign: 'right' }}>Qty</th>
-                    <th style={{ paddingBottom: '8px', textAlign: 'right' }}>Price</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((item: any, index: number) => (
-                    <tr key={index} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                      <td style={{ padding: '12px 0', fontSize: '14px' }}>{item.name}</td>
-                      <td style={{ padding: '12px 0', fontSize: '14px', textAlign: 'right' }}>{item.quantity}</td>
-                      <td style={{ padding: '12px 0', fontSize: '14px', textAlign: 'right' }}>
-                        ₦{item.price ? item.price.toLocaleString() : '0'}
-                      </td>
-                    </tr>
-                  ))}
+                  {items.map((item: any, index: number) => {
+                    const categoryName = item.name || (item.categoryId ? item.categoryId.charAt(0).toUpperCase() + item.categoryId.slice(1) : 'Product');
+                    return (
+                      <tr key={index} style={{ borderBottom: '1px solid #f3f4f6' }}>
+                        <td style={{ padding: '12px 0', fontSize: '14px', fontWeight: '600' }}>{categoryName}</td>
+                        <td style={{ padding: '12px 0', fontSize: '14px' }}>{item.subCategory || 'Standard'}</td>
+                        <td style={{ padding: '12px 0', fontSize: '14px', textAlign: 'right' }}>{item.quantity}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             ) : (
@@ -120,7 +123,7 @@ export const OrderConfirmationEmail: React.FC<OrderConfirmationEmailProps> = ({
 
           <div style={{ marginTop: '32px', textAlign: 'center' }}>
             <p style={{ fontSize: '14px', color: '#6b7280', margin: '0 0 16px 0' }}>
-              If you have any questions, feel free to contact us at {orderData.phone}
+              If you have any questions, feel free to contact us at 09093009400
             </p>
             <a 
               href="https://ccbfarms.com" 

@@ -39,14 +39,7 @@ body {
 
 /* === PROMO BAR === */
 .promo-bar {
-  background: linear-gradient(90deg, #14532d 0%, #22c55e 50%, #14532d 100%);
-  background-size: 200% 100%;
-  animation: promo-shimmer 6s linear infinite;
-}
-
-@keyframes promo-shimmer {
-  0% { background-position: 0% 0%; }
-  100% { background-position: 200% 0%; }
+  background: #4ca579; /* Slate 900 for a neutral, premium dark background */
 }
 
 /* === Navbar === */
@@ -125,8 +118,8 @@ nav.scrolled {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-.ticker-wrap { overflow: hidden; white-space: nowrap; }
-.ticker-content { display: inline-block; animation: ticker 30s linear infinite; }
+.ticker-wrap { overflow: hidden; white-space: nowrap; display: flex; align-items: center; }
+.ticker-content { display: inline-flex; align-items: center; animation: ticker 30s linear infinite; }
 .ticker-content:hover { animation-play-state: paused; }
 
 /* === CATEGORY PILL === */

@@ -22,14 +22,6 @@ export default async function ShopPage() {
     return (
         <div className="min-h-screen bg-background text-foreground">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-24">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-                    <div className="flex-1">
-                        <h1 className="text-4xl md:text-7xl font-black text-deep-green tracking-tighter leading-none mb-6">
-                           CCB <span className="text-leaf">Shop</span>
-                        </h1>
-                    </div>
-                </div>
-
                 <ShopClient products={products} />
             </div>
         </div>

@@ -11,28 +11,31 @@ export default function ContactPage() {
         {
             title: "Call Us",
             value: "0909 300 9400",
-            desc: "Mon-Sat, 8am-6pm",
+            desc: " ",
             icon: Phone,
-            color: "bg-blue-500",
+            bgColor: "bg-blue-500/10",
+            iconColor: "text-blue-500",
         },
         {
             title: "WhatsApp",
             value: "0909 300 9400",
             desc: "Instant chat support",
             icon: MessageSquare,
-            color: "bg-green-500",
+            bgColor: "bg-green-500/10",
+            iconColor: "text-green-500",
         },
         {
             title: "Email Us",
             value: "hello@ccbfarms.com",
             desc: "We reply within 24h",
             icon: Mail,
-            color: "bg-orange-500",
+            bgColor: "bg-orange-500/10",
+            iconColor: "text-orange-500",
         },
     ];
 
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24 relative overflow-hidden">
+        <div className="min-h-screen bg-background pt-4 pb-24 relative overflow-hidden">
             {/* Background Decorative Elements */}
             <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
                 <div className="absolute top-20 right-[-10%] w-[500px] h-[500px] bg-leaf rounded-full blur-[150px]" />
@@ -40,7 +43,7 @@ export default function ContactPage() {
             </div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <header className="mb-20">
+                <header className="mb-8">
                     
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
@@ -68,8 +71,8 @@ export default function ContactPage() {
                                     transition={{ delay: idx * 0.1 }}
                                     className="bg-white  p-8 rounded-[40px] shadow-2xl shadow-black/5 border border-earth/5  group hover:border-leaf/30 transition-all"
                                 >
-                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${method.color} bg-opacity-10`}>
-                                        <method.icon className={`w-7 h-7 ${method.color.replace('bg-', 'text-')}`} />
+                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${method.bgColor}`}>
+                                        <method.icon className={`w-7 h-7 ${method.iconColor}`} />
                                     </div>
                                     <h3 className="text-xl font-black text-deep-green  mb-2">{method.title}</h3>
                                     <p className="font-bold text-foreground/80 mb-2">{method.value}</p>
@@ -77,6 +80,7 @@ export default function ContactPage() {
                                 </motion.div>
                             ))}
 
+                             {/**]
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -99,7 +103,7 @@ export default function ContactPage() {
                                         <span className="text-white/40">Closed</span>
                                     </p>
                                 </div>
-                            </motion.div>
+                            </motion.div>**/}
                         </div>
 
                         <div className="bg-leaf/5 p-10 rounded-[50px] border border-leaf/10">
@@ -110,8 +114,8 @@ export default function ContactPage() {
                                 <div>
                                     <h3 className="text-2xl font-black text-deep-green  mb-2">Our Location</h3>
                                     <p className="text-lg text-foreground/60 leading-relaxed font-medium">
-                                        Ogun State and Lagos State, <br />
-                                        Nigeria.
+                                        Lagos, Nationwide and <br />
+                                        Internationally.
                                     </p>
                                 </div>
                             </div>                
@@ -244,7 +248,7 @@ function ContactForm() {
     }
 
     return (
-        <form className="space-y-8" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-4">
                 <label className="text-xs font-black uppercase tracking-widest text-foreground/30 ml-2">Full Name</label>
                 <input 
@@ -252,7 +256,7 @@ function ContactForm() {
                     type="text" 
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-3xl py-5 px-8 outline-none transition-all font-bold" 
+                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-2xl py-3 px-8 outline-none transition-all font-bold" 
                     placeholder="How should we address you?" 
                 />
             </div>
@@ -263,7 +267,7 @@ function ContactForm() {
                     type="email" 
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-3xl py-5 px-8 outline-none transition-all font-bold" 
+                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-2xl py-3 px-8 outline-none transition-all font-bold" 
                     placeholder="your@email.com" 
                 />
             </div>
@@ -272,7 +276,7 @@ function ContactForm() {
                 <select 
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-3xl py-5 px-8 outline-none transition-all font-bold appearance-none"
+                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-2xl py-3 px-8 outline-none transition-all font-bold appearance-none"
                 >
                     <option>Product Inquiry</option>
                     <option>Training Enrolment</option>
@@ -286,14 +290,14 @@ function ContactForm() {
                     required 
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-3xl py-5 px-8 outline-none transition-all font-bold min-h-[150px]" 
+                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-2xl py-3 px-8 outline-none transition-all font-bold min-h-[150px]" 
                     placeholder="Tell us what you need help with..." 
                 />
             </div>
             <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className={`w-full ${isSubmitting ? 'bg-leaf/50' : 'bg-leaf hover:bg-leaf-dark'} text-white py-6 rounded-3xl font-black text-xl uppercase tracking-widest shadow-2xl shadow-leaf/30 transition-all hover:scale-[1.02] flex items-center justify-center gap-4`}
+                className={`w-full ${isSubmitting ? 'bg-leaf/50' : 'bg-leaf hover:bg-leaf-dark'} text-white py-6 rounded-2xl font-black text-xl uppercase tracking-widest transition-all hover:scale-[1.02] flex items-center justify-center gap-4`}
             >
                 {isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}
                 <ArrowRight className="w-6 h-6" />

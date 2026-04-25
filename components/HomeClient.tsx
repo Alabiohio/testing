@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search, ShoppingBag, ShoppingCart, ChevronRight, ChevronDown,
+  Search, ShoppingBag, ShoppingCart, ChevronRight, ChevronLeft, ChevronDown,
   Shield, Truck, Clock, Star, ArrowRight, CheckCircle,
   Zap, Tag, Phone, MapPin, Users, Leaf, Package, Heart, Activity, Brain, MessageSquare
 } from "lucide-react";
@@ -67,6 +67,180 @@ interface ProductProps {
   rawPriceRange: string | null;
 }
 
+const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm: (ad: any) => void }) => {
+  if (ad.hasLink === false) {
+    return (
+      <div className="block bg-transparent rounded-2xl overflow-hidden border border-transparent">
+        <Image
+          src={ad.imageUrl}
+          alt={ad.title || "Special offer from our partner"}
+          width={1200}
+          height={600}
+          className="w-full h-auto"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {ad.linkUrl ? (
+        <Link 
+          href={ad.linkUrl} 
+          target={ad.linkUrl.startsWith('http') ? "_blank" : "_self"}
+          className="block bg-transparent rounded-2xl overflow-hidden hover:shadow-md border border-transparent cursor-pointer group"
+        >
+          <Image
+            src={ad.imageUrl}
+            alt={ad.title || "Special offer from our partner"}
+            width={1200}
+            height={600}
+            className="w-full h-auto group-hover:scale-[1.02] transition-transform duration-700"
+          />
+        </Link>
+      ) : (
+        <div 
+          onClick={() => handleAdOrderConfirm(ad)}
+          className="block bg-transparent rounded-2xl overflow-hidden hover:shadow-md border border-transparent bg-transparent cursor-pointer group"
+        >
+          <Image
+            src={ad.imageUrl}
+            alt={ad.title || "Special offer from our partner"}
+            width={1200}
+            height={600}
+            className="w-full h-auto group-hover:scale-[1.02] transition-transform duration-700"
+          />
+        </div>
+      )}
+    </>
+  );
+};
+
+const SliderCountdown = ({ targetDate, isMobile }: { targetDate: Date | string | null, isMobile?: boolean }) => {
+  const time = useCountdown(targetDate || undefined);
+  return (
+    <div className={`flex items-center gap-1 font-bold ${!isMobile ? 'text-xl' : ''} tabular-nums`} suppressHydrationWarning>
+      <span>{pad(time.h)}h</span>
+      <span>:</span>
+      <span>{pad(time.m)}m</span>
+      <span>:</span>
+      <span>{pad(time.s)}s</span>
+    </div>
+  );
+};
+
+const HeroCountdown = ({ targetDate }: { targetDate: Date | string | null }) => {
+  const time = useCountdown(targetDate || undefined);
+  return (
+    <div className="flex items-center gap-2 ml-1 font-black text-deep-green tabular-nums" suppressHydrationWarning>
+      <div className="flex items-center gap-1">
+        <span className="bg-deep-green text-white px-1.5 py-0.5 rounded text-[11px]">{pad(time.h)}</span>
+        <span className="text-[9px] text-foreground/30 font-bold lowercase">h</span>
+      </div>
+      <span className="text-foreground/10">:</span>
+      <div className="flex items-center gap-1">
+        <span className="bg-deep-green text-white px-1.5 py-0.5 rounded text-[11px]">{pad(time.m)}</span>
+        <span className="text-[9px] text-foreground/30 font-bold lowercase">m</span>
+      </div>
+      <span className="text-foreground/10">:</span>
+      <div className="flex items-center gap-1">
+        <span className="bg-deep-green text-white px-1.5 py-0.5 rounded text-[11px]">{pad(time.s)}</span>
+        <span className="text-[9px] text-foreground/30 font-bold lowercase">s</span>
+      </div>
+    </div>
+  );
+};
+
+const PartnerAdSection = ({ initialPartnerAds, handleAdOrderConfirm }: { initialPartnerAds: any[], handleAdOrderConfirm: (ad: any) => void }) => {
+  const [adIndex, setAdIndex] = useState(0);
+  const [isAdHovered, setIsAdHovered] = useState(false);
+
+  useEffect(() => {
+    if (!initialPartnerAds || initialPartnerAds.length <= 1 || isAdHovered) return;
+    const interval = setInterval(() => {
+      setAdIndex((prev) => (prev + 1) % initialPartnerAds.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [initialPartnerAds, isAdHovered]);
+
+  if (!initialPartnerAds || initialPartnerAds.length === 0) return null;
+
+  return (
+    <section className="bg-transparent max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+      {/* Mobile View: Vertical Stack */}
+      <div className="flex md:hidden flex-col items-center gap-6">
+        {initialPartnerAds.map((ad: any, idx: number) => (
+          <div key={ad.id || idx} className="w-full max-w-md group">
+            <AdContent ad={ad} handleAdOrderConfirm={handleAdOrderConfirm} />
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop View: Auto-Slider */}
+      <div 
+        className="hidden md:block relative h-full min-h-[200px] group/slider"
+        onMouseEnter={() => setIsAdHovered(true)}
+        onMouseLeave={() => setIsAdHovered(false)}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={adIndex}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="w-full max-w-2xl mx-auto group"
+          >
+            <AdContent 
+              ad={initialPartnerAds[adIndex]} 
+              handleAdOrderConfirm={handleAdOrderConfirm} 
+            />
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation Arrows */}
+        {initialPartnerAds.length > 1 && (
+          <>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setAdIndex(prev => (prev - 1 + initialPartnerAds.length) % initialPartnerAds.length);
+              }}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-deep-green shadow-xl opacity-0 group-hover/slider:opacity-100 transition-all hover:bg-white hover:scale-110 z-20"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                setAdIndex(prev => (prev + 1) % initialPartnerAds.length);
+              }}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-deep-green shadow-xl opacity-0 group-hover/slider:opacity-100 transition-all hover:bg-white hover:scale-110 z-20"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </>
+        )}
+
+        {/* Slide Indicators */}
+        {initialPartnerAds.length > 1 && (
+          <div className="flex justify-center gap-2 mt-6">
+            {initialPartnerAds.map((_: any, i: number) => (
+              <button
+                key={i}
+                onClick={() => setAdIndex(i)}
+                className={`h-1 rounded-full transition-all duration-300 ${
+                  i === adIndex ? "bg-leaf w-8" : "bg-gray-200 w-2 hover:bg-leaf/40"
+                }`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+};
+
 export default function HomeClient({
   initialProducts,
   initialFlashDeal,
@@ -87,16 +261,12 @@ export default function HomeClient({
   const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
 
   const galleryRef = useRef<HTMLDivElement>(null);
-  const [activeFilter, setActiveFilter] = useState("All");
-  const [activeTypeFilter, setActiveTypeFilter] = useState("All Fish");
-
-  const heroCountdown = useCountdown(initialFlashDeal?.endTime);
+  // Removed tabbed filters state as we now use vertical sections
 
   // Use global settings for slider if available, otherwise find earliest
   const sliderEndTime = globalSettings?.endTime || (activeFlashDeals.length > 0
     ? [...activeFlashDeals].sort((a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime())[0]?.endTime
     : null);
-  const sliderCountdown = useCountdown(sliderEndTime);
 
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -115,9 +285,6 @@ export default function HomeClient({
 
   const { addItem } = useCart();
   const [catalogItems, setCatalogItems] = useState<PriceCatalogItem[]>(initialPriceCatalog || []);
-
-
-
 
   const handleAdOrderConfirm = (ad: any) => {
     setConfirmModal({
@@ -170,23 +337,10 @@ export default function HomeClient({
 
   const products = initialProducts;
 
-  const filters = ["All", "Farming", "Consumption", "Breeding"];
+  const filters = ["Farming", "Consumption", "Breeding"];
   const typeFilters = ["All Fish", "Fingerlings", "Juvenile", "Broodstock", "Table Size", "Smoked"];
 
-  const filteredByCategory = products.filter(p => activeFilter === "All" || p.category === activeFilter);
-
-  const filteredByType = products.filter(p => {
-    if (activeTypeFilter === "All Fish") return true;
-
-    const searchString = `${p.name} ${p.id} ${p.category} ${p.desc}`.toLowerCase();
-
-    if (activeTypeFilter === "Fingerlings") return searchString.includes("fingerling");
-    if (activeTypeFilter === "Juvenile") return searchString.includes("juvenil");
-    if (activeTypeFilter === "Broodstock") return searchString.includes("broodstock");
-    if (activeTypeFilter === "Table Size") return searchString.includes("table size") || searchString.includes("table-size") || searchString.includes("table_size");
-    if (activeTypeFilter === "Smoked") return searchString.includes("smoke");
-    return false;
-  });
+  // Filtered lists for vertical sections are computed inline to avoid redundant state management
 
   const renderProductCard = (product: ProductProps, idx: number) => (
     <motion.div
@@ -201,7 +355,7 @@ export default function HomeClient({
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-gray-50 ">
         <Image
-          src={product.img || "/hero.png"}
+          src={product.img || "/assets/bgImages/fingerlings.png"}
           alt={product.name}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -236,11 +390,11 @@ export default function HomeClient({
         </div>
 
         {/* Price & CTA */}
-        <div className="flex items-center justify-between pt-3 border-t border-gray-50 ">
+        <div className="flex items-center justify-between border-t border-gray-50 ">
           <div>
             <p className="text-base sm:text-xl font-black text-gray-900 ">{product.price}</p>
             <div className="flex items-center gap-2">
-              {product.originalPrice && <p className="text-[10px] sm:text-xs text-gray-400 line-through font-medium">{product.originalPrice}</p>}
+              {product.originalPrice && <p className="text-[10px] sm:text-xs text-gray-400 font-medium">₦{product.originalPrice}</p>}
               <span className="text-[9px] sm:text-[10px] font-bold text-gray-400">per {product.unit}</span>
             </div>
           </div>
@@ -323,7 +477,7 @@ export default function HomeClient({
             </h1>
 
             <p className="text-lg text-white/70 mb-10 max-w-xl leading-relaxed font-medium">
-              Healthy. Fresh. Responsibly Raised. — Supplying high-quality catfish across all growth stages to farmers, retailers, restaurants & households within Lagos & Ogun State.
+              Healthy. Fresh. Responsibly Raised. — Supplying high-quality catfish across all growth stages to farmers, retailers, restaurants & households within Lagos, Nationwide and Internationally.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
@@ -354,34 +508,6 @@ export default function HomeClient({
         </div>
       </section>
 
-      {/* ===== TRUST STRIP ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { icon: Truck, title: "Lagos & Ogun", sub: "Reliable delivery across both states" },
-            { icon: Shield, title: "Quality Assured", sub: "100% disease-free fish" },
-            { icon: Clock, title: "48h Fulfilment", sub: "Lagos & Ogun express delivery" },
-            { icon: Phone, title: "Expert Support", sub: "Call/WhatsApp 09093009400" },
-          ].map(({ icon: Icon, title, sub }) => (
-            <motion.div
-              key={title}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="flex items-center gap-4 bg-white  border border-gray-100  rounded-2xl px-5 py-4 shadow-sm hover:border-leaf/30 transition-all"
-            >
-              <div className="w-10 h-10 rounded-xl bg-leaf/10 flex items-center justify-center shrink-0">
-                <Icon className="w-5 h-5 text-leaf" />
-              </div>
-              <div>
-                <p className="font-bold text-gray-800  text-sm">{title}</p>
-                <p className="text-xs text-gray-400  font-medium">{sub}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
       {/* ===== MULTIPLE FLASH DEALS SLIDER ===== */}
       {activeFlashDeals.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
@@ -394,13 +520,7 @@ export default function HomeClient({
               </div>
               <div className="hidden md:flex items-center gap-2">
                 <span className="text-sm font-medium">Time Left:</span>
-                <div className="flex items-center gap-1 font-bold text-xl tabular-nums tracking-wide" suppressHydrationWarning>
-                  <span>{pad(sliderCountdown.h)}h</span>
-                  <span>:</span>
-                  <span>{pad(sliderCountdown.m)}m</span>
-                  <span>:</span>
-                  <span>{pad(sliderCountdown.s)}s</span>
-                </div>
+                <SliderCountdown targetDate={sliderEndTime} />
               </div>
               <Link href="#shop-categories" className="text-sm md:text-base font-medium hover:text-white/80 flex items-center gap-1">
                 See All <ChevronRight className="w-4 h-4 md:w-5 md:h-5" />
@@ -409,13 +529,7 @@ export default function HomeClient({
             {/* Mobile Countdown Row */}
             <div className="md:hidden bg-[#CC1300] text-white px-4 py-1.5 flex items-center justify-center gap-2 text-xs">
               <span className="font-medium">Time Left:</span>
-              <div className="flex items-center gap-1 font-bold tabular-nums" suppressHydrationWarning>
-                <span>{pad(sliderCountdown.h)}h</span>
-                <span>:</span>
-                <span>{pad(sliderCountdown.m)}m</span>
-                <span>:</span>
-                <span>{pad(sliderCountdown.s)}s</span>
-              </div>
+              <SliderCountdown targetDate={sliderEndTime} isMobile={true} />
             </div>
 
             {/* Products Horizontal List */}
@@ -470,22 +584,7 @@ export default function HomeClient({
               <div className="flex items-center gap-1.5 ml-auto text-xs font-bold text-foreground/40 uppercase tracking-widest">
                 <Clock className="w-3.5 h-3.5" />
                 <span>Ends in</span>
-                <div className="flex items-center gap-2 ml-1 font-black text-deep-green tabular-nums" suppressHydrationWarning>
-                  <div className="flex items-center gap-1">
-                    <span className="bg-deep-green text-white px-1.5 py-0.5 rounded text-[11px]">{pad(heroCountdown.h)}</span>
-                    <span className="text-[9px] text-foreground/30 font-bold lowercase">h</span>
-                  </div>
-                  <span className="text-foreground/10">:</span>
-                  <div className="flex items-center gap-1">
-                    <span className="bg-deep-green text-white px-1.5 py-0.5 rounded text-[11px]">{pad(heroCountdown.m)}</span>
-                    <span className="text-[9px] text-foreground/30 font-bold lowercase">m</span>
-                  </div>
-                  <span className="text-foreground/10">:</span>
-                  <div className="flex items-center gap-1">
-                    <span className="bg-deep-green text-white px-1.5 py-0.5 rounded text-[11px]">{pad(heroCountdown.s)}</span>
-                    <span className="text-[9px] text-foreground/30 font-bold lowercase">s</span>
-                  </div>
-                </div>
+                <HeroCountdown targetDate={initialFlashDeal.endTime} />
               </div>
             </div>
 
@@ -569,7 +668,7 @@ export default function HomeClient({
                       Add to Cart
                       <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
                     </button>
-                    <span className="text-[10px] text-foreground/30 font-medium hidden sm:block">Free delivery in Lagos</span>
+                    <span className="text-[10px] text-foreground/30 font-medium hidden sm:block">Delivery available Nationwide & Internationally</span>
                   </div>
                 </div>
               </div>
@@ -579,156 +678,105 @@ export default function HomeClient({
       })()}
       {/* ===== PARTNER AD BANNER ===== */}
       {initialPartnerAds && initialPartnerAds.length > 0 && (
-        <section className="bg-transparent max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-          <div className="flex bg-transparent flex-nowrap md:flex-wrap overflow-x-auto md:overflow-x-visible justify-start md:justify-center gap-1 md:gap-8 pb-6 md:pb-0 px-2 md:px-0 snap-x snap-mandatory no-scrollbar">
-            {initialPartnerAds.map((ad: any, idx: number) => (
-              <div key={ad.id || idx} className="max-w-sm bg-transparent w-[85vw] md:w-full flex-shrink-0 snap-center">
-                {ad.linkUrl ? (
-                  <Link 
-                    href={ad.linkUrl} 
-                    target={ad.linkUrl.startsWith('http') ? "_blank" : "_self"}
-                    className="block bg-transparent rounded-2xl overflow-hidden hover:shadow-md border border-transparent cursor-pointer group aspect-[2/1]"
-                  >
-                    <Image
-                      src={ad.imageUrl}
-                      alt={ad.title || "Special offer from our partner"}
-                      width={900}
-                      height={450}
-                      className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-700"
-                    />
-                  </Link>
-                ) : (
-                  <div 
-                    onClick={() => handleAdOrderConfirm(ad)}
-                    className="block bg-transparent rounded-2xl overflow-hidden hover:shadow-md border border-transparent bg-transparent cursor-pointer group aspect-[2/1]"
-                  >
-                    <Image
-                      src={ad.imageUrl}
-                      alt={ad.title || "Special offer from our partner"}
-                      width={900}
-                      height={450}
-                      className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-700"
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
+        <PartnerAdSection 
+          initialPartnerAds={initialPartnerAds} 
+          handleAdOrderConfirm={handleAdOrderConfirm} 
+        />
       )}
 
-      {/* ===== PRODUCT GRID BY CATEGORY ===== */}
-      <section id="shop-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10">
-          <div>
-            <div className="section-label mb-3">
-              <Package className="w-3.5 h-3.5" />
-              Our Categories
+
+      {/* ===== PRODUCT GRID BY CATEGORY - VERTICAL SECTIONS ===== */}
+      <section id="shop-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32 mb-1">
+        <div className="py-8">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
+            <div>
+              <h2 className="text-3xl md:text-5xl font-black text-deep-green tracking-tight">Shop by Category</h2>
             </div>
-            <h2 className="text-3xl md:text-4xl font-black text-deep-green  tracking-tight">Our Shop</h2>
           </div>
-        </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {filters.map(f => (
-            <button
-              key={f}
-              onClick={() => setActiveFilter(f)}
-              className={`category-pill ${activeFilter === f ? 'active' : ''}`}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
+          <div className="space-y-20">
+            {filters.map((catName) => {
+              const catItems = products.filter(p => {
+                const pCat = p.category.toLowerCase();
+                if (catName === "Farming") return ["fingerlings", "juveniles", "farming"].includes(pCat);
+                if (catName === "Consumption") return ["table-size", "smoked", "consumption"].includes(pCat);
+                if (catName === "Breeding") return ["broodstock", "breeding"].includes(pCat);
+                return p.category === catName;
+              }).slice(0, 2);
+              if (catItems.length === 0) return null;
 
-        {/* Product Cards */}
-        <div className="min-h-[400px]">
-          <AnimatePresence mode="popLayout">
-            {filteredByCategory.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-                {filteredByCategory.map((product, idx) => renderProductCard(product, idx))}
-              </div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="flex flex-col items-center justify-center py-20 text-center"
-              >
-                <div className="w-16 h-16 bg-gray-50 text-gray-300 rounded-2xl flex items-center justify-center mb-4">
-                  <Package className="w-8 h-8" />
+              return (
+                <div key={catName} className="group/section">
+                  <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
+                    <div className="flex items-center gap-4">
+                      <h3 className="text-2xl md:text-3xl font-black text-deep-green tracking-tight">{catName}</h3>
+                    </div>
+                    <Link 
+                      href={`/category/${catName.toLowerCase()}`}
+                      className="bg-deep-green text-white px-6 py-2.5 rounded-full flex items-center gap-2 font-bold text-[13px] hover:bg-deep-green/90 transition-all shadow-md shadow-black/10 group"
+                    >
+                      More {catName} <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+                    {catItems.map((product, idx) => renderProductCard(product, idx))}
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold text-deep-green mb-2">No Items Available</h3>
-                <p className="text-gray-500 max-w-xs mx-auto">
-                  We currently don't have items in the <span className="font-bold text-leaf">{activeFilter}</span> category matching your filters.
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
+              );
+            })}
+          </div>
         </div>
       </section>
 
-      {/* ===== PRODUCT GRID BY TYPE ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div className="py-2 sm:py-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10">
-            <div>
-              <div className="section-label mb-3">
-                <Leaf className="w-3.5 h-3.5" />
-                Fish Varieties
-              </div>
-              <h2 className="text-3xl md:text-4xl font-black text-deep-green  tracking-tight">Shop by Fish Type</h2>
-            </div>
-          </div>
+      {/* ===== PRODUCT GRID BY TYPE - VERTICAL SECTIONS ===== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-1">
+        <div className="py-4 sm:py-8">
 
-          {/* Filters */}
-          <div className="flex flex-wrap gap-2 mb-8">
-            {typeFilters.map(f => (
-              <button
-                key={f}
-                onClick={() => setActiveTypeFilter(f)}
-                className={`category-pill bg-white/60 hover:bg-white ${activeTypeFilter === f ? 'active !bg-leaf' : ''}`}
-              >
-                {f}
-              </button>
-            ))}
-          </div>
+          {/* Vertical Categories */}
+          <div className="space-y-24">
+            {typeFilters.filter(f => f !== "All Fish").map((type) => {
+              const typeItems = products.filter(p => {
+                const pCat = p.category.toLowerCase();
+                if (type === "Fingerlings") return pCat === "fingerlings";
+                if (type === "Juvenile") return pCat === "juveniles" || pCat === "juvenile";
+                if (type === "Broodstock") return pCat === "broodstock";
+                if (type === "Table Size") return pCat === "table-size" || pCat === "table size";
+                if (type === "Smoked") return pCat === "smoked";
+                return false;
+              }).slice(0, 2);
 
-          {/* Product Cards */}
-          <div className="min-h-[400px]">
-            <AnimatePresence mode="popLayout">
-              {filteredByType.length > 0 ? (
-                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
-                  {filteredByType.map((product, idx) => renderProductCard(product, idx))}
-                </div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="flex flex-col items-center justify-center py-20 text-center"
-                >
-                  <div className="w-16 h-16 bg-white/50 text-leaf/30 rounded-2xl flex items-center justify-center mb-4">
-                    <Search className="w-8 h-8" />
+              if (typeItems.length === 0) return null;
+
+              return (
+                <div key={type} className="group/section">
+                  <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
+                    <div className="flex items-center gap-4">
+                      <h3 className="text-2xl md:text-4xl font-black text-deep-green tracking-tight">{type}</h3>
+                    </div>
+                    <Link 
+                      href={`/shop?type=${type.toLowerCase()}`}
+                      className="bg-deep-green text-white px-6 py-2.5 rounded-full flex items-center gap-2 font-bold text-[13px] hover:bg-deep-green/90 transition-all shadow-md shadow-black/10 group"
+                    >
+                      More {type} <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                   </div>
-                  <h3 className="text-xl font-bold text-deep-green mb-2">Variety Not Found</h3>
-                  <p className="text-gray-500 max-w-xs mx-auto">
-                    No <span className="font-bold text-leaf">{activeTypeFilter}</span> matches found with your current budget or availability settings.
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+                    {typeItems.map((product, idx) => renderProductCard(product, idx))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
-          <div className="mt-10 text-center">
+          <div className="mt-20 text-center">
             <Link
-              href="/category"
-              className="inline-flex items-center gap-2.5 border-2 border-leaf/20 text-leaf hover:bg-leaf hover:text-white hover:border-leaf px-8 py-4 rounded-xl font-bold transition-all text-sm tracking-wide shadow-sm hover:shadow-lg hover:shadow-leaf/20"
+              href="/shop"
+              className="inline-flex items-center gap-2.5 bg-leaf text-white px-10 py-3 rounded-xl font-black transition-all text-sm tracking-widest uppercase hover:-translate-y-1 active:scale-95"
             >
-              Browse All categories <ChevronRight className="w-4 h-4" />
+              Explore Full Catalog <ChevronRight className="w-5 h-5" />
             </Link>
           </div>
         </div>
@@ -828,32 +876,14 @@ export default function HomeClient({
                 </div>
 
                 <div className="pt-4">
+                  <Link href={item.link}>
                   <button
-                    onClick={() => {
-                      const product = products.find(p => p.name.includes(item.title)) || {
-                        id: item.link.split("=")[1] || item.title,
-                        name: item.title,
-                        desc: item.desc,
-                        img: item.img,
-                        price: "Contant",
-                        originalPrice: "",
-                        unit: item.title === "Broodstock" ? "fish" : "piece",
-                        category: "Farming",
-                        tags: [],
-                        rating: 5,
-                        reviews: 0,
-                        badge: "",
-                        badgeColor: "",
-                        rawPrice: null,
-                        rawPriceRange: null
-                      };
-                      handleOrderConfirm(product);
-                    }}
-                    className="inline-flex items-center justify-center gap-2 w-full bg-amber-500 hover:bg-amber-600 text-white py-4 rounded-2xl font-black text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95 group/btn cursor-pointer"
+                    className="inline-flex items-center justify-center gap-2 w-full bg-amber-500 hover:bg-amber-600 text-white py-2.5 rounded-md font-black text-sm transition-all shadow-lg shadow-amber-500/20 active:scale-95 group/btn cursor-pointer"
                   >
                     Order {item.title}
                     <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                   </button>
+                  </Link>
                 </div>
               </div>
             </motion.div>
@@ -882,11 +912,7 @@ export default function HomeClient({
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Centered Header */}
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <div className="inline-flex items-center gap-2 px-5 py-2 bg-leaf/15 text-leaf border border-leaf/20 rounded-full text-xs font-black uppercase tracking-[0.2em] mb-8">
-              <Shield className="w-3.5 h-3.5" />
-              Our Commitment
-            </div>
+          <div className="text-center max-w-3xl mx-auto mb-20">           
             <h2 className="text-4xl lg:text-6xl font-black text-deep-green mb-8 leading-[1.05] tracking-tight">
               Quality, Consistency &<br />
               <span className="text-leaf">Customer Satisfaction</span>
@@ -897,12 +923,12 @@ export default function HomeClient({
           </div>
 
           {/* 4 Feature Pillars */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-6 mb-16">
             {[
               { title: "Hygienic Bio-Security", sub: "Rigorous disease-control standards for every batch.", icon: Shield },
               { title: "Expert Support", sub: "Professional guidance at every growth stage.", icon: Users },
               { title: "Organic Feed Only", sub: "Zero hormones or chemicals. Pure nutrition.", icon: Leaf },
-              { title: "Timely Delivery", sub: "Reliable Lagos & Ogun logistics you can count on.", icon: Truck },
+              { title: "Timely Delivery", sub: "Reliable Nationwide & International logistics you can count on.", icon: Truck },
             ].map(({ title, sub, icon: Icon }) => (
               <motion.div
                 key={title}
@@ -1084,7 +1110,7 @@ export default function HomeClient({
             {[
               { title: "Healthy & Disease-Free", desc: "Strict bio-security controls ensure robust health and zero disease in every batch.", icon: Shield },
               { title: "Consistent Quality", desc: "Guaranteed uniform sizes and excellent feeding response across all categories.", icon: CheckCircle },
-              { title: "Reliable Supply", desc: "Consistent supply and timely delivery within Lagos & Ogun to your farm or home.", icon: Truck },
+              { title: "Reliable Supply", desc: "Consistent supply and timely delivery within Lagos, Nationwide & Internationally to your doorstep.", icon: Truck },
               { title: "Competitive Pricing", desc: "Premium quality at the most competitive prices for maximum value.", icon: Tag },
               { title: "Hygienic Processing", desc: "Professional packaging for both live and smoked catfish products.", icon: Leaf },
               { title: "Expert Support", desc: "Technical guidance and professional support for maximum yield and success.", icon: Users },
@@ -1116,7 +1142,7 @@ export default function HomeClient({
             { step: "01", title: "Browse & Select", desc: "Choose from Fingerlings, Juveniles, Table-size, Smoked, or Broodstock.", icon: Search },
             { step: "02", title: "Place Your Order", desc: "Order online or WhatsApp us at 09093009400 for bulk inquiries.", icon: ShoppingCart },
             { step: "03", title: "We Prepare It", desc: "Your order is carefully packaged with hygiene and precision.", icon: Package },
-            { step: "04", title: "Fast Delivery", desc: "Lagos & Ogun express delivery or farm pickup — your choice.", icon: Truck },
+            { step: "04", title: "Global Delivery", desc: "Express delivery across Lagos, Nationwide & Internationally — your choice.", icon: Truck },
           ].map((item, idx) => (
             <div key={idx} className="relative">
               {idx < 3 && (
@@ -1287,16 +1313,16 @@ export default function HomeClient({
                   fill
                   className="object-cover group-hover:scale-110 transition-transform duration-1000"
                 />
-                <div className="absolute inset-0 bg-gradient-to-tr from-deep-green/40 to-transparent flex items-end p-8">
-                  <div className="bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-xl w-full">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-leaf rounded-xl flex items-center justify-center text-white">
-                        <Star className="w-5 h-5 fill-current" />
+                <div className="absolute bottom-6 left-6">
+                  <div className="bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-2xl w-fit border border-white/20">
+                    <div className="flex items-center gap-3 mb-1.5">
+                      <div className="w-8 h-8 bg-leaf rounded-lg flex items-center justify-center text-white">
+                        <Star className="w-4 h-4 fill-current" />
                       </div>
-                      <h4 className="font-black text-deep-green tracking-tight">Superfood Choice</h4>
+                      <h4 className="font-black text-deep-green tracking-tight text-sm">Superfood Choice</h4>
                     </div>
-                    <p className="text-gray-500 text-xs font-bold leading-relaxed uppercase tracking-wider">
-                      High Protein • Omega-3 • Vitamin B12
+                    <p className="text-gray-500 text-[9px] font-black leading-none uppercase tracking-[0.15em] ml-11">
+                      Protein • Omega-3 • B12
                     </p>
                   </div>
                 </div>
@@ -1437,8 +1463,8 @@ export default function HomeClient({
             </div>
             <div className="mt-12 flex flex-wrap justify-center gap-10 text-white/60 font-bold text-sm">
               <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> 09093009400</span>
-              <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Ogun State & Lagos</span>
-              <span className="flex items-center gap-2"><Truck className="w-4 h-4" /> Lagos & Ogun Delivery</span>
+              <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Lagos, Nationwide & Int'l</span>
+              <span className="flex items-center gap-2"><Truck className="w-4 h-4" /> Nationwide & Global Delivery</span>
             </div>
           </div>
         </div>

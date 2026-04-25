@@ -16,23 +16,33 @@ export default async function Home() {
 
   // Map DB products to the format expected by HomeClient
   // If DB is empty, we can provide some defaults or the static ones
-  const mappedProducts = dbProducts.length > 0 ? dbProducts.map((p: Product) => ({
-    id: p.id,
-    name: p.name,
-    desc: p.description || "",
-    img: p.imageUrl || "/assets/bgImages/fingerlings.png", // fallback
-    price: p.price ? `₦${p.price.toLocaleString()}` : (p.price_range || "Contact for price"),
-    originalPrice: p.price_range || "",
-    unit: p.unit,
-    category: p.category,
-    tags: [] as string[],
-    rating: 4.9, // Default rating
-    reviews: 10, // Default reviews
-    badge: p.available ? "In Stock" : "Out of Stock",
-    badgeColor: p.available ? "bg-leaf" : "bg-gray-400",
-    rawPrice: p.price ?? null,
-    rawPriceRange: p.price_range ?? null,
-  })) : [
+    const mappedProducts = dbProducts.length > 0 ? dbProducts.map((p: Product) => {
+      const pCat = (p.category || "").toLowerCase();
+      let fallbackImg = "/assets/bgImages/fingerlings.png";
+      
+      if (pCat.includes('juvenile')) fallbackImg = "/assets/bgImages/juveniles.png";
+      else if (pCat.includes('table')) fallbackImg = "/assets/bgImages/tablesize.png";
+      else if (pCat.includes('smoke')) fallbackImg = "/assets/bgImages/smoked.png";
+      else if (pCat.includes('broodstock')) fallbackImg = "/assets/bgImages/broodstock.png";
+
+      return {
+        id: p.id,
+        name: p.name,
+        desc: p.description || "",
+        img: p.imageUrl || fallbackImg,
+        price: p.price ? `₦${p.price.toLocaleString()}` : (p.price_range || "Contact for price"),
+        originalPrice: p.price_range || "",
+        unit: p.unit,
+        category: p.category,
+        tags: [] as string[],
+        rating: 4.9, // Default rating
+        reviews: 10, // Default reviews
+        badge: p.available ? "In Stock" : "Out of Stock",
+        badgeColor: p.available ? "bg-leaf" : "bg-gray-400",
+        rawPrice: p.price ?? null,
+        rawPriceRange: p.price_range ?? null,
+      };
+    }) : [
     {
       id: "fingerlings",
       name: "Fingerlings",

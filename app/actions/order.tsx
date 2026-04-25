@@ -21,6 +21,8 @@ export async function createOrder(data: any) {
             totalAmount: data.totalAmount || null,
             items: data.items ? JSON.stringify(data.items) : null,
             deliveryOption: data.deliveryOption,
+            country: data.country || null,
+            postalCode: data.postalCode || null,
             notes: data.notes || null,
         }).returning();
 

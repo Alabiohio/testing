@@ -36,8 +36,10 @@ export const orders = pgTable("orders", {
   subCategory: varchar("sub_category", { length: 255 }),
   quantity: varchar("quantity", { length: 100 }),
   totalAmount: integer("total_amount"),
-  items: text("items"), // Storing as stringified JSON for simplicity if jsonb is not available/complex
+  items: text("items"), 
   deliveryOption: varchar("delivery_option", { length: 255 }).notNull(),
+  country: varchar("country", { length: 255 }),
+  postalCode: varchar("postal_code", { length: 50 }),
   notes: text("notes"),
   isRead: boolean("is_read").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -102,6 +104,9 @@ export const priceCatalog = pgTable("price_catalog", {
   priceRange: text("price_range").notNull(),
   unit: text("unit").notNull(),
   imageUrl: text("image_url"),
+  iconName: text("icon_name"),
+  color: text("color"),
+  orderIndex: integer("order_index"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -116,7 +121,8 @@ export const partnerAds = pgTable("partner_ads", {
   imageUrl: text("image_url").notNull(),
    linkUrl: text("link_url"),
    price: text("price"),
-   isActive: boolean("is_active").notNull().default(true),
+  isActive: boolean("is_active").notNull().default(true),
+  hasLink: boolean("has_link").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

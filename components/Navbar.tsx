@@ -66,16 +66,79 @@ const Navbar = () => {
                         exit={{ height: 0, opacity: 0 }}
                         className="promo-bar relative z-[105] overflow-hidden"
                     >
-                        <div className="ticker-wrap py-2.5">
-                            <div className="ticker-content">
-                                {['📦 Bulk order discounts available — Call 09093009400', '🚚 Nationwide delivery available', '🌿 100% organic feed — no hormones, no preservatives'].map((msg, i) => (
-                                    <span key={i} className="inline-flex items-center text-white font-bold text-sm px-12 opacity-95">
-                                        {msg}
+                        <div className="ticker-wrap py-1">
+                            <div className="ticker-content flex items-center">
+                                {[
+                                    { text: '📦 Bulk order discounts available — Call 09093009400' },
+                                    { text: '100% Organically Grown with No Hormones Inducement' },
+                                    { text: 'No preservatives!' },
+                                    {text: 'Naturally farmed'},
+                                    {text: 'National wide delivery'},
+                                    { 
+                                        isPartner: true,
+                                        content: (
+                                            <div className="flex items-center gap-1">
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="relative w-15 h-7 shrink-0">
+                                                        <Image src="/ccbLg.png" alt="CCB" fill className="object-contain p-0.5" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="whitespace-nowrap uppercase tracking-wider">CCB Farms</span>
+                                                        <span className="text-white/50 text-[9px] font-bold tracking-widest uppercase">RC: 3709222</span>
+                                                    </div>
+                                                </div>
+                                                <span className="opacity-40 font-normal mx-1">|</span>
+                                                <div className="flex items-center font-black gap-1.5">
+                                                    <span className="whitespace-nowrap uppercase tracking-wider">an Official Partner of Techgrow Farms Limited</span>
+                                                    <div className="relative w-20 h-7 shrink-0">
+                                                        <Image src="/assets/images/techgrowTrans.png" alt="Techgrow" fill className="object-contain p-0.5" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-white/50 text-[9px] font-bold tracking-widest uppercase">RC: 8103767</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                ].map((item, i) => (
+                                    <span key={i} className="inline-flex items-center text-white text-xs sm:text-sm px-8 opacity-95">
+                                        {item.content || item.text}
                                     </span>
                                 ))}
-                                {['📦 Bulk order discounts available — Call 09093009400', '🚚 Nationwide delivery available', '🌿 100% organic feed — no hormones, no preservatives'].map((msg, i) => (
-                                    <span key={`r-${i}`} className="inline-flex items-center text-white font-bold text-sm px-12 opacity-95">
-                                        {msg}
+                                {/* Duplicate for continuous scroll */}
+                                {[
+                                    { text: '📦 Bulk order discounts available — Call 09093009400' },
+                                    { text: '🚚 Nationwide delivery available' },
+                                    { text: '🌿 100% organic feed — no hormones, no preservatives' },
+                                    { 
+                                        isPartner: true, 
+                                        content: (
+                                            <div className="flex items-center gap-1">
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="relative w-15 h-7 shrink-0">
+                                                        <Image src="/ccbLg.png" alt="CCB" fill className="object-contain p-0.5" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="whitespace-nowrap uppercase tracking-wider">CCB Farms</span>
+                                                        <span className="text-white/50 text-[9px] font-bold tracking-widest uppercase">RC: 3709222</span>
+                                                    </div>
+                                                </div>
+                                                <span className="opacity-40 font-normal mx-1">|</span>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="whitespace-nowrap uppercase tracking-wider">an Official Partner of Techgrow Farms Limited</span>
+                                                    <div className="relative w-20 h-7 shrink-0">
+                                                        <Image src="/assets/images/techgrowTrans.png" alt="Techgrow" fill className="object-contain p-0.5" />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-white/50 text-[9px] font-bold tracking-widest uppercase">RC: 8103767</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                ].map((item, i) => (
+                                    <span key={`r-${i}`} className="inline-flex items-center text-white text-xs sm:text-sm px-8 opacity-95">
+                                        {item.content || item.text}
                                     </span>
                                 ))}
                             </div>
@@ -112,7 +175,7 @@ const Navbar = () => {
                         </Link>
 
                         {/* Desktop Menu */}
-                        <div className="hidden md:flex items-center gap-1">
+                        <div className="hidden lg:flex items-center gap-1">
                             {menuItems.map((item) => {
                                 const isActive = pathname === item.href;
                                 return (
@@ -149,7 +212,7 @@ const Navbar = () => {
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 onClick={() => setIsSearchOpen(true)}
-                                className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 hover:border-leaf/30 hover:text-leaf transition-all text-sm font-medium"
+                                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 hover:border-leaf/30 hover:text-leaf transition-all text-sm font-medium"
                             >
                                 <Search className="w-4 h-4" />
                                 <span className="text-xs opacity-60 hidden lg:block">Search</span>
@@ -173,14 +236,14 @@ const Navbar = () => {
                             {/* Shop CTA - Desktop */}
                             <Link
                                 href="/book-order"
-                                className="hidden md:inline-flex items-center gap-2 bg-leaf hover:bg-leaf-dark text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 shadow-lg shadow-leaf/25 active:scale-95 tracking-wide"
+                                className="hidden lg:inline-flex items-center gap-2 bg-leaf hover:bg-leaf-dark text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 shadow-lg shadow-leaf/25 active:scale-95 tracking-wide"
                             >
                                 Order Now
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
 
                             {/* Mobile Controls */}
-                            <div className="md:hidden flex items-center gap-2">
+                            <div className="lg:hidden flex items-center gap-2">
                                 <motion.button
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
@@ -212,7 +275,7 @@ const Navbar = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsOpen(false)}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] md:hidden"
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] lg:hidden"
                         />
 
                         {/* Drawer */}
@@ -221,7 +284,7 @@ const Navbar = () => {
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
                             transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[120] md:hidden shadow-[-20px_0_60px_rgba(0,0,0,0.25)] flex flex-col"
+                            className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[120] lg:hidden shadow-[-20px_0_60px_rgba(0,0,0,0.25)] flex flex-col"
                         >
                             {/* Header */}
                             <div className="p-5 flex items-center justify-between border-b border-gray-100">

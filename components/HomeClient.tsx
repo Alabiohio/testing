@@ -756,7 +756,7 @@ export default function HomeClient({
                       <h3 className="text-2xl md:text-4xl font-black text-deep-green tracking-tight">{type}</h3>
                     </div>
                     <Link 
-                      href={`/shop?type=${type.toLowerCase()}`}
+                      href={`/${type === "Juvenile" ? "juveniles" : type === "Table Size" ? "table-size" : type.toLowerCase()}`}
                       className="bg-deep-green text-white px-6 py-2.5 rounded-full flex items-center gap-2 font-bold text-[13px] hover:bg-deep-green/90 transition-all shadow-md shadow-black/10 group"
                     >
                       More {type} <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

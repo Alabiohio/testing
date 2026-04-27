@@ -20,6 +20,7 @@ export async function createOrder(data: any) {
             quantity: data.quantity || null,
             totalAmount: data.totalAmount || null,
             items: data.items ? JSON.stringify(data.items) : null,
+            imageUrl: data.items && data.items.length > 0 ? data.items[0].imageUrl : null,
             deliveryOption: data.deliveryOption,
             country: data.country || null,
             postalCode: data.postalCode || null,

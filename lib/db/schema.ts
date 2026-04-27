@@ -37,6 +37,7 @@ export const orders = pgTable("orders", {
   quantity: varchar("quantity", { length: 100 }),
   totalAmount: integer("total_amount"),
   items: text("items"), 
+  imageUrl: text("image_url"),
   deliveryOption: varchar("delivery_option", { length: 255 }).notNull(),
   country: varchar("country", { length: 255 }),
   postalCode: varchar("postal_code", { length: 50 }),

@@ -448,7 +448,7 @@ export default function HomeClient({
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-18 mb-12 relative z-10">
+        <div id="hero-search-bar" className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 lg:pt-18 mb-12 relative z-10">
           <div
             className="relative group cursor-pointer"
             onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
@@ -471,12 +471,12 @@ export default function HomeClient({
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="max-w-3xl"
           >
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight mb-6 leading-[1.05] text-white">
+            <h1 style={{ fontFamily: "var(--belanosima-font), sans-serif" }} className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 leading-[1.05] text-white">
               Premium Catfish<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-leaf to-emerald-300">Direct from Farm</span>
             </h1>
 
-            <p className="text-lg text-white/70 mb-10 max-w-xl leading-relaxed font-medium">
+            <p className="text-md text-white/80 mb-5 max-w-xl leading-relaxed font-medium">
               Healthy. Fresh. Responsibly Raised. — Supplying high-quality catfish across all growth stages to farmers, retailers, restaurants & households within Lagos, Nationwide and Internationally.
             </p>
 

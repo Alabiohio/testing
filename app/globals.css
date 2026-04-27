@@ -12,6 +12,8 @@
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-belanosima: var(--belanosima-font), sans-serif;
+  --font-saira: var(--saira-font), sans-serif;
 }
 
 :root {
@@ -39,8 +41,17 @@ body {
 
 /* === PROMO BAR === */
 .promo-bar {
-  background: #4ca579; /* Slate 900 for a neutral, premium dark background */
+  background: #010438;
+  background-size: 200% auto;
+  animation: shimmer-bar 10s linear infinite;
+  font-family: var(--font-saira), sans-serif;
 }
+
+@keyframes shimmer-bar {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
 
 /* === Navbar === */
 nav.scrolled {
@@ -83,7 +94,7 @@ nav.scrolled {
 
 /* === TRUST BADGE STRIP === */
 .trust-strip {
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  background: linear-gradient(135deg, #0ba539 0%, #dcfce7 100%);
   border-bottom: 1px solid #bbf7d0;
 }
 

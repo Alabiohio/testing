@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, Search, ShoppingCart, ArrowRight, Truck, ShieldCheck, RefreshCcw, Headphones } from 'lucide-react';
+import { Menu, X, Search, ShoppingCart, ArrowRight, Truck, ShieldCheck, RefreshCcw, Headphones, Asterisk } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlobalSearch from './GlobalSearch';
 import { usePathname } from 'next/navigation';
@@ -13,7 +13,30 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [promoVisible, setPromoVisible] = useState(true);
+    const [isHeroSearchVisible, setIsHeroSearchVisible] = useState(false);
     const [cartCount] = useState(0);
+
+    // Hero Search Visibility Observer
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsHeroSearchVisible(entry.isIntersecting);
+            },
+            { threshold: 0.1 }
+        );
+
+        const heroSearch = document.getElementById('hero-search-bar');
+        if (heroSearch) {
+            observer.observe(heroSearch);
+        } else {
+            // If we're not on a page with the hero search, always show the nav search
+            setIsHeroSearchVisible(false);
+        }
+
+        return () => {
+            if (heroSearch) observer.unobserve(heroSearch);
+        };
+    }, [pathname]); // Re-run when path changes to look for the element again
     const headerRef = useRef<HTMLElement | null>(null);
 
     // Body scroll lock
@@ -36,6 +59,42 @@ const Navbar = () => {
         { name: 'Training', href: '/training' },
         { name: 'Book Order', href: '/book-order' },
         { name: 'Contact', href: '/contact' },
+    ];
+
+    const tickerItems = [
+        { 
+            isPartner: true,
+            content: (
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5">
+                        <div className="relative w-16 h-8 shrink-0">
+                            <Image src="/ccbLg.png" alt="CCB Logo" fill className="object-contain" />
+                        </div>
+                        <span className="whitespace-nowrap uppercase tracking-wider font-bold text-[11px] text-white/90">RC: 3709222</span>
+                    </div>
+                    <span className="text-[12px] font-black uppercase tracking-[0.2em] text-white/90 italic mx-1">Official Partner of</span>
+                    <div className="flex items-center gap-1.5">
+                        <div className="relative w-28 h-9 shrink-0">
+                          <Image src="/assets/images/techgrowWhite.png" alt="Techgrow Logo" fill className="object-contain" />
+                        </div>
+                        <span className="whitespace-nowrap uppercase tracking-wider font-bold text-[11px] text-white/90">RC: 8103767</span>
+                    </div>
+                </div>
+            )
+        },
+        { text: '100% Organically Grown' },
+        { text: 'Naturally Farmed' },
+        { text: 'No Preservatives' },
+        { text: 'Fresh from Farm' },
+        { text: '100% Hygienic' },
+        { content: <span className="font-black uppercase tracking-[0.15em] text-[10px] text-white/70">Products:</span> },
+        { text: 'Garri2go' },
+        { text: 'Soups2go' },
+        { text: 'Banga Soup2go' },
+        { text: 'Egusi Soup2go' },
+        { text: 'Nationwide delivery available' },
+        { text: 'Bulk orders available' },
+        { text: 'Call  09093009400' }
     ];
 
     useEffect(() => {
@@ -66,90 +125,20 @@ const Navbar = () => {
                         exit={{ height: 0, opacity: 0 }}
                         className="promo-bar relative z-[105] overflow-hidden"
                     >
-                        <div className="ticker-wrap py-1">
+                        <div className="ticker-wrap">
                             <div className="ticker-content flex items-center">
-                                {[
-                                    { text: '📦 Bulk order discounts available — Call 09093009400' },
-                                    { text: '100% Organically Grown with No Hormones Inducement' },
-                                    { text: 'No preservatives!' },
-                                    {text: 'Naturally farmed'},
-                                    {text: 'National wide delivery'},
-                                    { 
-                                        isPartner: true,
-                                        content: (
-                                            <div className="flex items-center gap-1">
-                                                <div className="flex items-center gap-1.5">
-                                                    <div className="relative w-15 h-7 shrink-0">
-                                                        <Image src="/ccbLg.png" alt="CCB" fill className="object-contain p-0.5" />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="whitespace-nowrap uppercase tracking-wider">CCB Farms</span>
-                                                        <span className="text-white/50 text-[9px] font-bold tracking-widest uppercase">RC: 3709222</span>
-                                                    </div>
-                                                </div>
-                                                <span className="opacity-40 font-normal mx-1">|</span>
-                                                <div className="flex items-center font-black gap-1.5">
-                                                    <span className="whitespace-nowrap uppercase tracking-wider">an Official Partner of Techgrow Farms Limited</span>
-                                                    <div className="relative w-20 h-7 shrink-0">
-                                                        <Image src="/assets/images/techgrowTrans.png" alt="Techgrow" fill className="object-contain p-0.5" />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="text-white/50 text-[9px] font-bold tracking-widest uppercase">RC: 8103767</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )
-                                    }
-                                ].map((item, i) => (
-                                    <span key={i} className="inline-flex items-center text-white text-xs sm:text-sm px-8 opacity-95">
-                                        {item.content || item.text}
-                                    </span>
-                                ))}
-                                {/* Duplicate for continuous scroll */}
-                                {[
-                                    { text: '📦 Bulk order discounts available — Call 09093009400' },
-                                    { text: '🚚 Nationwide delivery available' },
-                                    { text: '🌿 100% organic feed — no hormones, no preservatives' },
-                                    { 
-                                        isPartner: true, 
-                                        content: (
-                                            <div className="flex items-center gap-1">
-                                                <div className="flex items-center gap-1.5">
-                                                    <div className="relative w-15 h-7 shrink-0">
-                                                        <Image src="/ccbLg.png" alt="CCB" fill className="object-contain p-0.5" />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="whitespace-nowrap uppercase tracking-wider">CCB Farms</span>
-                                                        <span className="text-white/50 text-[9px] font-bold tracking-widest uppercase">RC: 3709222</span>
-                                                    </div>
-                                                </div>
-                                                <span className="opacity-40 font-normal mx-1">|</span>
-                                                <div className="flex items-center gap-1.5">
-                                                    <span className="whitespace-nowrap uppercase tracking-wider">an Official Partner of Techgrow Farms Limited</span>
-                                                    <div className="relative w-20 h-7 shrink-0">
-                                                        <Image src="/assets/images/techgrowTrans.png" alt="Techgrow" fill className="object-contain p-0.5" />
-                                                    </div>
-                                                    <div className="flex flex-col">
-                                                        <span className="text-white/50 text-[9px] font-bold tracking-widest uppercase">RC: 8103767</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )
-                                    }
-                                ].map((item, i) => (
-                                    <span key={`r-${i}`} className="inline-flex items-center text-white text-xs sm:text-sm px-8 opacity-95">
-                                        {item.content || item.text}
-                                    </span>
+                                {[...tickerItems, ...tickerItems].map((item, i) => (
+                                    <React.Fragment key={i}>
+                                        <span className="inline-flex items-center font-bold text-white text-sm sm:text-sm whitespace-nowrap">
+                                            {item.content || item.text}
+                                        </span>
+                                        <div className="flex-shrink-0 flex items-center justify-center mx-4">
+                                            <Asterisk className="w-3 h-3 text-white" strokeWidth={3} />
+                                        </div>
+                                    </React.Fragment>
                                 ))}
                             </div>
                         </div>
-                        <button
-                            onClick={() => setPromoVisible(false)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors p-1 rounded-full hover:bg-white/10"
-                            aria-label="Close announcement"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -208,16 +197,22 @@ const Navbar = () => {
                         {/* Right Actions */}
                         <div className="flex items-center gap-3">
                             {/* Search */}
-                            <motion.button
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                onClick={() => setIsSearchOpen(true)}
-                                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 hover:border-leaf/30 hover:text-leaf transition-all text-sm font-medium"
-                            >
-                                <Search className="w-4 h-4" />
-                                <span className="text-xs opacity-60 hidden lg:block">Search</span>
-                                <span className="text-[10px] font-black opacity-30 bg-foreground/5 px-1.5 py-0.5 rounded-md hidden lg:block">⌘K</span>
-                            </motion.button>
+                            <AnimatePresence>
+                                {!isHeroSearchVisible && (
+                                    <motion.button
+                                        key="desktop-search"
+                                        initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                                        exit={{ opacity: 0, scale: 0.8, x: 20 }}
+                                        onClick={() => setIsSearchOpen(true)}
+                                        className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 hover:border-leaf/30 hover:text-leaf transition-all text-sm font-medium"
+                                    >
+                                        <Search className="w-4 h-4" />
+                                        <span className="text-xs opacity-60 hidden lg:block">Search</span>
+                                        <span className="text-[10px] font-black opacity-30 bg-foreground/5 px-1.5 py-0.5 rounded-md hidden lg:block">⌘K</span>
+                                    </motion.button>
+                                )}
+                            </AnimatePresence>
 
                             {/* Cart Icon */}
                             <Link
@@ -244,14 +239,20 @@ const Navbar = () => {
 
                             {/* Mobile Controls */}
                             <div className="lg:hidden flex items-center gap-2">
-                                <motion.button
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    onClick={() => setIsSearchOpen(true)}
-                                    className="p-2.5 rounded-xl bg-gray-100 text-gray-600 active:scale-90 transition-all"
-                                >
-                                    <Search className="w-5 h-5" />
-                                </motion.button>
+                                <AnimatePresence>
+                                    {!isHeroSearchVisible && (
+                                        <motion.button
+                                            key="mobile-search"
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.8 }}
+                                            onClick={() => setIsSearchOpen(true)}
+                                            className="p-2.5 rounded-xl bg-gray-100 text-gray-600 active:scale-90 transition-all"
+                                        >
+                                            <Search className="w-5 h-5" />
+                                        </motion.button>
+                                    )}
+                                </AnimatePresence>
                                 <button
                                     onClick={() => setIsOpen(!isOpen)}
                                     className="p-2.5 rounded-xl bg-gray-100 text-gray-700 active:scale-90 transition-all"

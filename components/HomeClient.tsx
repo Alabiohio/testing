@@ -411,7 +411,7 @@ export default function HomeClient({
                 <ShoppingCart className="w-5 h-5" />
                 Explore Categories
               </Link>
-              <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-white hover:text:white text-black px-8 py-2.5 rounded-sm font-bold transition-all hover:bg-leaf text-base">
+              <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-white hover:text-white text-black px-8 py-2.5 rounded-sm font-bold transition-all hover:bg-leaf text-base">
                 <Phone className="w-5 h-5 text-black hover:text:white" />
                 Talk to an Expert
               </Link>

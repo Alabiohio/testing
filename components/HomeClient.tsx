@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ShoppingBag, ShoppingCart, ChevronRight, ChevronLeft, ChevronDown,
   Shield, Truck, Clock, Star, ArrowRight, CheckCircle,
-  Zap, Tag, Phone, MapPin, Users, Leaf, Package, Heart, Activity, Brain, MessageSquare
+  Zap, Tag, Phone, MapPin, Users, Leaf, Package, Heart, Activity, Brain, Asterisk, MessageSquare
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ConfirmModal from "./ConfirmModal";
@@ -70,12 +70,12 @@ interface ProductProps {
 const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm: (ad: any) => void }) => {
   if (ad.hasLink === false) {
     return (
-      <div className="block rounded-sm overflow-hidden border border-red-700 shadow-sm">
+      <div className="block rounded-sm overflow-hidden">
         <Image
           src={ad.imageUrl}
           alt={ad.title || "Special offer from our partner"}
-          width={800}
-          height={400}
+          width={1200}
+          height={600}
           className="w-full h-[100px] md:h-[240px] object-contain"
         />
       </div>
@@ -88,7 +88,7 @@ const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm
         <Link
           href={ad.linkUrl}
           target={ad.linkUrl.startsWith('http') ? "_blank" : "_self"}
-          className="block rounded-sm overflow-hidden cursor-pointer group transition-all bg-white"
+          className="block rounded-sm overflow-hidden cursor-pointer group transition-all"
         >
           <Image
             src={ad.imageUrl}
@@ -101,7 +101,7 @@ const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm
       ) : (
         <div
           onClick={() => handleAdOrderConfirm(ad)}
-          className="block rounded-sm overflow-hidden cursor-pointer group transition-all bg-white"
+          className="block rounded-sm overflow-hidden cursor-pointer group transition-all"
         >
           <Image
             src={ad.imageUrl}
@@ -154,18 +154,48 @@ const HeroCountdown = ({ targetDate }: { targetDate: Date | string | null }) => 
 const PartnerAdSection = ({ initialPartnerAds, handleAdOrderConfirm }: { initialPartnerAds: any[], handleAdOrderConfirm: (ad: any) => void }) => {
   if (!initialPartnerAds || initialPartnerAds.length === 0) return null;
 
+  // Reverse the order so the last item shows first
+  const reversedAds = [...initialPartnerAds].reverse();
+
   return (
-    <section className="bg-transparent max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-      <div className="grid grid-cols-2 md:flex md:flex-wrap md:justify-center gap-1 md:gap-2">
-        {initialPartnerAds.map((ad: any, idx: number) => (
-          <div key={ad.id || idx} className="w-full md:w-[280px] group">
-            <AdContent ad={ad} handleAdOrderConfirm={handleAdOrderConfirm} />
-          </div>
-        ))}
+    <section className="bg-transparent mb-24 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl md:text-3xl font-black text-deep-green tracking-tight uppercase">Featured Products</h2>
+          <div className="flex-1 h-px bg-gray-100" />
+        </div>
+      </div>
+
+      <div className="relative overflow-hidden w-full">
+        <div
+          className="flex w-max partner-ad-scroll"
+          style={{
+            // Increased speed: from 10s per item down to 4s
+            animationDuration: `${initialPartnerAds.length * 4}s`,
+          }}
+        >
+          {/* Two identical sets with trailing gap padding for seamless infinite loop */}
+          {[1, 2].map((set) => (
+            <div key={set} className="flex gap-4 md:gap-8 pr-4 md:pr-8">
+              {reversedAds.map((ad: any, idx: number) => (
+                <div key={`${set}-${idx}`} className="w-[280px] md:w-[350px] shrink-0 group">
+                  <div className="relative bg-white rounded-sm border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden p-2">
+                    <AdContent ad={ad} handleAdOrderConfirm={handleAdOrderConfirm} />
+                    <div className="mt-3 px-2 pb-2">
+                      <h3 className="font-black text-deep-green text-sm uppercase tracking-tight line-clamp-1">{ad.title}</h3>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
 };
+
+
 
 export default function HomeClient({
   initialProducts,

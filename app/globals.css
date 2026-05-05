@@ -133,6 +133,18 @@ nav.scrolled {
 .ticker-content { display: inline-flex; align-items: center; animation: ticker 30s linear infinite; }
 .ticker-content:hover { animation-play-state: paused; }
 
+/* === PARTNER AD SCROLL === */
+@keyframes partner-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.partner-ad-scroll {
+  animation: partner-scroll 30s linear infinite;
+}
+.partner-ad-scroll:hover {
+  animation-play-state: paused;
+}
+
 /* === CATEGORY PILL === */
 .category-pill {
   display: inline-flex;

@@ -943,22 +943,6 @@ export default function HomeClient({
                 We provide honest market rates for our premium stock. No hidden fees, just pure value for your investment.
               </p>
             </div>
-            <div className="hidden lg:block shrink-0 pb-2">
-              <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-sm border border-gray-100">
-                <div className="px-6 py-4 text-center">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Updated</p>
-                  <p className="text-sm font-black text-deep-green">Daily 8:00 AM</p>
-                </div>
-                <div className="w-px h-8 bg-gray-200" />
-                <div className="px-6 py-4 text-center">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Status</p>
-                  <div className="flex items-center gap-2 justify-center">
-                    <div className="w-2 h-2 rounded-full bg-leaf" />
-                    <p className="text-sm font-black text-leaf">Live Catalog</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">

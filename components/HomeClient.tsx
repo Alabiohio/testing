@@ -455,11 +455,8 @@ export default function HomeClient({
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="max-w-4xl"
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/6 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/72 mb-6">
-              Trusted Supply for Retail and Farm Orders
-            </div>
 
-            <h1 style={{ fontFamily: "var(--belanosima-font), sans-serif" }} className="text-4xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.02] text-white max-w-3xl">
+            <h1 style={{ fontFamily: "var(--belanosima-font), sans-serif" }} className="text-3xl sm:text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.02] text-white max-w-3xl">
               Premium catfish for buyers who value consistency.
             </h1>
 
@@ -468,25 +465,25 @@ export default function HomeClient({
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Link href="/category" className="inline-flex items-center justify-center gap-2.5 bg-deep-green hover:bg-[#0f2f21] text-white px-8 py-3 rounded-md font-bold text-base transition-all shadow-sm active:scale-95 tracking-wide">
+              <Link href="/category" className="inline-flex items-center justify-center gap-2.5 bg-deep-green hover:bg-[#0f2f21] text-white px-8 py-2.5 rounded-md font-bold text-base transition-all shadow-sm active:scale-95 tracking-wide">
                 <ShoppingCart className="w-5 h-5" />
                 View Categories
               </Link>
-              <Link href="/contact" className="inline-flex items-center justify-center gap-2 border border-white/18 bg-white/8 text-white px-8 py-3 rounded-md font-bold transition-all hover:bg-white/14 text-base">
+              <Link href="/contact" className="inline-flex items-center justify-center gap-2 border border-white/18 bg-white text-[0f2f21] px-8 py-2.5 rounded-md font-bold transition-all hover:bg-white/80 text-base">
                 <Phone className="w-5 h-5" />
                 Speak with the Team
               </Link>
             </div>
 
             {/* Quick Stats */}
-            <div className="grid gap-5 sm:grid-cols-3 max-w-3xl border-t border-white/12 pt-8">
+            <div className="grid gap-5 grid-cols-3 sm:grid-cols-3 max-w-3xl border-t border-white/12 pt-8">
               {[
                 { value: "₦80", label: "Entry pricing from" },
                 { value: "7 Days", label: "Support availability" },
                 { value: "Nationwide", label: "Delivery coverage" },
               ].map(s => (
-                <div key={s.label} className="rounded-md border border-white/10 bg-white/6 px-4 py-4">
-                  <p className="text-2xl font-black text-white">{s.value}</p>
+                <div key={s.label} className="rounded-md border border-white/10 bg-white/6 px-2 py-2">
+                  <p className="text-md font-bold text-white">{s.value}</p>
                   <p className="text-xs font-bold text-white/50 uppercase tracking-wider mt-1">{s.label}</p>
                 </div>
               ))}

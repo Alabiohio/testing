@@ -35,13 +35,7 @@ export default function ContactPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-background pt-4 pb-24 relative overflow-hidden">
-            {/* Background Decorative Elements */}
-            <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none">
-                <div className="absolute top-20 right-[-10%] w-[500px] h-[500px] bg-leaf rounded-full blur-[150px]" />
-                <div className="absolute bottom-20 left-[-10%] w-[400px] h-[400px] bg-earth rounded-full blur-[150px]" />
-            </div>
-
+        <div className="min-h-screen bg-background pt-8 pb-24 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <header className="mb-8">
                     
@@ -51,8 +45,8 @@ export default function ContactPage() {
                         transition={{ delay: 0.1 }}
                         className="text-5xl lg:text-7xl font-black text-deep-green  mb-8 tracking-tighter"
                     >
-                        Contact <br />
-                        <span className="text-leaf">CCB Farms</span>
+                        Contact the <br />
+                        <span className="text-deep-green/75">CCB Farms team</span>
                     </motion.h1>
                     <p className="text-xl text-foreground/60 max-w-2xl leading-relaxed">
                         Have questions about our products or training? Reach out to us through any of the channels below or visit our farm.
@@ -69,9 +63,9 @@ export default function ContactPage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
-                                    className="bg-white  p-8 rounded-[40px] shadow-2xl shadow-black/5 border border-earth/5  group hover:border-leaf/30 transition-all"
+                                    className="bg-white p-8 rounded-md shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 group hover:border-black/12 transition-all"
                                 >
-                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 ${method.bgColor}`}>
+                                    <div className={`w-14 h-14 rounded-md flex items-center justify-center mb-6 ${method.bgColor}`}>
                                         <method.icon className={`w-7 h-7 ${method.iconColor}`} />
                                     </div>
                                     <h3 className="text-xl font-black text-deep-green  mb-2">{method.title}</h3>
@@ -106,10 +100,10 @@ export default function ContactPage() {
                             </motion.div>**/}
                         </div>
 
-                        <div className="bg-leaf/5 p-10 rounded-[50px] border border-leaf/10">
+                        <div className="bg-white p-10 rounded-md border border-black/6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
                             <div className="flex gap-6 mb-8">
-                                <div className="w-16 h-16 rounded-3xl bg-white  shadow-xl flex items-center justify-center shrink-0">
-                                    <MapPin className="w-8 h-8 text-leaf" />
+                                <div className="w-16 h-16 rounded-md bg-[#f4f5f1] flex items-center justify-center shrink-0">
+                                    <MapPin className="w-8 h-8 text-deep-green" />
                                 </div>
                                 <div>
                                     <h3 className="text-2xl font-black text-deep-green  mb-2">Our Location</h3>
@@ -127,7 +121,7 @@ export default function ContactPage() {
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="bg-white  p-10 md:p-14 rounded-[60px] shadow-2xl shadow-earth/5 border-2 border-earth/5 "
+                        className="bg-white p-10 md:p-14 rounded-md shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6"
                     >
                         <h2 className="text-3xl font-black text-deep-green  mb-10 tracking-tight">Send Message</h2>
                         
@@ -135,7 +129,7 @@ export default function ContactPage() {
 
                         <div className="mt-12 pt-12 border-t border-earth/5 flex justify-center gap-6">
                             {[Facebook, Instagram, Twitter].map((Icon, i) => (
-                                <a key={i} href="#" className="w-12 h-12 rounded-2xl bg-leaf/5 flex items-center justify-center text-leaf hover:bg-leaf hover:text-white transition-all transform hover:-translate-y-1">
+                                <a key={i} href="#" className="w-12 h-12 rounded-md bg-[#f4f5f1] flex items-center justify-center text-deep-green hover:bg-deep-green hover:text-white transition-all">
                                     <Icon className="w-6 h-6" />
                                 </a>
                             ))}
@@ -228,9 +222,9 @@ function ContactForm() {
             <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-leaf/5 border-2 border-leaf/20 rounded-[40px] p-12 text-center space-y-6"
+                className="bg-[#edf1eb] border border-deep-green/15 rounded-md p-12 text-center space-y-6"
             >
-                <div className="w-20 h-20 bg-leaf rounded-full flex items-center justify-center mx-auto shadow-xl shadow-leaf/20">
+                <div className="w-20 h-20 bg-deep-green rounded-full flex items-center justify-center mx-auto shadow-sm">
                     <CheckCircle className="w-10 h-10 text-white" />
                 </div>
                 <h3 className="text-2xl font-black text-deep-green">Message Sent!</h3>
@@ -239,7 +233,7 @@ function ContactForm() {
                 </p>
                 <button 
                     onClick={() => setIsSuccess(false)}
-                    className="text-leaf font-black uppercase tracking-widest text-xs hover:underline pt-4"
+                    className="text-deep-green font-black uppercase tracking-widest text-xs hover:underline pt-4"
                 >
                     SEND ANOTHER MESSAGE
                 </button>
@@ -256,7 +250,7 @@ function ContactForm() {
                     type="text" 
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-2xl py-3 px-8 outline-none transition-all font-bold" 
+                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-md py-3 px-8 outline-none transition-all font-bold" 
                     placeholder="How should we address you?" 
                 />
             </div>
@@ -267,7 +261,7 @@ function ContactForm() {
                     type="email" 
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-2xl py-3 px-8 outline-none transition-all font-bold" 
+                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-md py-3 px-8 outline-none transition-all font-bold" 
                     placeholder="your@email.com" 
                 />
             </div>
@@ -276,7 +270,7 @@ function ContactForm() {
                 <select 
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-2xl py-3 px-8 outline-none transition-all font-bold appearance-none"
+                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-md py-3 px-8 outline-none transition-all font-bold appearance-none"
                 >
                     <option>Product Inquiry</option>
                     <option>Training Enrolment</option>
@@ -290,14 +284,14 @@ function ContactForm() {
                     required 
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-earth/5  border-2 border-transparent focus:border-leaf focus:bg-white  rounded-2xl py-3 px-8 outline-none transition-all font-bold min-h-[150px]" 
+                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-md py-3 px-8 outline-none transition-all font-bold min-h-[150px]" 
                     placeholder="Tell us what you need help with..." 
                 />
             </div>
             <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className={`w-full ${isSubmitting ? 'bg-leaf/50' : 'bg-leaf hover:bg-leaf-dark'} text-white py-6 rounded-2xl font-black text-xl uppercase tracking-widest transition-all hover:scale-[1.02] flex items-center justify-center gap-4`}
+                className={`w-full ${isSubmitting ? 'bg-deep-green/50' : 'bg-deep-green hover:bg-[#0f2f21]'} text-white py-5 rounded-md font-black text-base uppercase tracking-[0.18em] transition-all flex items-center justify-center gap-4`}
             >
                 {isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}
                 <ArrowRight className="w-6 h-6" />

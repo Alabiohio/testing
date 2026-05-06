@@ -1,0 +1,16 @@
+Based on your current container setup, here are the recommended dimensions:
+
+Container Specs
+Card Width	Padding	Image Area	Image Height	Aspect Ratio
+Mobile	280px	16px (p-2)	264px	180px	~3:2
+Desktop	350px	16px (p-2)	334px	280px	~6:5
+Recommended Image Size
+700 × 560px (2x retina for desktop)
+
+Aspect ratio: 5:4 — best compromise between mobile (3:2) and desktop (6:5)
+At 2x pixel density, images will look crisp on all screens
+File format: WebP or optimized PNG/JPG for fast loading
+For a truly perfect fit (zero gaps)
+If you want zero letterboxing at all breakpoints, you'd need to switch from object-contain to object-cover — but that crops. Since the ratios differ between mobile and desktop, a single image can't perfectly fill both with object-contain.
+
+The 700 × 560px size will get you the closest fit with minimal-to-no visible bg-gray-50 gaps on desktop, and only thin side bars on mobile.

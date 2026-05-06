@@ -37,14 +37,14 @@ export default async function CategoryProductPage({ params }: { params: Promise<
     
     if (!validCategories.includes(slug)) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gray-50">
-                <div className="bg-white p-12 rounded-[3rem] shadow-xl border border-gray-100 text-center max-w-md">
+            <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#f4f5f1]">
+                <div className="bg-white p-12 rounded-md shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 text-center max-w-md">
                     <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
                         <Package className="w-10 h-10" />
                     </div>
                     <h1 className="text-3xl font-black text-deep-green mb-4">Category Not Found</h1>
                     <p className="text-gray-500 mb-8 italic">Sorry, the category "{slug}" doesn't exist or has been moved.</p>
-                    <Link href="/shop" className="inline-flex items-center gap-2 bg-leaf hover:bg-leaf-dark text-white px-8 py-4 rounded-2xl font-bold transition-all shadow-lg shadow-leaf/25">
+                    <Link href="/shop" className="inline-flex items-center gap-2 bg-deep-green hover:bg-[#0f2f21] text-white px-8 py-4 rounded-md font-bold transition-all shadow-sm">
                         <ArrowLeft className="w-4 h-4" />
                         Back to Shop
                     </Link>
@@ -67,11 +67,11 @@ export default async function CategoryProductPage({ params }: { params: Promise<
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-24">
                 {/* Breadcrumbs */}
                 <div className="flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-8">
-                    <Link href="/" className="hover:text-leaf transition-colors">Home</Link>
+                    <Link href="/" className="hover:text-deep-green transition-colors">Home</Link>
                     <ChevronRight className="w-3 h-3" />
-                    <Link href="/shop" className="hover:text-leaf transition-colors">Shop</Link>
+                    <Link href="/shop" className="hover:text-deep-green transition-colors">Shop</Link>
                     <ChevronRight className="w-3 h-3" />
-                    <span className="text-leaf">{displayTitle}</span>
+                    <span className="text-deep-green">{displayTitle}</span>
                 </div>
 
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">

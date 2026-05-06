@@ -13,7 +13,7 @@ import { useRouter } from "next/navigation";
 import ConfirmModal from "./ConfirmModal";
 import { useCart } from "@/lib/cart-context";
 import { getPriceCatalog } from "@/app/actions/price-catalog";
-import { PriceCatalogItem } from "@/lib/db/schema";
+import { PriceCatalogItem, GrowthStage } from "@/lib/db/schema";
 
 
 
@@ -67,16 +67,42 @@ interface ProductProps {
   rawPriceRange: string | null;
 }
 
+const SafeImage = ({ src, alt, className, width, height, fill, unoptimized }: { src: string, alt: string, className?: string, width?: number, height?: number, fill?: boolean, unoptimized?: boolean }) => {
+  const [error, setError] = useState(false);
+
+  if (error || !src) {
+    return (
+      <div className={`flex flex-col items-center justify-center bg-gray-50 border border-gray-100 ${className}`}>
+        <ShoppingBag className="w-8 h-8 text-leaf/20" />
+        <span className="text-[10px] font-black uppercase tracking-widest text-leaf/20 mt-2">No Image</span>
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      fill={fill}
+      unoptimized={unoptimized || (typeof src === 'string' && src.startsWith('/'))}
+      className={className}
+      onError={() => setError(true)}
+    />
+  );
+};
+
 const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm: (ad: any) => void }) => {
   if (ad.hasLink === false) {
     return (
-      <div className="block rounded-sm overflow-hidden">
-        <Image
+      <div className="block rounded-sm overflow-hidden bg-gray-50">
+        <SafeImage
           src={ad.imageUrl}
-          alt={ad.title || "Special offer from our partner"}
+          alt={ad.title || "Special offer"}
           width={1200}
           height={600}
-          className="w-full h-[100px] md:h-[240px] object-contain"
+          className="w-full h-[180px] md:h-[280px] object-contain"
         />
       </div>
     );
@@ -88,27 +114,27 @@ const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm
         <Link
           href={ad.linkUrl}
           target={ad.linkUrl.startsWith('http') ? "_blank" : "_self"}
-          className="block rounded-sm overflow-hidden cursor-pointer group transition-all"
+          className="block rounded-sm overflow-hidden cursor-pointer group transition-all bg-gray-50"
         >
-          <Image
+          <SafeImage
             src={ad.imageUrl}
-            alt={ad.title || "Special offer from our partner"}
+            alt={ad.title || "Special offer"}
             width={800}
             height={400}
-            className="w-full h-[120px] md:h-[180px] object-contain group-hover:scale-[1.02] transition-transform duration-500"
+            className="w-full h-[180px] md:h-[280px] object-contain group-hover:scale-[1.02] transition-transform duration-500"
           />
         </Link>
       ) : (
         <div
           onClick={() => handleAdOrderConfirm(ad)}
-          className="block rounded-sm overflow-hidden cursor-pointer group transition-all"
+          className="block rounded-sm overflow-hidden cursor-pointer group transition-all bg-gray-50"
         >
-          <Image
+          <SafeImage
             src={ad.imageUrl}
-            alt={ad.title || "Special offer from our partner"}
+            alt={ad.title || "Special offer"}
             width={800}
             height={400}
-            className="w-full h-[120px] md:h-[180px] object-contain group-hover:scale-[1.02] transition-transform duration-500"
+            className="w-full h-[180px] md:h-[280px] object-contain group-hover:scale-[1.02] transition-transform duration-500"
           />
         </div>
       )}
@@ -204,7 +230,8 @@ export default function HomeClient({
   globalSettings,
   initialTestimonials = [],
   initialPriceCatalog = [],
-  initialPartnerAds = []
+  initialPartnerAds = [],
+  initialGrowthStages = []
 }: {
   initialProducts: ProductProps[],
   initialFlashDeal?: any,
@@ -212,7 +239,8 @@ export default function HomeClient({
   globalSettings?: any,
   initialTestimonials?: any[],
   initialPriceCatalog?: PriceCatalogItem[],
-  initialPartnerAds?: any[]
+  initialPartnerAds?: any[],
+  initialGrowthStages?: GrowthStage[]
 }) {
   const [activeGalleryIndex, setActiveGalleryIndex] = useState(0);
 
@@ -310,11 +338,11 @@ export default function HomeClient({
     >
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden bg-gray-50 ">
-        <Image
+        <SafeImage
           src={product.img || "/assets/bgImages/fingerlings.png"}
           alt={product.name}
           fill
-          className="object-cover group-hover:scale-105 transition-transform duration-500"
+          className="object-contain group-hover:scale-105 transition-transform duration-500"
         />
         {/* Badge */}
         {product.badge && (
@@ -400,7 +428,7 @@ export default function HomeClient({
             playsInline
             className="object-cover w-full h-full"
           />
-          <div className="absolute inset-0 bg-black/65" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,16,13,0.86)_0%,rgba(10,16,13,0.72)_44%,rgba(10,16,13,0.58)_100%)]" />
         </div>
 
         {/* Search Bar */}
@@ -409,10 +437,10 @@ export default function HomeClient({
             className="relative group cursor-pointer"
             onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
           >
-            <div className="w-full h-10 pl-14 pr-6 rounded-sm border-2 border-white/20 focus-within:border-leaf bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all flex items-center">
-              <span className="text-gray-400 text-sm font-medium">Search for catfish, fingerlings...</span>
+            <div className="w-full h-12 pl-14 pr-6 rounded-md border border-white/15 bg-white/92 shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-all flex items-center">
+              <span className="text-gray-500 text-sm font-medium">Search products, sizes, or categories</span>
             </div>
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-leaf" />
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-deep-green" />
             <div className="absolute right-5 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-2">
               <span className="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-sm uppercase tracking-widest border border-gray-200">⌘K</span>
             </div>
@@ -425,38 +453,41 @@ export default function HomeClient({
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="max-w-3xl"
+            className="max-w-4xl"
           >
-            <h1 style={{ fontFamily: "var(--belanosima-font), sans-serif" }} className="text-4xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.05] text-white">
-              Premium Catfish<br />
-              <span className="text-leaf">Direct from Farm</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/6 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/72 mb-6">
+              Trusted Supply for Retail and Farm Orders
+            </div>
+
+            <h1 style={{ fontFamily: "var(--belanosima-font), sans-serif" }} className="text-4xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.02] text-white max-w-3xl">
+              Premium catfish for buyers who value consistency.
             </h1>
 
-            <p className="text-md text-white/80 mb-5 max-w-xl leading-relaxed font-medium">
-              Healthy. Fresh. Responsibly Raised. — Supplying high-quality catfish across all growth stages to farmers, retailers, restaurants & households within Lagos, Nationwide and Internationally.
+            <p className="text-base text-white/78 mb-8 max-w-2xl leading-relaxed font-medium">
+              From fingerlings to processed stock, CCB Farms supplies carefully raised catfish for farmers, retailers, restaurants, and households with dependable quality and straightforward fulfilment.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Link href="/category" className="inline-flex items-center justify-center gap-2.5 bg-leaf hover:bg-leaf-dark text-white px-8 py-2.5 rounded-sm font-bold text-base transition-all hover:-translate-y-0.5 shadow-sm active:scale-95 tracking-wide">
+              <Link href="/category" className="inline-flex items-center justify-center gap-2.5 bg-deep-green hover:bg-[#0f2f21] text-white px-8 py-3 rounded-md font-bold text-base transition-all shadow-sm active:scale-95 tracking-wide">
                 <ShoppingCart className="w-5 h-5" />
-                Explore Categories
+                View Categories
               </Link>
-              <Link href="/contact" className="inline-flex items-center justify-center gap-2 bg-white hover:text-white text-black px-8 py-2.5 rounded-sm font-bold transition-all hover:bg-leaf text-base">
-                <Phone className="w-5 h-5 text-black hover:text:white" />
-                Talk to an Expert
+              <Link href="/contact" className="inline-flex items-center justify-center gap-2 border border-white/18 bg-white/8 text-white px-8 py-3 rounded-md font-bold transition-all hover:bg-white/14 text-base">
+                <Phone className="w-5 h-5" />
+                Speak with the Team
               </Link>
             </div>
 
             {/* Quick Stats */}
-            <div className="flex items-center gap-8 lg:gap-12 border-t border-white/15 pt-8">
+            <div className="grid gap-5 sm:grid-cols-3 max-w-3xl border-t border-white/12 pt-8">
               {[
-                { value: "₦80", label: "From / Piece" },
-                { value: "100%", label: "Organic Feed" },
-                { value: "24h", label: "Farm to Table" },
+                { value: "₦80", label: "Entry pricing from" },
+                { value: "7 Days", label: "Support availability" },
+                { value: "Nationwide", label: "Delivery coverage" },
               ].map(s => (
-                <div key={s.label}>
-                  <p className="text-2xl font-black text-leaf">{s.value}</p>
-                  <p className="text-xs font-bold text-white/40 uppercase tracking-wider mt-0.5">{s.label}</p>
+                <div key={s.label} className="rounded-md border border-white/10 bg-white/6 px-4 py-4">
+                  <p className="text-2xl font-black text-white">{s.value}</p>
+                  <p className="text-xs font-bold text-white/50 uppercase tracking-wider mt-1">{s.label}</p>
                 </div>
               ))}
             </div>
@@ -501,7 +532,7 @@ export default function HomeClient({
                     onClick={() => handleOrderConfirm(product)}
                   >
                     <div className="relative aspect-square mb-3 bg-white rounded-sm overflow-hidden shrink-0 border border-black/5 flex items-center justify-center">
-                      <Image
+                      <SafeImage
                         src={deal.imageUrl || product.img}
                         alt={deal.title || product.name}
                         fill
@@ -550,18 +581,18 @@ export default function HomeClient({
                 {/* Product Image */}
                 <div className="relative w-full md:w-[280px] h-[200px] md:h-[240px] bg-zinc-50 shrink-0 overflow-hidden group">
                   {initialFlashDeal.imageUrl ? (
-                    <Image
+                    <SafeImage
                       src={initialFlashDeal.imageUrl}
                       alt={initialFlashDeal.subtitle || "Flash deal"}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : dealProduct?.img ? (
-                    <Image
+                    <SafeImage
                       src={dealProduct.img}
                       alt={dealProduct.name}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="object-contain group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-leaf/5 to-deep-green/5 flex items-center justify-center">
@@ -748,35 +779,7 @@ export default function HomeClient({
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
-          {[
-            {
-              title: "Fingerlings",
-              size: "2–5 cm",
-              age: "1–2 weeks",
-              desc: "Healthy Start, High Survival",
-              img: "/assets/bgImages/fingerlings.png",
-              color: "leaf",
-              link: "/book-order?cat=fingerlings"
-            },
-            {
-              title: "Juveniles",
-              size: "5–15 cm",
-              age: "3–6 weeks",
-              desc: "Fast Growth, Uniform Quality",
-              img: "/assets/bgImages/juveniles.png",
-              color: "leaf",
-              link: "/book-order?cat=juveniles"
-            },
-            {
-              title: "Broodstock",
-              size: "30 cm+",
-              age: "6+ months",
-              desc: "Breeding Stock, Strong Genetics",
-              img: "/assets/bgImages/broodstock.png",
-              color: "leaf",
-              link: "/book-order?cat=broodstock"
-            },
-          ].map((item, idx) => (
+          {initialGrowthStages.map((item, idx) => (
             <motion.div
               key={item.title}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -792,8 +795,8 @@ export default function HomeClient({
               <div className="relative w-48 h-48 mb-10">
                 <div className="absolute inset-0 bg-leaf/10 rounded-full scale-110 group-hover:scale-105 transition-transform duration-700" />
                 <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-white shadow-sm z-10">
-                  <Image
-                    src={item.img}
+                  <SafeImage
+                    src={item.imageUrl}
                     alt={item.title}
                     fill
                     className="object-cover scale-110 group-hover:scale-100 transition-transform duration-1000"
@@ -828,7 +831,7 @@ export default function HomeClient({
                 </div>
 
                 <div className="bg-gray-50 rounded-sm p-4 border border-gray-100 italic font-bold text-[11px] text-gray-500">
-                  "{item.desc}"
+                  "{item.description}"
                 </div>
 
                 <div className="pt-4">
@@ -982,7 +985,7 @@ export default function HomeClient({
                         src={item.imageUrl}
                         alt={item.name}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                        className="object-contain group-hover:scale-105 transition-transform duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                     </div>
@@ -1018,13 +1021,13 @@ export default function HomeClient({
       )}
 
       {/* ===== WHY CHOOSE US ===== */}
-      <section className="bg-deep-green py-20 mb-20 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(white_1px,transparent_1px)] [background-size:30px_30px]" />
+      <section className="bg-[#18231d] py-20 mb-20 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-14">
-            <h2 className="text-white text-3xl lg:text-4xl font-black mb-4 tracking-tight">The CCB Farms Advantage</h2>
-            <p className="text-white/60 text-base max-w-xl mx-auto font-medium">
-              We supply catfish you can trust — delivered with reliability and expert care.
+            <h2 className="text-white text-3xl lg:text-4xl font-black mb-4 tracking-tight">Why buyers stay with CCB Farms</h2>
+            <p className="text-white/60 text-base max-w-2xl mx-auto font-medium">
+              A mature supply operation is about consistency, handling discipline, and responsive service at every order size.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1038,11 +1041,11 @@ export default function HomeClient({
             ].map(({ title, desc, icon: Icon }, idx) => (
               <motion.div
                 key={idx}
-                whileHover={{ y: -6 }}
-                className="bg-white/5 border border-white/10 p-7 rounded-sm hover:bg-white/10 hover:border-leaf/30 transition-all"
+                whileHover={{ y: -4 }}
+                className="bg-white/[0.04] border border-white/10 p-7 rounded-md hover:bg-white/[0.06] hover:border-white/16 transition-all"
               >
-                <div className="w-12 h-12 bg-leaf/20 rounded-sm flex items-center justify-center mb-5 border border-leaf/20">
-                  <Icon className="w-6 h-6 text-leaf" />
+                <div className="w-12 h-12 bg-white/8 rounded-md flex items-center justify-center mb-5 border border-white/10">
+                  <Icon className="w-6 h-6 text-[#9cc4a7]" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
                 <p className="text-white/55 text-sm leading-relaxed font-medium">{desc}</p>
@@ -1055,7 +1058,7 @@ export default function HomeClient({
       {/* ===== HOW IT WORKS ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-black text-deep-green tracking-tight">Order in 4 Easy Steps</h2>
+          <h2 className="text-3xl md:text-4xl font-black text-deep-green tracking-tight">A clear ordering process</h2>
         </div>
         <div className="grid md:grid-cols-4 gap-6">
           {[
@@ -1066,17 +1069,17 @@ export default function HomeClient({
           ].map((item, idx) => (
             <div key={idx} className="relative">
               {idx < 3 && (
-                <div className="hidden lg:block absolute top-10 left-full w-full h-[2px] bg-gradient-to-r from-leaf/20 to-transparent -z-10" />
+                <div className="hidden lg:block absolute top-10 left-full w-full h-px bg-gradient-to-r from-black/10 to-transparent -z-10" />
               )}
               <motion.div
-                whileHover={{ y: -4 }}
-                className="bg-white border border-gray-100 p-7 rounded-sm hover:border-leaf/30 hover:shadow-lg hover:shadow-leaf/10 transition-all group"
+                whileHover={{ y: -3 }}
+                className="bg-white border border-black/6 p-7 rounded-md hover:border-black/12 hover:shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] transition-all group"
               >
                 <div className="flex items-center justify-between mb-5">
-                  <div className="w-11 h-11 bg-leaf/10 rounded-sm flex items-center justify-center group-hover:bg-leaf transition-colors">
-                    <item.icon className="w-5 h-5 text-leaf group-hover:text-white transition-colors" />
+                  <div className="w-11 h-11 bg-deep-green/8 rounded-md flex items-center justify-center group-hover:bg-deep-green transition-colors">
+                    <item.icon className="w-5 h-5 text-deep-green group-hover:text-white transition-colors" />
                   </div>
-                  <span className="text-3xl font-black text-gray-100">{item.step}</span>
+                  <span className="text-3xl font-black text-gray-200">{item.step}</span>
                 </div>
                 <h3 className="text-base font-bold text-gray-900 mb-2">{item.title}</h3>
                 <p className="text-gray-400 text-sm leading-relaxed font-medium">{item.desc}</p>
@@ -1168,7 +1171,7 @@ export default function HomeClient({
                   src="/assets/bgImages/tablesize.png"
                   alt="Healthy Catfish"
                   fill
-                  className="object-cover group-hover:scale-110 transition-transform duration-1000"
+                  className="object-contain group-hover:scale-110 transition-transform duration-1000"
                 />
                 <div className="absolute bottom-6 left-6">
                   <div className="bg-white p-4 rounded-sm shadow-sm w-fit border border-gray-100">
@@ -1255,11 +1258,11 @@ export default function HomeClient({
 
       {/* ===== NEWSLETTER ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-        <div className="bg-deep-green rounded-sm p-10 md:p-16 relative overflow-hidden text-center">
+        <div className="bg-[#1a231d] rounded-md p-10 md:p-16 relative overflow-hidden text-center">
           <div className="relative z-10 max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">Get Exclusive Offers</h2>
+            <h2 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">Stay informed without the noise</h2>
             <p className="text-white/60 text-base mb-8 font-medium">
-              Weekly price updates, farming tips, and exclusive deals straight to your inbox.
+              Get periodic pricing updates, product availability, and useful farm notes in a more measured cadence.
             </p>
             <form
               className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto"
@@ -1269,11 +1272,11 @@ export default function HomeClient({
                 required
                 type="email"
                 placeholder="Enter your email address"
-                className="flex-grow bg-white/10 border-2 border-white/10 focus:border-leaf rounded-sm px-5 py-3.5 outline-none font-medium text-white placeholder-white/40 text-sm transition-all"
+                className="flex-grow bg-white/8 border border-white/12 focus:border-[#87a08e] rounded-md px-5 py-3.5 outline-none font-medium text-white placeholder-white/40 text-sm transition-all"
               />
               <button
                 type="submit"
-                className="bg-leaf hover:bg-leaf-dark text-white px-7 py-3.5 rounded-sm font-bold uppercase tracking-wide hover:-translate-y-0.5 transition-all active:scale-95 shadow-sm text-sm whitespace-nowrap"
+                className="bg-[#2c5b43] hover:bg-[#214734] text-white px-7 py-3.5 rounded-md font-bold uppercase tracking-wide transition-all active:scale-95 shadow-sm text-sm whitespace-nowrap"
               >
                 Subscribe
               </button>
@@ -1285,25 +1288,24 @@ export default function HomeClient({
 
       {/* ===== CALL TO ACTION ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="bg-gradient-to-br from-leaf to-leaf-dark rounded-sm p-10 md:p-20 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-[url('/hero.png')] opacity-10 bg-cover bg-center" />
+        <div className="bg-[#dfe6dc] rounded-md p-10 md:p-20 text-center relative overflow-hidden border border-black/6">
+          <div className="absolute inset-0 bg-[url('/hero.png')] opacity-[0.05] bg-cover bg-center" />
           <div className="relative z-10">
-            <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight text-white">
-              Ready to Order<br />
-              <span className="text-white/80">Premium Catfish?</span>
+            <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight text-deep-green">
+              Ready to place an order?
             </h2>
-            <p className="text-white/80 text-base md:text-lg font-medium mb-10 max-w-xl mx-auto">
-              Place your order today or speak with our team for the best recommendation.
+            <p className="text-gray-600 text-base md:text-lg font-medium mb-10 max-w-xl mx-auto">
+              We can help you choose the right size, quantity, and delivery arrangement for your needs.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/book-order" className="bg-white text-leaf hover:bg-gray-50 px-8 py-4 rounded-sm font-black text-base transition-all hover:-translate-y-0.5 shadow-xl shadow-black/20 text-center tracking-wide">
-                Place Order Now
+              <Link href="/book-order" className="bg-deep-green text-white hover:bg-[#0f2f21] px-8 py-4 rounded-md font-black text-base transition-all shadow-sm text-center tracking-wide">
+                Start Order
               </Link>
-              <Link href="/contact" className="bg-white/15 hover:bg-white/25 text-white border-2 border-white/25 px-8 py-4 rounded-sm font-bold text-base transition-all hover:-translate-y-0.5 text-center tracking-wide">
-                Talk to an Expert
+              <Link href="/contact" className="bg-white/70 hover:bg-white text-deep-green border border-black/8 px-8 py-4 rounded-md font-bold text-base transition-all text-center tracking-wide">
+                Talk to the Team
               </Link>
             </div>
-            <div className="mt-12 flex flex-wrap justify-center gap-10 text-white/60 font-bold text-sm">
+            <div className="mt-12 flex flex-wrap justify-center gap-10 text-gray-600 font-bold text-sm">
               <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> 09093009400</span>
               <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Lagos, Nationwide & Int'l</span>
               <span className="flex items-center gap-2"><Truck className="w-4 h-4" /> Nationwide & Global Delivery</span>

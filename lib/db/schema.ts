@@ -6,6 +6,7 @@ import {
   uuid,
   boolean,
   varchar,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 export const products = pgTable("products", {
@@ -129,3 +130,33 @@ export const partnerAds = pgTable("partner_ads", {
 });
 
 export type PartnerAd = typeof partnerAds.$inferSelect;
+
+export const orderCategories = pgTable("order_categories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  slug: text("slug").notNull().unique(),
+  name: text("name").notNull(),
+  unit: text("unit").notNull(),
+  image: text("image").notNull(),
+  options: jsonb("options").notNull(), 
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type OrderCategory = typeof orderCategories.$inferSelect;
+
+export const growthStages = pgTable("growth_stages", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title").notNull(),
+  size: text("size").notNull(),
+  age: text("age").notNull(),
+  description: text("description").notNull(),
+  imageUrl: text("image_url").notNull(),
+  color: text("color").default("leaf"),
+  link: text("link").notNull(),
+  orderIndex: integer("order_index").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type GrowthStage = typeof growthStages.$inferSelect;

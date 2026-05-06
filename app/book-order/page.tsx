@@ -7,59 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Truck, User, Phone, MapPin, Mail, ChevronRight, Info, ShieldCheck, Check, CheckCircle } from "lucide-react";
 import { Country, State, City } from "country-state-city";
 import { createOrder } from "../actions/order";
-
-const categoryGroups: Record<string, CategoryGroup> = {
-    fingerlings: {
-        name: "Fingerlings (Farming)",
-        unit: "pieces",
-        image: "/assets/bgImages/fingerlings.png",
-        options: [
-            { label: "Small Fingerlings (5–10g)", value: "small-fingerlings" },
-            { label: "Medium Fingerlings (10–20g)", value: "medium-fingerlings" },
-            { label: "Large Fingerlings (20–30g)", value: "large-fingerlings" },
-        ]
-    },
-    juveniles: {
-        name: "Juvenile Catfish (Farming)",
-        unit: "pieces",
-        image: "/assets/bgImages/juveniles.png",
-        options: [
-            { label: "Small Juveniles (50–100g)", value: "small-juveniles" },
-            { label: "Medium Juveniles (100–200g)", value: "medium-juveniles" },
-            { label: "Large Juveniles (200–300g)", value: "large-juveniles" },
-        ]
-    },
-    broodstock: {
-        name: "Broodstock Catfish (Farming)",
-        unit: "fish",
-        image: "/assets/bgImages/broodstock.png",
-        options: [
-            { label: "Medium Broodstock (1.5 – 2kg)", value: "medium-broodstock" },
-            { label: "Large Broodstock (2 – 3kg)", value: "large-broodstock" },
-            { label: "Extra Large (3kg and above)", value: "xl-broodstock" },
-        ]
-    },
-    "table-size": {
-        name: "Fresh Table-Size (Consumption)",
-        unit: "kg",
-        image: "/assets/bgImages/tablesize.png",
-        options: [
-            { label: "Small (0.5 – 0.8kg)", value: "small-table" },
-            { label: "Medium (1 – 1.5kg)", value: "medium-table" },
-            { label: "Large (1.5 – 2kg)", value: "large-table" },
-        ]
-    },
-    smoked: {
-        name: "Smoked Catfish (Consumption)",
-        unit: "kg",
-        image: "/assets/bgImages/smoked.png",
-        options: [
-            { label: "Small Smoked (0.3 – 0.5kg)", value: "small-smoked" },
-            { label: "Medium Smoked (0.6 – 0.9kg)", value: "medium-smoked" },
-            { label: "Large Smoked (1kg and above)", value: "large-smoked" },
-        ]
-    },
-};
+import { getOrderCategories } from "../actions/order-categories";
 
 const deliveryOptions = [
     "Pickup",
@@ -68,6 +16,8 @@ const deliveryOptions = [
 ];
 
 export default function BookedOrderPage() {
+    const [categoryGroups, setCategoryGroups] = useState<Record<string, CategoryGroup>>({});
+    const [isLoading, setIsLoading] = useState(true);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -77,11 +27,32 @@ export default function BookedOrderPage() {
         country: "Nigeria",
         state: "Lagos",
         postalCode: "",
-        categories: ["fingerlings"] as string[],
-        items: [{ categoryId: "fingerlings", subCategory: "", quantity: "" }],
+        categories: [] as string[],
+        items: [] as any[],
         deliveryOption: "Home Delivery",
         notes: "",
     });
+
+    useEffect(() => {
+        async function fetchCategories() {
+            const result = await getOrderCategories();
+            if (result.success && result.categories) {
+                setCategoryGroups(result.categories);
+                
+                // Initialize form with the first category if not already set
+                const firstCat = Object.keys(result.categories)[0];
+                if (firstCat) {
+                    setFormData(prev => ({
+                        ...prev,
+                        categories: [firstCat],
+                        items: [{ categoryId: firstCat, subCategory: "", quantity: "" }]
+                    }));
+                }
+            }
+            setIsLoading(false);
+        }
+        fetchCategories();
+    }, []);
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -111,8 +82,8 @@ export default function BookedOrderPage() {
                 country: "Nigeria",
                 state: "Lagos",
                 postalCode: "",
-                categories: ["fingerlings"],
-                items: [{ categoryId: "fingerlings", subCategory: "", quantity: "" }],
+                categories: Object.keys(categoryGroups).slice(0, 1),
+                items: [{ categoryId: Object.keys(categoryGroups)[0], subCategory: "", quantity: "" }],
                 deliveryOption: "Home Delivery",
                 notes: "",
             });
@@ -120,6 +91,15 @@ export default function BookedOrderPage() {
             alert(result.error || "Something went wrong. Please try again.");
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+                <div className="w-16 h-16 border-4 border-leaf border-t-transparent rounded-full animate-spin mb-4" />
+                <p className="text-deep-green font-black uppercase tracking-widest animate-pulse">Initializing Order System...</p>
+            </div>
+        );
+    }
 
     return (
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center font-black text-leaf">Loading...</div>}>
@@ -164,11 +144,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
     }, [catParam, categoryGroups, setFormData]);
 
     return (
-        <div className="min-h-screen bg-background pt-4 pb-24 relative overflow-x-clip">
-            {/* Background Blobs */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-leaf/10 rounded-full blur-[120px] -z-10 animate-pulse" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-earth/10 rounded-full blur-[100px] -z-10" />
-
+        <div className="min-h-screen bg-background pt-8 pb-24 relative overflow-x-clip">
             <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
                 <div className="grid lg:grid-cols-3 gap-12 items-start">
                     {/* Order Form */}
@@ -179,9 +155,9 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
                             onSubmit={handleSubmit}
-                            className="bg-white  shadow-2xl shadow-black/5 border-2 border-earth/5  py-8 px-4 md:py-10 md:px-8 rounded-3xl space-y-12 relative overflow-hidden"
+                            className="bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 py-8 px-4 md:py-10 md:px-8 rounded-md space-y-12 relative overflow-hidden"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 rounded-bl-[100px] -z-0" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#edf1eb] rounded-bl-[72px] -z-0" />
 
                             {/* Section: Customer Info */}
                             <div className="space-y-8">
@@ -270,7 +246,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                         src={group.image}
                                                         alt={group.name}
                                                         fill
-                                                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                                                        className="object-contain group-hover:scale-110 transition-transform duration-500"
                                                     />
                                                 </div>
                                                 <div className="flex-grow">
@@ -304,11 +280,10 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                         <CheckCircle className="w-5 h-5" />
                                                     </div>
                                                     <div>
-                                                        <h3 className="font-black text-deep-green uppercase tracking-tight">{group.name}</h3>
-                                                        <p className="text-[10px] font-bold text-foreground/30 uppercase tracking-widest">Configure Specifications</p>
-                                                    </div>
+                                                        <h3 className="font-black text-deep-green uppercase tracking-tight">{group.name}</h3>                                                                                                       </div>
                                                 </div>
 
+{group.options && group.options.length > 0 && (
                                                 <div className="space-y-6">
                                                     <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Choose Size/Weight</label>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -332,6 +307,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                         ))}
                                                     </div>
                                                 </div>
+                                                )}
 
                                                 <div className="space-y-4">
                                                     <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">
@@ -528,8 +504,8 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
 
                     {/* Sidebar / Summary */}
                     <div className="space-y-8 sticky top-32">
-                        <div className="bg-amber-500/5 rounded-3xl p-8 md:p-10 border border-amber-500/10 border-dashed relative overflow-hidden">
-                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
+                        <div className="bg-white rounded-md p-8 md:p-10 border border-black/6 relative overflow-hidden shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
+                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#edf1eb] rounded-full blur-3xl" />
                             <h3 className="text-3xl font-black text-deep-green  mb-10 leading-none">Order <br /> Summary</h3>
 
                             <div className="space-y-8">
@@ -581,7 +557,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                             form="order-form"
                             type="submit"
                             disabled={isSubmitting}
-                            className={`w-full ${isSubmitting ? "bg-leaf/50" : "bg-leaf hover:bg-leaf-dark hover:scale-[1.02]"} text-white py-3 rounded-xl font-black text-xl uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-4`}
+                            className={`w-full ${isSubmitting ? "bg-deep-green/50" : "bg-deep-green hover:bg-[#0f2f21]"} text-white py-4 rounded-md font-black text-base uppercase tracking-[0.18em] transition-all active:scale-95 flex items-center justify-center gap-4`}
                         >
                             {isSubmitting ? "PLACING ORDER..." : "PLACE ORDER"}
                             <ChevronRight className="w-6 h-6" />

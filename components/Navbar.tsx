@@ -12,7 +12,7 @@ const Navbar = () => {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [promoVisible, setPromoVisible] = useState(true);
+    const promoVisible = true;
     const [isHeroSearchVisible, setIsHeroSearchVisible] = useState(false);
     const [cartCount] = useState(0);
 
@@ -82,11 +82,11 @@ const Navbar = () => {
                 </div>
             )
         },
-        { text: '100% Organically Grown' },
-        { text: 'Naturally Farmed' },
-        { text: 'No Preservatives' },
-        { text: 'Fresh from Farm' },
-        { text: '100% Hygienic' },
+        { text: 'Responsibly raised stock' },
+        { text: 'Fresh harvest scheduling' },
+        { text: 'Clean processing standards' },
+        { text: 'Nationwide fulfilment' },
+        { text: 'Wholesale supply available' },
         { content: <span className="font-black uppercase tracking-[0.15em] text-[10px] text-white/70">Products:</span> },
         { text: 'Garri2go' },
         { text: 'Soups2go' },
@@ -145,7 +145,7 @@ const Navbar = () => {
 
             {/* Main Navbar - Statically Sticky */}
             <nav
-                className="sticky top-0 z-[100] w-full transition-all duration-300 bg-white/95 backdrop-blur-xl shadow-md border-b border-gray-200"
+                className="sticky top-0 z-[100] w-full transition-all duration-300 bg-[#f5f6f2]/95 backdrop-blur-xl shadow-[0_8px_28px_rgba(15,23,42,0.06)] border-b border-black/5"
                 ref={headerRef}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,9 +171,9 @@ const Navbar = () => {
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className={`px-4 py-2 text-sm font-semibold tracking-wide transition-all rounded-xl relative group ${isActive
-                                            ? 'text-leaf bg-leaf/10'
-                                            : 'text-gray-700 hover:text-leaf hover:bg-leaf/5'
+                                        className={`px-4 py-2 text-sm font-semibold tracking-wide transition-all rounded-md relative group ${isActive
+                                            ? 'text-deep-green bg-deep-green/8'
+                                            : 'text-gray-700 hover:text-deep-green hover:bg-black/[0.03]'
                                             }`}
                                     >
                                         <span className="relative">
@@ -185,7 +185,7 @@ const Navbar = () => {
                                         {isActive && (
                                             <motion.div
                                                 layoutId="nav-active"
-                                                className="absolute inset-0 bg-leaf/8 rounded-xl -z-10"
+                                                className="absolute inset-0 bg-deep-green/8 rounded-md -z-10"
                                                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                             />
                                         )}
@@ -205,7 +205,7 @@ const Navbar = () => {
                                         animate={{ opacity: 1, scale: 1, x: 0 }}
                                         exit={{ opacity: 0, scale: 0.8, x: 20 }}
                                         onClick={() => setIsSearchOpen(true)}
-                                        className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 text-gray-500 hover:border-leaf/30 hover:text-leaf transition-all text-sm font-medium"
+                                        className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-md border border-black/8 bg-white text-gray-500 hover:border-deep-green/20 hover:text-deep-green transition-all text-sm font-medium"
                                     >
                                         <Search className="w-4 h-4" />
                                         <span className="text-xs opacity-60 hidden lg:block">Search</span>
@@ -217,10 +217,10 @@ const Navbar = () => {
                             {/* Cart Icon */}
                             <Link
                                 href="/book-order"
-                                className="relative p-2.5 rounded-xl transition-all hover:bg-leaf/10 active:scale-95 group"
+                                className="relative p-2.5 rounded-md transition-all hover:bg-deep-green/8 active:scale-95 group"
                                 aria-label="Shopping Cart"
                             >
-                                <ShoppingCart className="w-5 h-5 text-gray-600 group-hover:text-leaf transition-colors" />
+                                <ShoppingCart className="w-5 h-5 text-gray-600 group-hover:text-deep-green transition-colors" />
                                 {cartCount > 0 && (
                                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-leaf text-white text-[10px] font-black rounded-full flex items-center justify-center cart-badge-pulse">
                                         {cartCount}
@@ -231,9 +231,9 @@ const Navbar = () => {
                             {/* Shop CTA - Desktop */}
                             <Link
                                 href="/book-order"
-                                className="hidden lg:inline-flex items-center gap-2 bg-leaf hover:bg-leaf-dark text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all hover:-translate-y-0.5 shadow-lg shadow-leaf/25 active:scale-95 tracking-wide"
+                                className="hidden lg:inline-flex items-center gap-2 bg-deep-green hover:bg-[#0f2f21] text-white px-5 py-2.5 rounded-md font-bold text-sm transition-all shadow-sm active:scale-95 tracking-wide"
                             >
-                                Order Now
+                                Start Order
                                 <ArrowRight className="w-4 h-4" />
                             </Link>
 
@@ -247,7 +247,7 @@ const Navbar = () => {
                                             animate={{ opacity: 1, scale: 1 }}
                                             exit={{ opacity: 0, scale: 0.8 }}
                                             onClick={() => setIsSearchOpen(true)}
-                                            className="p-2.5 rounded-xl bg-gray-100 text-gray-600 active:scale-90 transition-all"
+                                            className="p-2.5 rounded-md bg-white border border-black/8 text-gray-600 active:scale-90 transition-all"
                                         >
                                             <Search className="w-5 h-5" />
                                         </motion.button>
@@ -255,7 +255,7 @@ const Navbar = () => {
                                 </AnimatePresence>
                                 <button
                                     onClick={() => setIsOpen(!isOpen)}
-                                    className="p-2.5 rounded-xl bg-gray-100 text-gray-700 active:scale-90 transition-all"
+                                    className="p-2.5 rounded-md bg-white border border-black/8 text-gray-700 active:scale-90 transition-all"
                                     aria-label="Toggle menu"
                                 >
                                     {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -313,7 +313,7 @@ const Navbar = () => {
                                     className="relative cursor-pointer mb-8 group"
                                     onClick={() => { setIsOpen(false); setIsSearchOpen(true); }}
                                 >
-                                    <div className="w-full h-12 pl-11 pr-4 rounded-xl bg-gray-100 border-2 border-transparent group-hover:border-leaf/20 transition-all flex items-center">
+                                    <div className="w-full h-12 pl-11 pr-4 rounded-md bg-[#f4f5f1] border border-transparent group-hover:border-deep-green/15 transition-all flex items-center">
                                         <span className="text-gray-400 text-sm font-medium">Search products...</span>
                                     </div>
                                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-leaf/70" />
@@ -333,14 +333,14 @@ const Navbar = () => {
                                                 <Link
                                                     href={item.href}
                                                     onClick={() => setIsOpen(false)}
-                                                    className={`flex items-center justify-between px-4 py-3.5 rounded-xl text-base font-semibold transition-all group ${isActive
-                                                        ? 'text-leaf bg-leaf/10'
-                                                        : 'text-gray-600 hover:text-leaf hover:bg-leaf/5'
+                                                    className={`flex items-center justify-between px-4 py-3.5 rounded-md text-base font-semibold transition-all group ${isActive
+                                                        ? 'text-deep-green bg-deep-green/8'
+                                                        : 'text-gray-600 hover:text-deep-green hover:bg-black/[0.03]'
                                                         }`}
                                                 >
                                                     {item.name}
                                                     <ArrowRight className={`w-4 h-4 transition-all ${isActive
-                                                        ? 'opacity-100 text-leaf'
+                                                        ? 'opacity-100 text-deep-green'
                                                         : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'}`}
                                                     />
                                                 </Link>
@@ -357,8 +357,8 @@ const Navbar = () => {
                                         { icon: RefreshCcw, text: 'Freshness Promise' },
                                         { icon: Headphones, text: 'Expert Support' },
                                     ].map(({ icon: Icon, text }) => (
-                                        <div key={text} className="flex items-center gap-2 p-3 bg-gray-50 rounded-xl">
-                                            <Icon className="w-4 h-4 text-leaf shrink-0" />
+                                        <div key={text} className="flex items-center gap-2 p-3 bg-[#f4f5f1] rounded-md">
+                                            <Icon className="w-4 h-4 text-deep-green shrink-0" />
                                             <span className="text-xs font-semibold text-gray-600">{text}</span>
                                         </div>
                                     ))}
@@ -370,10 +370,10 @@ const Navbar = () => {
                                 <Link
                                     href="/book-order"
                                     onClick={() => setIsOpen(false)}
-                                    className="w-full bg-leaf hover:bg-leaf-dark text-white py-4 rounded-xl font-black text-base shadow-lg shadow-leaf/25 active:scale-95 transition-all flex items-center justify-center gap-2 tracking-wide"
+                                    className="w-full bg-deep-green hover:bg-[#0f2f21] text-white py-4 rounded-md font-black text-base shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 tracking-wide"
                                 >
                                     <ShoppingCart className="w-5 h-5" />
-                                    Place Order
+                                    Start Order
                                 </Link>
                                 <p className="text-center text-xs text-gray-400 mt-3 font-medium">
                                     Free delivery on orders above ₦50,000

@@ -35,10 +35,7 @@ const trainingModules = [
 
 export default function TrainingPage() {
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24 relative overflow-hidden">
-            {/* Decorative BG */}
-            <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-leaf/5 rounded-full blur-[120px] -z-10 -translate-y-1/2 translate-x-1/2" />
-
+        <div className="min-h-screen bg-background pt-24 pb-24 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <header className="text-center mb-24">
 
@@ -48,8 +45,8 @@ export default function TrainingPage() {
                         transition={{ delay: 0.1 }}
                         className="text-5xl lg:text-7xl font-black text-deep-green  mb-8 tracking-tighter"
                     >
-                        Become a Professional <br />
-                        <span className="text-leaf">Catfish Farmer</span>
+                        Build a serious <br />
+                        <span className="text-deep-green/75">catfish operation</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -90,12 +87,12 @@ export default function TrainingPage() {
                         <motion.div
                             key={idx}
                             whileHover={{ y: -10 }}
-                            className="bg-white  shadow-2xl shadow-black/5  border border-earth/5  p-10 rounded-3xl relative overflow-hidden group"
+                            className="bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 p-10 rounded-md relative overflow-hidden group"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 -translate-y-1/2 translate-x-1/2 rounded-full group-hover:scale-150 transition-transform duration-700" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#edf1eb] -translate-y-1/2 translate-x-1/2 rounded-full group-hover:scale-125 transition-transform duration-700" />
 
-                            <div className="w-14 h-14 bg-leaf/10 rounded-xl flex items-center justify-center mb-8">
-                                <module.icon className="w-7 h-7 text-leaf" />
+                            <div className="w-14 h-14 bg-[#edf1eb] rounded-md flex items-center justify-center mb-8">
+                                <module.icon className="w-7 h-7 text-deep-green" />
                             </div>
 
                             <h3 className="text-2xl font-black text-deep-green  mb-6 leading-tight">{module.title}</h3>
@@ -103,16 +100,16 @@ export default function TrainingPage() {
 
                             <div className="flex items-center gap-6 mb-10 pt-6 border-t border-foreground/5">
                                 <div className="flex items-center gap-2">
-                                    <Calendar className="w-4 h-4 text-leaf" />
+                                    <Calendar className="w-4 h-4 text-deep-green" />
                                     <span className="text-sm font-bold text-foreground/40 uppercase tracking-wider">{module.duration}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Users className="w-4 h-4 text-leaf" />
+                                    <Users className="w-4 h-4 text-deep-green" />
                                     <span className="text-sm font-bold text-foreground/40 uppercase tracking-wider">{module.students}</span>
                                 </div>
                             </div>
 
-                            <button className="w-full bg-leaf hover:bg-leaf-dark text-white py-5 rounded-2xl font-bold flex items-center justify-center gap-3 transition-colors shadow-lg shadow-leaf/20">
+                            <button className="w-full bg-deep-green hover:bg-[#0f2f21] text-white py-4 rounded-md font-bold flex items-center justify-center gap-3 transition-colors shadow-sm">
                                 Enroll Now
                                 <ArrowRight className="w-5 h-5" />
                             </button>
@@ -121,7 +118,7 @@ export default function TrainingPage() {
                 </div>
 
                 {/* CTA Section */}
-                <div className="bg-deep-green rounded-3xl p-12 md:p-20 text-center text-white relative overflow-hidden">
+                <div className="bg-[#1a231d] rounded-md p-12 md:p-20 text-center text-white relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('/event.png')] bg-cover bg-center" />
                     <div className="relative z-10">
                         <h2 className="text-4xl lg:text-5xl font-black mb-8">Ready to Start Your Journey?</h2>
@@ -129,7 +126,7 @@ export default function TrainingPage() {
                             Don&apos;t just farm, farm like a pro. Get the skills, mentorship, and support you need to succeed in the catfish business.
                         </p>
                         <div className="flex flex-wrap justify-center gap-6">
-                            <Link href="/contact" className="bg-white text-deep-green px-10 py-5 rounded-xl font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">
+                            <Link href="/contact" className="bg-white text-deep-green px-10 py-4 rounded-md font-black uppercase tracking-widest hover:bg-gray-100 transition-colors">
                                 Contact for Consultation
                             </Link>
                         </div>

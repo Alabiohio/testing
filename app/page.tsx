@@ -1,8 +1,9 @@
 import HomeClient from "@/components/HomeClient";
 import { db } from "@/lib/db";
-import { products as productsTable, flashDeals as flashDealsTable, flashSaleSettings as settingsTable, testimonials as testimonialsTable, priceCatalog as priceCatalogTable, type Product } from "@/lib/db/schema";
+import { products as productsTable, flashDeals as flashDealsTable, flashSaleSettings as settingsTable, testimonials as testimonialsTable, priceCatalog as priceCatalogTable, growthStages as growthStagesTable, type Product } from "@/lib/db/schema";
 
-import { desc, and, eq, gte } from "drizzle-orm";
+import { desc, and, eq, gte, asc } from "drizzle-orm";
+import { getActivePartnerAds } from "@/app/actions/partner-ads";
 
 export const dynamic = 'force-dynamic';
 
@@ -176,8 +177,17 @@ export default async function Home() {
     console.error("Failed to fetch price catalog:", error);
   }
 
-  const { getActivePartnerAds } = await import("@/app/actions/partner-ads");
   const initialPartnerAds = await getActivePartnerAds();
+  
+  let initialGrowthStages: any[] = [];
+  try {
+    initialGrowthStages = await db
+      .select()
+      .from(growthStagesTable)
+      .orderBy(asc(growthStagesTable.orderIndex));
+  } catch (error) {
+    console.error("Failed to fetch growth stages:", error);
+  }
 
   return <HomeClient 
     initialProducts={mappedProducts} 
@@ -187,6 +197,7 @@ export default async function Home() {
     initialTestimonials={initialTestimonials}
     initialPriceCatalog={initialPriceCatalog}
     initialPartnerAds={initialPartnerAds}
+    initialGrowthStages={initialGrowthStages}
   />;
 }
 

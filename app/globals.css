@@ -17,18 +17,18 @@
 }
 
 :root {
-  --background: #f9fcf6;
-  --foreground: #0f172a;
-  --primary: #22c55e;
-  --primary-deep: #14532d;
-  --secondary: #f59e0b;
-  --card-bg: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(0, 0, 0, 0.08);
+  --background: #f5f6f2;
+  --foreground: #16211b;
+  --primary: #1f7a45;
+  --primary-deep: #133d2a;
+  --secondary: #a16207;
+  --card-bg: rgba(255, 255, 255, 0.92);
+  --glass-border: rgba(15, 23, 42, 0.08);
   --surface: #ffffff;
-  --surface-alt: #f1f5f9;
-  --border: #e2e8f0;
-  --muted: #64748b;
-  --accent: #f59e0b;
+  --surface-alt: #ecefe8;
+  --border: #d8ddd3;
+  --muted: #5f6b62;
+  --accent: #8b5e34;
   color-scheme: light;
 }
 
@@ -41,24 +41,16 @@ body {
 
 /* === PROMO BAR === */
 .promo-bar {
-  background: #010438;
-  background-size: 200% auto;
-  animation: shimmer-bar 10s linear infinite;
+  background: #16211b;
   font-family: var(--font-saira), sans-serif;
 }
 
-@keyframes shimmer-bar {
-  0% { background-position: 0% center; }
-  100% { background-position: 200% center; }
-}
-
-
 /* === Navbar === */
 nav.scrolled {
-  background: rgba(255, 255, 255, 0.97) !important;
+  background: rgba(245, 246, 242, 0.96) !important;
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.08), 0 4px 24px rgba(0,0,0,0.06);
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08), 0 12px 32px rgba(15, 23, 42, 0.06);
   transition: all 0.4s ease;
 }
 
@@ -94,8 +86,8 @@ nav.scrolled {
 
 /* === TRUST BADGE STRIP === */
 .trust-strip {
-  background: linear-gradient(135deg, #0ba539 0%, #dcfce7 100%);
-  border-bottom: 1px solid #bbf7d0;
+  background: linear-gradient(135deg, #e8efe7 0%, #f6f7f2 100%);
+  border-bottom: 1px solid #d8ddd3;
 }
 
 /* === PRODUCT CARD HOVER GLOW === */
@@ -103,8 +95,8 @@ nav.scrolled {
   transition: all 0.3s ease;
 }
 .product-card-glow:hover {
-  box-shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.1);
-  transform: translateY(-4px);
+  box-shadow: 0 16px 36px -18px rgba(15, 23, 42, 0.2);
+  transform: translateY(-2px);
 }
 
 /* === SHIMMER LOADING === */
@@ -160,9 +152,9 @@ nav.scrolled {
   cursor: pointer;
 }
 .category-pill.active, .category-pill:hover {
-  background: #22c55e;
+  background: #1f7a45;
   color: white;
-  border-color: #22c55e;
+  border-color: #1f7a45;
 }
 .category-pill:not(.active) {
   background: transparent;
@@ -172,7 +164,7 @@ nav.scrolled {
 
 /* === DEAL BADGE === */
 .deal-badge {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+  background: linear-gradient(135deg, #7f1d1d, #991b1b);
   color: white;
   font-size: 10px;
   font-weight: 900;
@@ -184,10 +176,10 @@ nav.scrolled {
 
 /* === GLASS CARD === */
 .glass-card {
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.78);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255,255,255,0.4);
+  border: 1px solid rgba(216, 221, 211, 0.7);
 }
 
 /* === SECTION LABEL === */
@@ -196,9 +188,9 @@ nav.scrolled {
   align-items: center;
   gap: 8px;
   padding: 6px 16px;
-  background: #f0fdf4;
-  color: #22c55e;
-  border: 1.5px solid #bbf7d0;
+  background: #edf3ec;
+  color: #1f7a45;
+  border: 1.5px solid #cfd8cc;
   border-radius: 9999px;
   font-size: 11px;
   font-weight: 900;

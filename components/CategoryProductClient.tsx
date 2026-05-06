@@ -121,7 +121,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                 cancelText="Maybe Later"
             />
             {/* Control Bar */}
-            <div className="bg-white rounded-[1rem] p-4 shadow-sm border border-gray-100 flex flex-col lg:flex-row items-center gap-4">
+            <div className="bg-white rounded-md p-4 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 flex flex-col lg:flex-row items-center gap-4">
                 {/* Search */}
                 <div className="relative flex-grow w-full lg:w-auto">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -130,7 +130,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                         placeholder={`Search ${displayTitle.toLowerCase()}...`}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-leaf/20 transition-all font-medium"
+                        className="w-full pl-12 pr-4 py-3 bg-[#f4f5f1] rounded-md outline-none focus:ring-2 focus:ring-deep-green/10 transition-all font-medium"
                     />
                 </div>
 
@@ -138,7 +138,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                     {/* Filter Toggle */}
                     <button
                         onClick={() => setIsFilterOpen(!isFilterOpen)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-bold transition-all border ${isFilterOpen ? 'bg-amber-500 text-white border-amber-500' : 'bg-white text-gray-700 border-gray-100 hover:border-amber-500/30'}`}
+                        className={`flex items-center gap-2 px-4 py-2 rounded-md font-bold transition-all border ${isFilterOpen ? 'bg-deep-green text-white border-deep-green' : 'bg-white text-gray-700 border-black/8 hover:border-deep-green/20'}`}
                     >
                         <SlidersHorizontal className="w-4 h-4" />
                         Filters
@@ -152,7 +152,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value as any)}
-                            className="appearance-none w-full bg-gray-50 border border-transparent hover:border-gray-200 px-6 py-2 pr-12 rounded-2xl font-bold text-gray-700 outline-none cursor-pointer transition-all"
+                            className="appearance-none w-full bg-[#f4f5f1] border border-transparent hover:border-black/8 px-6 py-2 pr-12 rounded-md font-bold text-gray-700 outline-none cursor-pointer transition-all"
                         >
                             <option value="newest">Latest First</option>
                             <option value="price-asc">Price: Low to High</option>
@@ -173,7 +173,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                     >
-                        <div className="bg-white rounded-[1rem] p-4 shadow-sm border border-gray-100 grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
+                        <div className="bg-white rounded-md p-4 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
                             {/* Price Range */}
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
@@ -203,7 +203,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                 <label className="flex items-center gap-3 cursor-pointer group">
                                     <div
                                         onClick={() => setOnlyAvailable(!onlyAvailable)}
-                                        className={`w-12 h-6 rounded-full transition-all relative ${onlyAvailable ? 'bg-amber-500' : 'bg-gray-200'}`}
+                                        className={`w-12 h-6 rounded-full transition-all relative ${onlyAvailable ? 'bg-deep-green' : 'bg-gray-200'}`}
                                     >
                                         <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${onlyAvailable ? 'left-7' : 'left-1'}`} />
                                     </div>
@@ -240,14 +240,14 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             key={product.id}
-                            className="group bg-white rounded-[1.4rem] overflow-hidden border border-gray-100 shadow-sm hover:-translate-y-1 transition-all duration-500"
+                            className="group bg-white rounded-md overflow-hidden border border-black/6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] hover:-translate-y-1 transition-all duration-500"
                         >
                             <div className="relative aspect-[4/3] bg-gray-50 overflow-hidden">
                                 <Image
                                     src={product.imageUrl || "/assets/bgImages/fingerlings.png"}
                                     alt={product.name}
                                     fill
-                                    className="object-cover group-hover:scale-110 transition-transform duration-1000"
+                                    className="object-contain group-hover:scale-110 transition-transform duration-1000"
                                 />                             
                                 {product.available ? (
                                     <div className="absolute top-3 left-3 bg-amber-500 text-white text-[9px] font-black uppercase tracking-[0.15em] px-2 py-0.5 rounded-full shadow-lg">
@@ -268,7 +268,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                 <div>
                                     <Link 
                                         href={`/${product.category}`}
-                                        className="inline-block text-[10px] font-black bg-leaf/10 text-leaf hover:bg-leaf hover:text-white px-3 py-1.5 rounded-full uppercase tracking-widest transition-all duration-300 shadow-sm hover:shadow-md"
+                                        className="inline-block text-[10px] font-black bg-[#edf1eb] text-deep-green hover:bg-deep-green hover:text-white px-3 py-1.5 rounded-full uppercase tracking-widest transition-all duration-300 shadow-sm"
                                     >
                                         {product.category.replace(/-/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
                                     </Link>
@@ -284,7 +284,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                                     </div>
                                     <button
                                         onClick={() => handleOrderConfirm(product)}
-                                        className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 bg-amber-500 hover:bg-amber-600 text-white rounded-xl sm:rounded-2xl active:scale-90 transition-all cursor-pointer border-none"
+                                        className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 bg-deep-green hover:bg-[#0f2f21] text-white rounded-md active:scale-90 transition-all cursor-pointer border-none"
                                     >
                                         <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6" />
                                     </button>
@@ -294,7 +294,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
                     ))}
                 </div>
             ) : (
-                <div className="bg-white rounded-[4rem] p-16 text-center border border-gray-100 shadow-xl overflow-hidden relative">
+                <div className="bg-white rounded-md p-16 text-center border border-black/6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] overflow-hidden relative">
                     <div className="absolute top-0 left-0 w-full h-1 bg-leaf/20" />
                     <div className="relative z-10 max-w-md mx-auto">
                         <div className="w-20 h-20 bg-gray-50 text-gray-300 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 transform -rotate-12">

@@ -150,8 +150,8 @@ const ShopClient = ({ products }: ShopClientProps) => {
                         onClick={() => setSelectedCategory(cat.id)}
                         className={`whitespace-nowrap px-8 py-2.5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 ${
                             selectedCategory === cat.id
-                                ? "bg-leaf text-white shadow-xl shadow-leaf/20 scale-105"
-                                : "bg-white text-foreground/40 border-2 border-earth/5 hover:border-leaf/20 hover:text-leaf"
+                                ? "bg-deep-green text-white shadow-sm"
+                                : "bg-white text-foreground/50 border border-black/6 hover:border-deep-green/20 hover:text-deep-green"
                         }`}
                     >
                         {cat.name}
@@ -160,7 +160,7 @@ const ShopClient = ({ products }: ShopClientProps) => {
             </div>
 
             {/* Control Bar */}
-            <div className="bg-white rounded-[1rem] p-6 shadow-2xl shadow-earth/5 border border-earth/5 flex flex-col lg:flex-row items-center gap-6">
+            <div className="bg-white rounded-md p-6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 flex flex-col lg:flex-row items-center gap-6">
                 {/* Search */}
                 <div className="relative flex-grow w-full">
                     <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-foreground/20" />
@@ -169,7 +169,7 @@ const ShopClient = ({ products }: ShopClientProps) => {
                         placeholder="Search products..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-16 pr-6 py-3 bg-earth/5 rounded-xl outline-none focus:ring-4 focus:ring-leaf/10 transition-all font-bold text-lg"
+                        className="w-full pl-16 pr-6 py-3 bg-[#f4f5f1] rounded-md outline-none focus:ring-2 focus:ring-deep-green/10 transition-all font-semibold text-base"
                     />
                 </div>
 
@@ -179,8 +179,8 @@ const ShopClient = ({ products }: ShopClientProps) => {
                         onClick={() => setIsFilterOpen(!isFilterOpen)}
                         className={`flex items-center gap-3 px-8 py-2.5 rounded-xl font-black text-sm uppercase tracking-widest transition-all border-2 ${
                             isFilterOpen 
-                                ? 'bg-deep-green text-white border-deep-green shadow-xl shadow-deep-green/20' 
-                                : 'bg-white text-foreground/60 border-earth/10 hover:border-leaf/30'
+                                ? 'bg-deep-green text-white border-deep-green shadow-sm' 
+                                : 'bg-white text-foreground/60 border-black/8 hover:border-deep-green/20'
                         }`}
                     >
                         <SlidersHorizontal className="w-5 h-5" />
@@ -195,7 +195,7 @@ const ShopClient = ({ products }: ShopClientProps) => {
                         <select
                             value={sortBy}
                             onChange={(e) => setSortBy(e.target.value as any)}
-                            className="appearance-none w-full bg-earth/5 border-2 border-transparent hover:border-earth/10 px-8 py-2.5 pr-14 rounded-xl font-black text-sm uppercase tracking-widest text-foreground/60 outline-none cursor-pointer transition-all"
+                            className="appearance-none w-full bg-[#f4f5f1] border border-transparent hover:border-black/8 px-8 py-2.5 pr-14 rounded-md font-black text-sm uppercase tracking-widest text-foreground/60 outline-none cursor-pointer transition-all"
                         >
                             <option value="newest">Latest</option>
                             <option value="price-asc">Price: Low</option>
@@ -216,7 +216,7 @@ const ShopClient = ({ products }: ShopClientProps) => {
                         exit={{ height: 0, opacity: 0, y: -20 }}
                         className="overflow-hidden"
                     >
-                        <div className="bg-white rounded-[2rem] p-10 shadow-2xl shadow-earth/5 border border-earth/5 grid md:grid-cols-2 lg:grid-cols-3 gap-12 mb-12">
+                        <div className="bg-white rounded-md p-10 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 grid md:grid-cols-2 lg:grid-cols-3 gap-12 mb-12">
                             {/* Price Range */}
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between">
@@ -232,7 +232,7 @@ const ShopClient = ({ products }: ShopClientProps) => {
                                     step="500"
                                     value={priceRange[1]}
                                     onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
-                                    className="w-full h-3 bg-earth/5 rounded-full appearance-none cursor-pointer accent-leaf"
+                                    className="w-full h-3 bg-[#edf1eb] rounded-full appearance-none cursor-pointer accent-[#1f7a45]"
                                 />
                                 <div className="flex justify-between text-[10px] font-black text-foreground/20 uppercase tracking-widest">
                                     <span>min: ₦0</span>
@@ -246,7 +246,7 @@ const ShopClient = ({ products }: ShopClientProps) => {
                                 <label className="flex items-center gap-4 cursor-pointer group">
                                     <div
                                         onClick={() => setOnlyAvailable(!onlyAvailable)}
-                                        className={`w-16 h-8 rounded-full transition-all relative border-2 ${onlyAvailable ? 'bg-leaf border-leaf' : 'bg-white border-earth/10'}`}
+                                        className={`w-16 h-8 rounded-full transition-all relative border ${onlyAvailable ? 'bg-deep-green border-deep-green' : 'bg-white border-black/8'}`}
                                     >
                                         <div className={`absolute top-1 w-5 h-5 rounded-full transition-all ${onlyAvailable ? 'left-9 bg-white' : 'left-1 bg-earth/20'}`} />
                                     </div>
@@ -286,20 +286,20 @@ const ShopClient = ({ products }: ShopClientProps) => {
                                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                                 transition={{ duration: 0.4, delay: idx * 0.05 }}
                                 key={product.id}
-                                className="group bg-white rounded-[1rem] overflow-hidden border border-earth/5 shadow-sm hover:shadow-2xl hover:-translate-y-3 transition-all duration-500"
+                                className="group bg-white rounded-md overflow-hidden border border-black/6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] hover:shadow-[0_22px_44px_-30px_rgba(15,23,42,0.32)] hover:-translate-y-1 transition-all duration-500"
                             >
                                 <div className="relative aspect-[5/4] bg-earth/5 overflow-hidden">
                                     <Image
                                         src={product.imageUrl || "/assets/bgImages/fingerlings.png"}
                                         alt={product.name}
                                         fill
-                                        className="object-cover group-hover:scale-110 transition-transform duration-1000"
+                                        className="object-contain group-hover:scale-110 transition-transform duration-1000"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-deep-green/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
                                     
                                     <div className="absolute top-4 left-4 sm:top-6 sm:left-6 flex flex-col gap-2">
                                         {product.available ? (
-                                            <span className="bg-leaf text-white text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg backdrop-blur-md">
+                                            <span className="bg-deep-green text-white text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-3 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-sm backdrop-blur-md">
                                                 In Stock
                                             </span>
                                         ) : (
@@ -312,12 +312,12 @@ const ShopClient = ({ products }: ShopClientProps) => {
 
                                 <div className="p-4 sm:p-8">
                                     <div className="mb-2 sm:mb-4">
-                                        <span className="text-[8px] sm:text-[10px] font-black text-leaf uppercase tracking-[0.2em] bg-leaf/5 px-2 sm:px-3 py-1 rounded-full border border-leaf/10">
+                                            <span className="text-[8px] sm:text-[10px] font-black text-deep-green uppercase tracking-[0.2em] bg-[#edf1eb] px-2 sm:px-3 py-1 rounded-full border border-black/6">
                                             {product.category}
                                         </span>
                                     </div>
 
-                                    <h3 className="text-base sm:text-2xl font-black text-deep-green mb-1.5 sm:mb-3 group-hover:text-leaf transition-colors leading-tight line-clamp-1 sm:line-clamp-none">
+                                    <h3 className="text-base sm:text-2xl font-black text-deep-green mb-1.5 sm:mb-3 group-hover:text-[#1f7a45] transition-colors leading-tight line-clamp-1 sm:line-clamp-none">
                                         {product.name}
                                     </h3>
                                     <p className="text-foreground/40 text-[10px] sm:text-sm font-medium mb-4 sm:mb-8 leading-relaxed line-clamp-2">
@@ -333,7 +333,7 @@ const ShopClient = ({ products }: ShopClientProps) => {
                                         </div>
                                         <button
                                             onClick={() => handleOrderConfirm(product)}
-                                            className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 bg-leaf hover:bg-leaf-dark text-white rounded-xl sm:rounded-2xl shadow-xl shadow-leaf/20 active:scale-95 transition-all cursor-pointer group/btn shrink-0"
+                                            className="flex items-center justify-center w-10 h-10 sm:w-14 sm:h-14 bg-deep-green hover:bg-[#0f2f21] text-white rounded-md shadow-sm active:scale-95 transition-all cursor-pointer group/btn shrink-0"
                                         >
                                             <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 group-hover/btn:rotate-12 transition-transform" />
                                         </button>
@@ -344,7 +344,7 @@ const ShopClient = ({ products }: ShopClientProps) => {
                     </AnimatePresence>
                 </div>
             ) : (
-                <div className="bg-white rounded-[4rem] p-24 text-center border border-earth/5 shadow-2xl shadow-earth/5">
+                <div className="bg-white rounded-md p-24 text-center border border-black/6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
                     <div className="w-24 h-24 bg-earth/5 text-foreground/10 rounded-[2rem] flex items-center justify-center mx-auto mb-8 transform -rotate-12">
                         <Package className="w-12 h-12" />
                     </div>
@@ -359,7 +359,7 @@ const ShopClient = ({ products }: ShopClientProps) => {
                             setSearchQuery("");
                             setSelectedCategory("all");
                         }}
-                        className="bg-leaf hover:bg-leaf-dark text-white px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-[0.2em] transition-all shadow-xl shadow-leaf/20"
+                        className="bg-deep-green hover:bg-[#0f2f21] text-white px-10 py-4 rounded-md font-black text-sm uppercase tracking-[0.2em] transition-all shadow-sm"
                     >
                         Reset All Filters
                     </button>

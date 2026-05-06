@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import SafeImage from "@/components/SafeImage";
 import { motion } from "framer-motion";
 import { Truck, User, ChevronRight, ShieldCheck, ShoppingBag, ArrowLeft, MapPin, Mail, Phone, Info } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
@@ -63,11 +64,10 @@ export default function CheckoutPage() {
 
     if (items.length === 0) {
         return (
-            <div className="min-h-screen bg-background pt-32 pb-24 flex flex-col items-center justify-center font-black text-deep-green gap-4 relative">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-leaf/5 rounded-full blur-[120px] -z-10" />
+            <div className="min-h-screen bg-background pt-24 pb-24 flex flex-col items-center justify-center font-black text-deep-green gap-4 relative">
                 <h2 className="text-3xl">Your cart is empty</h2>
                 <p className="text-foreground/50 font-medium font-sans max-w-md text-center mb-4">You need to add items to your cart before proceeding to checkout.</p>
-                <Link href="/shop" className="text-leaf bg-leaf/10 p-4 rounded-xl flex items-center gap-2 hover:bg-leaf/20 transition-colors">
+                <Link href="/shop" className="text-deep-green bg-[#edf1eb] p-4 rounded-md flex items-center gap-2 hover:bg-[#e2e9df] transition-colors">
                     <ArrowLeft className="w-5 h-5" /> Back to Shop
                 </Link>
             </div>
@@ -75,14 +75,10 @@ export default function CheckoutPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background pt-32 pb-24 relative overflow-hidden">
-            {/* Background Blobs */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-leaf/10 rounded-full blur-[120px] -z-10 animate-pulse" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-earth/10 rounded-full blur-[100px] -z-10" />
-
+        <div className="min-h-screen bg-background pt-24 pb-24 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <header className="mb-12">
-                    <Link href="/cart" className="inline-flex items-center gap-2 text-foreground/50 hover:text-leaf transition-colors font-bold text-sm uppercase tracking-wider mb-8">
+                    <Link href="/cart" className="inline-flex items-center gap-2 text-foreground/50 hover:text-deep-green transition-colors font-bold text-sm uppercase tracking-wider mb-8">
                         <ArrowLeft className="w-4 h-4" /> Back to Cart
                     </Link>
 
@@ -91,7 +87,7 @@ export default function CheckoutPage() {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-4xl md:text-6xl font-black text-deep-green mb-4 tracking-tighter"
                     >
-                        Secure <span className="text-leaf">Checkout</span>
+                        Secure <span className="text-deep-green/75">Checkout</span>
                     </motion.h1>
                     <p className="text-lg text-foreground/50 max-w-2xl font-medium">
                         Complete your details below. Our team will contact you to finalize the payment and delivery.
@@ -107,9 +103,9 @@ export default function CheckoutPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
                             onSubmit={handleSubmit}
-                            className="bg-white shadow-2xl shadow-black/5 border-2 border-earth/5 p-6 md:p-10 rounded-3xl space-y-10 relative overflow-hidden"
+                            className="bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 p-6 md:p-10 rounded-md space-y-10 relative overflow-hidden"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 rounded-bl-[100px] -z-0" />
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#edf1eb] rounded-bl-[72px] -z-0" />
 
                             {/* Section: Customer Info */}
                             <div className="space-y-6 relative z-10">
@@ -170,9 +166,9 @@ export default function CheckoutPage() {
                                             key={opt}
                                             type="button"
                                             onClick={() => setFormData({ ...formData, deliveryOption: opt })}
-                                            className={`p-4 rounded-xl border-2 transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
-                                                ? "border-amber-500 bg-amber-50 text-amber-600"
-                                                : "border-amber-500/10 hover:border-amber-500/30"
+                                            className={`p-4 rounded-md border transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
+                                                ? "border-deep-green bg-[#edf1eb] text-deep-green"
+                                                : "border-black/8 hover:border-deep-green/30"
                                                 }`}
                                         >
                                             {opt}
@@ -321,15 +317,15 @@ export default function CheckoutPage() {
 
                     {/* Sidebar / Summary */}
                     <div className="space-y-8 sticky top-32">
-                        <div className="bg-amber-500/5 rounded-3xl p-8 md:p-10 border border-amber-500/10 border-dashed relative overflow-hidden">
-                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
+                        <div className="bg-white rounded-md p-8 md:p-10 border border-black/6 relative overflow-hidden shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
+                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#edf1eb] rounded-full blur-3xl" />
                             <h3 className="text-3xl font-black text-deep-green mb-10 leading-none">Order <br /> Summary</h3>
 
                             <div className="space-y-8 mb-10">
                                 {items.map((item) => (
                                     <div key={item.id} className="flex items-start gap-4 pb-6 border-b border-amber-500/10 last:border-0 last:pb-0">
                                         <div className="w-16 h-16 bg-white rounded-xl flex-shrink-0 relative overflow-hidden border border-gray-100 shadow-sm">
-                                            <Image src={item.imageUrl || "/assets/bgImages/fingerlings.png"} alt={item.name} fill className="object-cover" />
+                                            <SafeImage src={item.imageUrl || "/assets/bgImages/fingerlings.png"} alt={item.name} fill className="object-contain" />
                                         </div>
                                         <div className="flex-grow min-w-0 pt-1">
                                             <p className="font-black text-sm text-deep-green uppercase tracking-tight truncate">{item.name}</p>
@@ -351,7 +347,7 @@ export default function CheckoutPage() {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Delivery</p>
-                                    <p className="text-leaf font-black text-[10px] uppercase tracking-widest bg-leaf/10 px-2 py-1 rounded-md">Calculated later</p>
+                                    <p className="text-deep-green font-black text-[10px] uppercase tracking-widest bg-[#edf1eb] px-2 py-1 rounded-md">Calculated later</p>
                                 </div>
                                 <div className="pt-4 border-t border-amber-500/10">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30 mb-1">Total Value</p>
@@ -360,8 +356,8 @@ export default function CheckoutPage() {
                                     </p>
                                 </div>
 
-                                <div className="flex items-start gap-4 p-4 bg-white/50 rounded-xl border border-amber-500/5 mt-6">
-                                    <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                                <div className="flex items-start gap-4 p-4 bg-[#f8f9f6] rounded-md border border-black/6 mt-6">
+                                    <Info className="w-5 h-5 text-deep-green shrink-0 mt-0.5" />
                                     <p className="text-[10px] text-foreground/50 font-medium leading-relaxed italic">
                                         Prices may vary based on market conditions. Final quote will be shared during confirmation.
                                     </p>
@@ -373,7 +369,7 @@ export default function CheckoutPage() {
                             form="checkout-form"
                             type="submit"
                             disabled={isSubmitting}
-                            className={`w-full ${isSubmitting ? "bg-leaf/50" : "bg-leaf hover:bg-leaf-dark hover:scale-[1.02]"} text-white py-4 rounded-xl font-black text-xl uppercase tracking-widest transition-all active:scale-95 flex items-center justify-center gap-4`}
+                            className={`w-full ${isSubmitting ? "bg-deep-green/50" : "bg-deep-green hover:bg-[#0f2f21]"} text-white py-4 rounded-md font-black text-base uppercase tracking-[0.18em] transition-all active:scale-95 flex items-center justify-center gap-4`}
                         >
                             {isSubmitting ? "PLACING ORDER..." : "PLACE ORDER"}
                             <ChevronRight className="w-6 h-6" />
@@ -384,9 +380,9 @@ export default function CheckoutPage() {
                                 { title: "Secure Checkout", desc: "Protected data handling", icon: ShieldCheck },
                                 { title: "Expert Support", desc: "24h Response guaranteed", icon: Phone },
                             ].map((item, i) => (
-                                <div key={i} className="flex gap-4 items-center bg-white/50 p-6 rounded-2xl border border-earth/5 backdrop-blur-sm">
-                                    <div className="w-12 h-12 rounded-xl bg-leaf/10 flex items-center justify-center shrink-0">
-                                        <item.icon className="w-6 h-6 text-leaf" />
+                                <div key={i} className="flex gap-4 items-center bg-white p-6 rounded-md border border-black/6">
+                                    <div className="w-12 h-12 rounded-md bg-[#edf1eb] flex items-center justify-center shrink-0">
+                                        <item.icon className="w-6 h-6 text-deep-green" />
                                     </div>
                                     <div>
                                         <h4 className="font-black text-deep-green text-sm uppercase tracking-tight">{item.title}</h4>

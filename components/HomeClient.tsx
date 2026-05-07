@@ -22,18 +22,22 @@ import { PriceCatalogItem, GrowthStage } from "@/lib/db/schema";
 
 // Countdown Timer Hook
 function useCountdown(targetDate?: Date | string) {
-  const [time, setTime] = useState({ h: 0, m: 0, s: 0 });
+  const [time, setTime] = useState({ d: 0, h: 0, m: 0, s: 0, totalHours: 0 });
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      if (!targetDate) return { h: 11, m: 59, s: 59 };
+      if (!targetDate) return { d: 0, h: 11, m: 59, s: 59, totalHours: 11 };
       const target = typeof targetDate === 'string' ? new Date(targetDate) : targetDate;
       const difference = target.getTime() - new Date().getTime();
-      if (difference <= 0) return { h: 0, m: 0, s: 0 };
+      if (difference <= 0) return { d: 0, h: 0, m: 0, s: 0, totalHours: 0 };
+      
+      const totalHours = Math.floor(difference / (1000 * 60 * 60));
       return {
-        h: Math.floor((difference / (1000 * 60 * 60))),
+        d: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        h: totalHours % 24,
         m: Math.floor((difference / 1000 / 60) % 60),
         s: Math.floor((difference / 1000) % 60),
+        totalHours
       };
     };
 
@@ -144,35 +148,72 @@ const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm
 
 const SliderCountdown = ({ targetDate, isMobile }: { targetDate: Date | string | null, isMobile?: boolean }) => {
   const time = useCountdown(targetDate || undefined);
+  const showDays = time.d > 0;
+
   return (
     <div className={`flex items-center gap-1 font-bold ${!isMobile ? 'text-xl' : ''} tabular-nums`} suppressHydrationWarning>
-      <span>{pad(time.h)}h</span>
-      <span>:</span>
-      <span>{pad(time.m)}m</span>
-      <span>:</span>
-      <span>{pad(time.s)}s</span>
+      {showDays ? (
+        <>
+          <span>{pad(time.d)}d</span>
+          <span>:</span>
+          <span>{pad(time.h)}h</span>
+          <span>:</span>
+          <span>{pad(time.m)}m</span>
+        </>
+      ) : (
+        <>
+          <span>{pad(time.h)}h</span>
+          <span>:</span>
+          <span>{pad(time.m)}m</span>
+          <span>:</span>
+          <span>{pad(time.s)}s</span>
+        </>
+      )}
     </div>
   );
 };
 
 const HeroCountdown = ({ targetDate }: { targetDate: Date | string | null }) => {
   const time = useCountdown(targetDate || undefined);
+  const showDays = time.d > 0;
+
   return (
     <div className="flex items-center gap-2 ml-1 font-black text-deep-green tabular-nums" suppressHydrationWarning>
-      <div className="flex items-center gap-1">
-        <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.h)}</span>
-        <span className="text-[9px] text-foreground/30 font-bold lowercase">h</span>
-      </div>
-      <span className="text-foreground/10">:</span>
-      <div className="flex items-center gap-1">
-        <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.m)}</span>
-        <span className="text-[9px] text-foreground/30 font-bold lowercase">m</span>
-      </div>
-      <span className="text-foreground/10">:</span>
-      <div className="flex items-center gap-1">
-        <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.s)}</span>
-        <span className="text-[9px] text-foreground/30 font-bold lowercase">s</span>
-      </div>
+      {showDays ? (
+        <>
+          <div className="flex items-center gap-1">
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.d)}</span>
+            <span className="text-[9px] text-foreground/30 font-bold lowercase">d</span>
+          </div>
+          <span className="text-foreground/10">:</span>
+          <div className="flex items-center gap-1">
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.h)}</span>
+            <span className="text-[9px] text-foreground/30 font-bold lowercase">h</span>
+          </div>
+          <span className="text-foreground/10">:</span>
+          <div className="flex items-center gap-1">
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.m)}</span>
+            <span className="text-[9px] text-foreground/30 font-bold lowercase">m</span>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex items-center gap-1">
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.h)}</span>
+            <span className="text-[9px] text-foreground/30 font-bold lowercase">h</span>
+          </div>
+          <span className="text-foreground/10">:</span>
+          <div className="flex items-center gap-1">
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.m)}</span>
+            <span className="text-[9px] text-foreground/30 font-bold lowercase">m</span>
+          </div>
+          <span className="text-foreground/10">:</span>
+          <div className="flex items-center gap-1">
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.s)}</span>
+            <span className="text-[9px] text-foreground/30 font-bold lowercase">s</span>
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -583,8 +624,6 @@ export default function HomeClient({
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-lg font-black text-deep-green uppercase tracking-tight">{initialFlashDeal.title}</h2>
               <div className="flex items-center gap-1.5 ml-auto text-xs font-bold text-foreground/40 uppercase tracking-widest">
-                <Clock className="w-3.5 h-3.5" />
-                <span>Ends in</span>
                 <HeroCountdown targetDate={initialFlashDeal.endTime} />
               </div>
             </div>

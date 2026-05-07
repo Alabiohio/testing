@@ -240,7 +240,7 @@ const reversedAds = [...initialPartnerAds].reverse();
               <div className="relative aspect-[3/4] rounded-sm overflow-hidden border border-black/5 shadow-xl transition-transform duration-500 group-hover:-translate-y-2">
                 <SafeImage
                   src="/assets/images/garri2goflyer.jpeg"
-                  alt="Garri2Go Flyer"
+                  alt="Garri2go Flyer"
                   fill
                   className="object-cover"
                 />

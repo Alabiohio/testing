@@ -222,29 +222,43 @@ const PartnerAdSection = ({ initialPartnerAds, handleAdOrderConfirm }: { initial
   if (!initialPartnerAds || initialPartnerAds.length === 0) return null;
 
   // Reverse the order so the last item shows first
-  const reversedAds = [...initialPartnerAds].reverse();
+const reversedAds = [...initialPartnerAds].reverse();
 
   return (
     <section className="bg-transparent overflow-hidden mb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 border-b border-gray-100/80 pb-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 sm:mb-8">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 md:gap-10 border-b border-gray-100/80 pb-8 md:pb-14">
           <div className="flex-1">
-            <h2 className="text-3xl md:text-4xl font-black text-deep-green tracking-tighter uppercase leading-[0.8]">
+            <h2 className="text-3xl md:text-5xl font-black text-deep-green tracking-tighter uppercase leading-[0.8] mb-4">
               Featured<br/>Products
             </h2>
           </div>
 
-          <div className="w-full md:w-[580px] shrink-0 relative">
-            <div className="relative aspect-video rounded-sm overflow-hidden border border-black/5 group">
-              <video
-                src="/assets/bgVid/products.mp4"
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4s] ease-out"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-70" />
+          <div className="flex flex-row items-end gap-3 md:gap-8 shrink-0">
+            {/* Promotional Flyer */}
+            <div className="w-[110px] sm:w-[180px] md:w-[220px] shrink-0 relative group">
+              <div className="relative aspect-[3/4] rounded-sm overflow-hidden border border-black/5 shadow-xl transition-transform duration-500 group-hover:-translate-y-2">
+                <SafeImage
+                  src="/assets/images/garri2goflyer.jpeg"
+                  alt="Garri2Go Flyer"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Featured Video Reel */}
+            <div className="flex-1 sm:w-[400px] md:w-[500px] sm:shrink-0 relative">
+              <div className="relative aspect-video rounded-sm overflow-hidden border border-black/5 group">
+                <video
+                  src="/assets/bgVid/products.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4s] ease-out"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -514,7 +528,7 @@ export default function HomeClient({
             className="max-w-4xl"
           >
 
-            <h1 style={{ fontFamily: "var(--belanosima-font), sans-serif" }} className="text-3xl sm:text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.02] text-white max-w-3xl">
+            <h1 className="text-3xl sm:text-3xl md:text-4xl lg:text-6xl font-black tracking-tight mb-6 leading-[1.02] text-white max-w-3xl">
               Premium catfish for buyers who value consistency.
             </h1>
 
@@ -726,7 +740,7 @@ export default function HomeClient({
 
 
       {/* ===== PRODUCT GRID BY CATEGORY - VERTICAL SECTIONS ===== */}
-      <section id="shop-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32">
+      <section id="shop-categories" className="max-w-7xl mx-auto px-4 sm:px-2 lg:px-1 scroll-mt-32">
         <div className="py-8">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
@@ -750,7 +764,7 @@ export default function HomeClient({
                 <div key={catName} className="group/section">
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-2xl md:text-3xl font-black text-deep-green tracking-tight">{catName}</h3>
+                      <h3 className="text-2xl md:text-3xl font-bold text-black tracking-tight">{catName}</h3>
                     </div>
                     <Link
                       href={`/category/${catName.toLowerCase()}`}
@@ -771,7 +785,7 @@ export default function HomeClient({
       </section>
 
       {/* ===== PRODUCT GRID BY TYPE - VERTICAL SECTIONS ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-1">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-1 mb-1">
         <div className="py-4 sm:py-8">
 
           {/* Vertical Categories */}
@@ -793,7 +807,7 @@ export default function HomeClient({
                 <div key={type} className="group/section">
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-2xl md:text-4xl font-black text-deep-green tracking-tight">{type}</h3>
+                      <h3 className="text-2xl md:text-4xl font-bold text-black tracking-tight">{type}</h3>
                     </div>
                     <Link
                       href={`/${type === "Juvenile" ? "juveniles" : type === "Table Size" ? "table-size" : type.toLowerCase()}`}

@@ -184,11 +184,28 @@ const PartnerAdSection = ({ initialPartnerAds, handleAdOrderConfirm }: { initial
   const reversedAds = [...initialPartnerAds].reverse();
 
   return (
-    <section className="bg-transparent mb-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
-        <div className="flex items-center gap-4">
-          <h2 className="text-2xl md:text-3xl font-black text-deep-green tracking-tight uppercase">Featured Products</h2>
-          <div className="flex-1 h-px bg-gray-100" />
+    <section className="bg-transparent overflow-hidden mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 border-b border-gray-100/80 pb-14">
+          <div className="flex-1">
+            <h2 className="text-3xl md:text-4xl font-black text-deep-green tracking-tighter uppercase leading-[0.8]">
+              Featured<br/>Products
+            </h2>
+          </div>
+
+          <div className="w-full md:w-[580px] shrink-0 relative">
+            <div className="relative aspect-video rounded-sm overflow-hidden border border-black/5 group">
+              <video
+                src="/assets/bgVid/products.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[4s] ease-out"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-70" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -670,16 +687,16 @@ export default function HomeClient({
 
 
       {/* ===== PRODUCT GRID BY CATEGORY - VERTICAL SECTIONS ===== */}
-      <section id="shop-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32 mb-1">
+      <section id="shop-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-32">
         <div className="py-8">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
             <div>
-              <h2 className="text-3xl md:text-5xl font-black text-deep-green tracking-tight">Shop by Category</h2>
+              <h2 className="text-2xl md:text-4xl font-black text-deep-green tracking-tight">Shop by Category</h2>
             </div>
           </div>
 
-          <div className="space-y-20">
+          <div className="space-y-14">
             {filters.map((catName) => {
               const catItems = products.filter(p => {
                 const pCat = p.category.toLowerCase();
@@ -692,7 +709,7 @@ export default function HomeClient({
 
               return (
                 <div key={catName} className="group/section">
-                  <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                     <div className="flex items-center gap-4">
                       <h3 className="text-2xl md:text-3xl font-black text-deep-green tracking-tight">{catName}</h3>
                     </div>
@@ -719,7 +736,7 @@ export default function HomeClient({
         <div className="py-4 sm:py-8">
 
           {/* Vertical Categories */}
-          <div className="space-y-24">
+          <div className="space-y-14">
             {typeFilters.filter(f => f !== "All Fish").map((type) => {
               const typeItems = products.filter(p => {
                 const pCat = p.category.toLowerCase();
@@ -735,7 +752,7 @@ export default function HomeClient({
 
               return (
                 <div key={type} className="group/section">
-                  <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-100">
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                     <div className="flex items-center gap-4">
                       <h3 className="text-2xl md:text-4xl font-black text-deep-green tracking-tight">{type}</h3>
                     </div>
@@ -747,7 +764,7 @@ export default function HomeClient({
                     </Link>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3">
                     {typeItems.map((product, idx) => renderProductCard(product, idx))}
                   </div>
                 </div>
@@ -755,7 +772,7 @@ export default function HomeClient({
             })}
           </div>
 
-          <div className="mt-20 text-center">
+          <div className="mt-14 text-center">
             <Link
               href="/shop"
               className="inline-flex items-center gap-2.5 bg-leaf text-white px-10 py-3 rounded-sm font-black transition-all text-sm tracking-widest uppercase hover:bg-leaf-dark active:scale-95"
@@ -769,7 +786,7 @@ export default function HomeClient({
       {/* ===== GROWTH STAGES / SELECTION GUIDE ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-black text-deep-green tracking-tight mb-4">From Hatchery to Harvest</h2>
+          <h2 className="text-2 xl md:text-3xl font-black text-deep-green tracking-tight mb-4">From Hatchery to Harvest</h2>
           <p className="text-gray-500 font-medium max-w-2xl mx-auto">
             Technical specifications for each growth stage, ensuring you select the right fit for your farming objectives.
           </p>
@@ -851,7 +868,7 @@ export default function HomeClient({
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-16 text-center"
+          className="mt-14 text-center"
         >
           <p className="text-lg md:text-2xl font-black text-deep-green tracking-tight italic">
             From Hatchery to Harvest — We&apos;ve Got You Covered
@@ -860,18 +877,18 @@ export default function HomeClient({
       </section>
 
       {/* ===== ABOUT + VALUES ===== */}
-      <section id="about" className="bg-gray-50 py-24 mb-24 relative overflow-hidden">
+      <section id="about" className="bg-gray-50 py-14 mb-8 relative overflow-hidden">
         {/* Background pattern */}
         <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(#166534_1px,transparent_1px)] [background-size:24px_24px]" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Centered Header */}
           <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-4xl lg:text-6xl font-black text-deep-green mb-8 leading-[1.05] tracking-tight">
+            <h2 className="text-3xl lg:text-5xl font-black text-deep-green mb-8 leading-[1.05] tracking-tight">
               Quality, Consistency &<br />
               <span className="text-leaf">Customer Satisfaction</span>
             </h2>
-            <p className="text-lg text-gray-500 leading-relaxed font-medium max-w-2xl mx-auto">
+            <p className="text-md text-gray-500 leading-relaxed font-medium max-w-2xl mx-auto">
               A trusted catfish supplier raising fish under controlled conditions with expert handling, proper feeding, and clean water systems for the highest standards.
             </p>
           </div>

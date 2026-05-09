@@ -6,7 +6,8 @@ export interface SavedItem {
     id: string;
     name: string;
     price: string | null;
-    originalPrice: string | null;
+    priceRange: string | null;
+    discountedFrom: string | null;
     rawPrice: number | null;
     rawPriceRange: string | null;
     unit: string;

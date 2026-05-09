@@ -38,7 +38,7 @@ export default function BookedOrderPage() {
             const result = await getOrderCategories();
             if (result.success && result.categories) {
                 setCategoryGroups(result.categories);
-                
+
                 // Initialize form with the first category if not already set
                 const firstCat = Object.keys(result.categories)[0];
                 if (firstCat) {
@@ -96,7 +96,7 @@ export default function BookedOrderPage() {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center bg-background">
                 <div className="w-16 h-16 border-4 border-leaf border-t-transparent rounded-full animate-spin mb-4" />
-                <p className="text-deep-green font-black uppercase tracking-widest animate-pulse">Initializing Order System...</p>
+                <p className="text-deep-green font-black uppercase tracking-widest animate-pulse">Loading...</p>
             </div>
         );
     }
@@ -135,8 +135,8 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
 
     useEffect(() => {
         if (catParam && categoryGroups[catParam] && !formData.categories.includes(catParam)) {
-            setFormData((prev: any) => ({ 
-                ...prev, 
+            setFormData((prev: any) => ({
+                ...prev,
                 categories: [catParam],
                 items: [{ categoryId: catParam, subCategory: "", quantity: "" }]
             }));
@@ -155,7 +155,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
                             onSubmit={handleSubmit}
-                            className="bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 py-8 px-4 md:py-10 md:px-8 rounded-md space-y-12 relative overflow-hidden"
+                            className="bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 py-8 px-4 md:py-10 md:px-8 rounded-xl space-y-12 relative overflow-hidden"
                         >
                             <div className="absolute top-0 right-0 w-32 h-32 bg-[#edf1eb] rounded-bl-[72px] -z-0" />
 
@@ -269,7 +269,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                     {formData.items.map((item: any, itemIdx: number) => {
                                         const group = categoryGroups[item.categoryId as keyof typeof categoryGroups];
                                         return (
-                                            <motion.div 
+                                            <motion.div
                                                 key={item.categoryId}
                                                 initial={{ opacity: 0, y: 20 }}
                                                 animate={{ opacity: 1, y: 0 }}
@@ -283,30 +283,30 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                         <h3 className="font-black text-deep-green uppercase tracking-tight">{group.name}</h3>                                                                                                       </div>
                                                 </div>
 
-{group.options && group.options.length > 0 && (
-                                                <div className="space-y-6">
-                                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Choose Size/Weight</label>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                                        {group.options.map((opt: CategoryOption) => (
-                                                            <button
-                                                                key={opt.value}
-                                                                type="button"
-                                                                onClick={() => {
-                                                                    const newItems = [...formData.items];
-                                                                    newItems[itemIdx].subCategory = opt.label;
-                                                                    setFormData({ ...formData, items: newItems });
-                                                                }}
-                                                                className={`px-3 py-3 rounded-xl border-2 transition-all text-left flex items-center justify-between ${item.subCategory === opt.label
-                                                                    ? "border-amber-500 bg-amber-50 text-amber-600"
-                                                                    : "border-amber-500/10 hover:border-amber-500/40"
-                                                                    }`}
-                                                            >
-                                                                <span className="font-bold text-sm">{opt.label}</span>
-                                                                {item.subCategory === opt.label && <Check className="w-4 h-4" />}
-                                                            </button>
-                                                        ))}
+                                                {group.options && group.options.length > 0 && (
+                                                    <div className="space-y-6">
+                                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Choose Size/Weight</label>
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                                            {group.options.map((opt: CategoryOption) => (
+                                                                <button
+                                                                    key={opt.value}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        const newItems = [...formData.items];
+                                                                        newItems[itemIdx].subCategory = opt.label;
+                                                                        setFormData({ ...formData, items: newItems });
+                                                                    }}
+                                                                    className={`px-3 py-3 rounded-xl border-2 transition-all text-left flex items-center justify-between ${item.subCategory === opt.label
+                                                                        ? "border-amber-500 bg-amber-50 text-amber-600"
+                                                                        : "border-amber-500/10 hover:border-amber-500/40"
+                                                                        }`}
+                                                                >
+                                                                    <span className="font-bold text-sm">{opt.label}</span>
+                                                                    {item.subCategory === opt.label && <Check className="w-4 h-4" />}
+                                                                </button>
+                                                            ))}
+                                                        </div>
                                                     </div>
-                                                </div>
                                                 )}
 
                                                 <div className="space-y-4">
@@ -370,11 +370,11 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                     value={formData.country}
                                                     onChange={(e) => {
                                                         const newCountry = e.target.value;
-                                                        setFormData({ 
-                                                            ...formData, 
+                                                        setFormData({
+                                                            ...formData,
                                                             country: newCountry,
                                                             state: "",
-                                                            city: "" 
+                                                            city: ""
                                                         });
                                                     }}
                                                 >
@@ -400,7 +400,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                     onChange={(e) => setFormData({ ...formData, state: e.target.value, city: "" })}
                                                 >
                                                     <option value="">Select State</option>
-                                                    {formData.country && 
+                                                    {formData.country &&
                                                         State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.country)?.isoCode || "").map((state) => (
                                                             <option key={state.isoCode} value={state.name}>
                                                                 {state.name}
@@ -429,7 +429,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                         const countryCode = Country.getAllCountries().find(c => c.name === formData.country)?.isoCode || "";
                                                         const stateCode = State.getStatesOfCountry(countryCode).find(s => s.name === formData.state)?.isoCode || "";
                                                         const cities = City.getCitiesOfState(countryCode, stateCode);
-                                                        
+
                                                         // Fallback if no cities found for the state
                                                         if (cities.length === 0) {
                                                             return <option value={formData.state}>{formData.state} (Entire Region)</option>;
@@ -445,7 +445,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                 <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
                                             </div>
                                         </div>
-                                        
+
                                         <div className="space-y-4">
                                             <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Postal / Zip Code</label>
                                             <input
@@ -469,7 +469,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                             placeholder={
                                                 formData.deliveryOption === "Pickup"
                                                     ? "e.g. Near Sagamu Interchange"
-                                                    : formData.country.toLowerCase() !== "nigeria" 
+                                                    : formData.country.toLowerCase() !== "nigeria"
                                                         ? "e.g. 123 Maple Avenue"
                                                         : "e.g. 123 Business Way"
                                             }
@@ -504,7 +504,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
 
                     {/* Sidebar / Summary */}
                     <div className="space-y-8 sticky top-32">
-                        <div className="bg-white rounded-md p-8 md:p-10 border border-black/6 relative overflow-hidden shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
+                        <div className="bg-white rounded-xl p-8 md:p-10 border border-black/6 relative overflow-hidden shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
                             <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#edf1eb] rounded-full blur-3xl" />
                             <h3 className="text-3xl font-black text-deep-green  mb-10 leading-none">Order <br /> Summary</h3>
 
@@ -542,7 +542,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Delivery Method</p>
                                         <p className="font-black text-deep-green text-lg uppercase">{formData.deliveryOption}</p>
                                     </div>
-                                    
+
                                     <div className="flex items-start gap-4 p-4 bg-white/50 rounded-xl border border-amber-500/5">
                                         <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                                         <p className="text-[10px] text-foreground/50 font-medium leading-relaxed italic">
@@ -557,7 +557,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                             form="order-form"
                             type="submit"
                             disabled={isSubmitting}
-                            className={`w-full ${isSubmitting ? "bg-deep-green/50" : "bg-deep-green hover:bg-[#0f2f21]"} text-white py-4 rounded-md font-black text-base uppercase tracking-[0.18em] transition-all active:scale-95 flex items-center justify-center gap-4`}
+                            className={`w-full ${isSubmitting ? "bg-deep-green/50" : "bg-deep-green hover:bg-[#0f2f21]"} text-white py-4 rounded-xl font-black text-base uppercase tracking-[0.18em] transition-all active:scale-95 flex items-center justify-center gap-4`}
                         >
                             {isSubmitting ? "PLACING ORDER..." : "PLACE ORDER"}
                             <ChevronRight className="w-6 h-6" />

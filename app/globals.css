@@ -7,8 +7,11 @@
   --color-leaf: #22c55e;
   --color-leaf-dark: #16a34a;
   --color-deep-green: #14532d;
+  --color-logo-red: #dc2626;
+  --color-logo-green: #22c55e;
   --color-earth: #92400e;
   --color-earth-dark: #78350f;
+  --color-text1: var(--text1);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -17,18 +20,21 @@
 }
 
 :root {
-  --background: #f5f6f2;
+  --background: #f6f6f6;
   --foreground: #16211b;
   --primary: #1f7a45;
   --primary-deep: #133d2a;
-  --secondary: #a16207;
+  --secondary: #dc2626; /* Updated to Logo Red */
+  --logo-red: #dc2626;
+  --logo-green: #22c55e;
   --card-bg: rgba(255, 255, 255, 0.92);
   --glass-border: rgba(15, 23, 42, 0.08);
   --surface: #ffffff;
   --surface-alt: #ecefe8;
   --border: #d8ddd3;
   --muted: #5f6b62;
-  --accent: #8b5e34;
+  --text1: #14522C;
+  --accent: #a16207; /* Moved original secondary here */
   color-scheme: light;
 }
 

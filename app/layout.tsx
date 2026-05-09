@@ -29,6 +29,7 @@ const saira = Saira({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://ccb.farms'),
   title: {
     default: "CCB Farms - Premium Catfish & Sustainable Agriculture",
     template: "%s | CCB Farms"

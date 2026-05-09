@@ -119,7 +119,7 @@ const GlobalSearch = ({ isOpen, onClose }: GlobalSearchProps) => {
                                                         <h4 className="font-bold text-lg text-deep-green  group-hover:text-leaf transition-colors">
                                                             {item.title}
                                                         </h4>
-                                                        <span className="text-[10px] font-black uppercase tracking-widest text-leaf/60 bg-leaf/5 px-2 py-1 rounded-md">
+                                                        <span className="text-[10px] font-black uppercase tracking-widest text-leaf/60 bg-leaf/5 px-2 py-1 rounded-xl">
                                                             {item.category}
                                                         </span>
                                                     </div>

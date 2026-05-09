@@ -62,20 +62,20 @@ const Navbar = () => {
     ];
 
     const tickerItems = [
-        { 
+        {
             isPartner: true,
             content: (
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1.5">
                         <div className="relative w-16 h-8 shrink-0">
-                            <Image src="/ccbLg.png" alt="CCB Logo" fill className="object-contain" />
+                            <Image src="/ccbLg.png" alt="CCB Logo" fill sizes="64px" className="object-contain" />
                         </div>
                         <span className="whitespace-nowrap uppercase tracking-wider font-bold text-[11px] text-white/90">RC: 3709222</span>
                     </div>
                     <span className="text-[12px] font-black uppercase tracking-[0.2em] text-white/90 italic mx-1">Official Partner of</span>
                     <div className="flex items-center gap-1.5">
                         <div className="relative w-28 h-9 shrink-0">
-                          <Image src="/assets/images/techgrowWhite.png" alt="Techgrow Logo" fill className="object-contain" />
+                            <Image src="/assets/images/techgrowWhite.png" alt="Techgrow Logo" fill sizes="112px" className="object-contain" />
                         </div>
                         <span className="whitespace-nowrap uppercase tracking-wider font-bold text-[11px] text-white/90">RC: 8103767</span>
                     </div>
@@ -158,7 +158,7 @@ const Navbar = () => {
                                     alt="CCB Farms Logo"
                                     width={128}
                                     height={128}
-                                    className="object-contain"
+                                    className="object-contain w-auto h-auto"
                                 />
                             </div>
                         </Link>
@@ -171,7 +171,7 @@ const Navbar = () => {
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className={`px-4 py-2 text-sm font-semibold tracking-wide transition-all rounded-md relative group ${isActive
+                                        className={`px-4 py-2 text-sm font-semibold tracking-wide transition-all rounded-xl relative group ${isActive
                                             ? 'text-deep-green bg-deep-green/8'
                                             : 'text-gray-700 hover:text-deep-green hover:bg-black/[0.03]'
                                             }`}
@@ -185,7 +185,7 @@ const Navbar = () => {
                                         {isActive && (
                                             <motion.div
                                                 layoutId="nav-active"
-                                                className="absolute inset-0 bg-deep-green/8 rounded-md -z-10"
+                                                className="absolute inset-0 bg-deep-green/8 rounded-xl -z-10"
                                                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                             />
                                         )}
@@ -205,11 +205,11 @@ const Navbar = () => {
                                         animate={{ opacity: 1, scale: 1, x: 0 }}
                                         exit={{ opacity: 0, scale: 0.8, x: 20 }}
                                         onClick={() => setIsSearchOpen(true)}
-                                        className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-md border border-black/8 bg-white text-gray-500 hover:border-deep-green/20 hover:text-deep-green transition-all text-sm font-medium"
+                                        className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl border border-black/8 bg-white text-gray-500 hover:border-deep-green/20 hover:text-deep-green transition-all text-sm font-medium"
                                     >
                                         <Search className="w-4 h-4" />
                                         <span className="text-xs opacity-60 hidden lg:block">Search</span>
-                                        <span className="text-[10px] font-black opacity-30 bg-foreground/5 px-1.5 py-0.5 rounded-md hidden lg:block">⌘K</span>
+                                        <span className="text-[10px] font-black opacity-30 bg-foreground/5 px-1.5 py-0.5 rounded-xl hidden lg:block">⌘K</span>
                                     </motion.button>
                                 )}
                             </AnimatePresence>
@@ -217,7 +217,7 @@ const Navbar = () => {
                             {/* Cart Icon */}
                             <Link
                                 href="/book-order"
-                                className="relative p-2.5 rounded-md transition-all hover:bg-deep-green/8 active:scale-95 group"
+                                className="relative p-2.5 rounded-xl transition-all hover:bg-deep-green/8 active:scale-95 group"
                                 aria-label="Shopping Cart"
                             >
                                 <ShoppingCart className="w-5 h-5 text-gray-600 group-hover:text-deep-green transition-colors" />
@@ -231,7 +231,7 @@ const Navbar = () => {
                             {/* Shop CTA - Desktop */}
                             <Link
                                 href="/book-order"
-                                className="hidden lg:inline-flex items-center gap-2 bg-deep-green hover:bg-[#0f2f21] text-white px-5 py-2.5 rounded-md font-bold text-sm transition-all shadow-sm active:scale-95 tracking-wide"
+                                className="hidden lg:inline-flex items-center gap-2 bg-deep-green hover:bg-[#0f2f21] text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm active:scale-95 tracking-wide"
                             >
                                 Start Order
                                 <ArrowRight className="w-4 h-4" />
@@ -247,7 +247,7 @@ const Navbar = () => {
                                             animate={{ opacity: 1, scale: 1 }}
                                             exit={{ opacity: 0, scale: 0.8 }}
                                             onClick={() => setIsSearchOpen(true)}
-                                            className="p-2.5 rounded-md bg-white border border-black/8 text-gray-600 active:scale-90 transition-all"
+                                            className="p-2.5 rounded-xl bg-white border border-black/8 text-gray-600 active:scale-90 transition-all"
                                         >
                                             <Search className="w-5 h-5" />
                                         </motion.button>
@@ -255,7 +255,7 @@ const Navbar = () => {
                                 </AnimatePresence>
                                 <button
                                     onClick={() => setIsOpen(!isOpen)}
-                                    className="p-2.5 rounded-md bg-white border border-black/8 text-gray-700 active:scale-90 transition-all"
+                                    className="p-2.5 rounded-xl bg-white border border-black/8 text-gray-700 active:scale-90 transition-all"
                                     aria-label="Toggle menu"
                                 >
                                     {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -295,7 +295,7 @@ const Navbar = () => {
                                         alt="CCB Farms Logo"
                                         width={80}
                                         height={80}
-                                        className="object-contain"
+                                        className="object-contain w-auto h-auto"
                                     />
                                 </div>
                                 <button
@@ -313,7 +313,7 @@ const Navbar = () => {
                                     className="relative cursor-pointer mb-8 group"
                                     onClick={() => { setIsOpen(false); setIsSearchOpen(true); }}
                                 >
-                                    <div className="w-full h-12 pl-11 pr-4 rounded-md bg-[#f4f5f1] border border-transparent group-hover:border-deep-green/15 transition-all flex items-center">
+                                    <div className="w-full h-12 pl-11 pr-4 rounded-xl bg-[#f4f5f1] border border-transparent group-hover:border-deep-green/15 transition-all flex items-center">
                                         <span className="text-gray-400 text-sm font-medium">Search products...</span>
                                     </div>
                                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-leaf/70" />
@@ -333,7 +333,7 @@ const Navbar = () => {
                                                 <Link
                                                     href={item.href}
                                                     onClick={() => setIsOpen(false)}
-                                                    className={`flex items-center justify-between px-4 py-3.5 rounded-md text-base font-semibold transition-all group ${isActive
+                                                    className={`flex items-center justify-between px-4 py-3.5 rounded-xl text-base font-semibold transition-all group ${isActive
                                                         ? 'text-deep-green bg-deep-green/8'
                                                         : 'text-gray-600 hover:text-deep-green hover:bg-black/[0.03]'
                                                         }`}
@@ -357,7 +357,7 @@ const Navbar = () => {
                                         { icon: RefreshCcw, text: 'Freshness Promise' },
                                         { icon: Headphones, text: 'Expert Support' },
                                     ].map(({ icon: Icon, text }) => (
-                                        <div key={text} className="flex items-center gap-2 p-3 bg-[#f4f5f1] rounded-md">
+                                        <div key={text} className="flex items-center gap-2 p-3 bg-[#f4f5f1] rounded-xl">
                                             <Icon className="w-4 h-4 text-deep-green shrink-0" />
                                             <span className="text-xs font-semibold text-gray-600">{text}</span>
                                         </div>
@@ -370,7 +370,7 @@ const Navbar = () => {
                                 <Link
                                     href="/book-order"
                                     onClick={() => setIsOpen(false)}
-                                    className="w-full bg-deep-green hover:bg-[#0f2f21] text-white py-4 rounded-md font-black text-base shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 tracking-wide"
+                                    className="w-full bg-deep-green hover:bg-[#0f2f21] text-white py-4 rounded-xl font-black text-base shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 tracking-wide"
                                 >
                                     <ShoppingCart className="w-5 h-5" />
                                     Start Order

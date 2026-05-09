@@ -39,7 +39,7 @@ export default function CheckoutPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (items.length === 0) {
             alert("Your cart is empty. Please add items before checking out.");
             return;
@@ -67,7 +67,7 @@ export default function CheckoutPage() {
             <div className="min-h-screen bg-background pt-24 pb-24 flex flex-col items-center justify-center font-black text-deep-green gap-4 relative">
                 <h2 className="text-3xl">Your cart is empty</h2>
                 <p className="text-foreground/50 font-medium font-sans max-w-md text-center mb-4">You need to add items to your cart before proceeding to checkout.</p>
-                <Link href="/shop" className="text-deep-green bg-[#edf1eb] p-4 rounded-md flex items-center gap-2 hover:bg-[#e2e9df] transition-colors">
+                <Link href="/shop" className="text-deep-green bg-[#edf1eb] p-4 rounded-xl flex items-center gap-2 hover:bg-[#e2e9df] transition-colors">
                     <ArrowLeft className="w-5 h-5" /> Back to Shop
                 </Link>
             </div>
@@ -103,7 +103,7 @@ export default function CheckoutPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
                             onSubmit={handleSubmit}
-                            className="bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 p-6 md:p-10 rounded-md space-y-10 relative overflow-hidden"
+                            className="bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 p-6 md:p-10 rounded-xl space-y-10 relative overflow-hidden"
                         >
                             <div className="absolute top-0 right-0 w-32 h-32 bg-[#edf1eb] rounded-bl-[72px] -z-0" />
 
@@ -166,7 +166,7 @@ export default function CheckoutPage() {
                                             key={opt}
                                             type="button"
                                             onClick={() => setFormData({ ...formData, deliveryOption: opt })}
-                                            className={`p-4 rounded-md border transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
+                                            className={`p-4 rounded-xl border transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
                                                 ? "border-deep-green bg-[#edf1eb] text-deep-green"
                                                 : "border-black/8 hover:border-deep-green/30"
                                                 }`}
@@ -187,11 +187,11 @@ export default function CheckoutPage() {
                                                     value={formData.country}
                                                     onChange={(e) => {
                                                         const newCountry = e.target.value;
-                                                        setFormData({ 
-                                                            ...formData, 
+                                                        setFormData({
+                                                            ...formData,
                                                             country: newCountry,
                                                             state: "",
-                                                            city: "" 
+                                                            city: ""
                                                         });
                                                     }}
                                                 >
@@ -217,7 +217,7 @@ export default function CheckoutPage() {
                                                     onChange={(e) => setFormData({ ...formData, state: e.target.value, city: "" })}
                                                 >
                                                     <option value="">Select State</option>
-                                                    {formData.country && 
+                                                    {formData.country &&
                                                         State.getStatesOfCountry(Country.getAllCountries().find(c => c.name === formData.country)?.isoCode || "").map((state) => (
                                                             <option key={state.isoCode} value={state.name}>
                                                                 {state.name}
@@ -246,7 +246,7 @@ export default function CheckoutPage() {
                                                         const countryCode = Country.getAllCountries().find(c => c.name === formData.country)?.isoCode || "";
                                                         const stateCode = State.getStatesOfCountry(countryCode).find(s => s.name === formData.state)?.isoCode || "";
                                                         const cities = City.getCitiesOfState(countryCode, stateCode);
-                                                        
+
                                                         // Fallback if no cities found for the state
                                                         if (cities.length === 0) {
                                                             return <option value={formData.state}>{formData.state} (Entire Region)</option>;
@@ -262,7 +262,7 @@ export default function CheckoutPage() {
                                                 <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
                                             </div>
                                         </div>
-                                        
+
                                         <div className="space-y-4">
                                             <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Postal / Zip Code</label>
                                             <input
@@ -286,7 +286,7 @@ export default function CheckoutPage() {
                                             placeholder={
                                                 formData.deliveryOption === "Pickup"
                                                     ? "e.g. Near Sagamu Interchange"
-                                                    : formData.country.toLowerCase() !== "nigeria" 
+                                                    : formData.country.toLowerCase() !== "nigeria"
                                                         ? "e.g. 123 Maple Avenue"
                                                         : "e.g. 123 Business Way"
                                             }
@@ -317,7 +317,7 @@ export default function CheckoutPage() {
 
                     {/* Sidebar / Summary */}
                     <div className="space-y-8 sticky top-32">
-                        <div className="bg-white rounded-md p-8 md:p-10 border border-black/6 relative overflow-hidden shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
+                        <div className="bg-white rounded-xl p-8 md:p-10 border border-black/6 relative overflow-hidden shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
                             <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#edf1eb] rounded-full blur-3xl" />
                             <h3 className="text-3xl font-black text-deep-green mb-10 leading-none">Order <br /> Summary</h3>
 
@@ -325,7 +325,7 @@ export default function CheckoutPage() {
                                 {items.map((item) => (
                                     <div key={item.id} className="flex items-start gap-4 pb-6 border-b border-amber-500/10 last:border-0 last:pb-0">
                                         <div className="w-16 h-16 bg-white rounded-xl flex-shrink-0 relative overflow-hidden border border-gray-100 shadow-sm">
-                                            <SafeImage src={item.imageUrl || "/assets/bgImages/fingerlings.png"} alt={item.name} fill className="object-contain" />
+                                            <SafeImage src={item.imageUrl} alt={item.name} fill className="object-contain" />
                                         </div>
                                         <div className="flex-grow min-w-0 pt-1">
                                             <p className="font-black text-sm text-deep-green uppercase tracking-tight truncate">{item.name}</p>
@@ -347,7 +347,7 @@ export default function CheckoutPage() {
                                 </div>
                                 <div className="flex justify-between items-center">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Delivery</p>
-                                    <p className="text-deep-green font-black text-[10px] uppercase tracking-widest bg-[#edf1eb] px-2 py-1 rounded-md">Calculated later</p>
+                                    <p className="text-deep-green font-black text-[10px] uppercase tracking-widest bg-[#edf1eb] px-2 py-1 rounded-xl">Calculated later</p>
                                 </div>
                                 <div className="pt-4 border-t border-amber-500/10">
                                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30 mb-1">Total Value</p>
@@ -356,7 +356,7 @@ export default function CheckoutPage() {
                                     </p>
                                 </div>
 
-                                <div className="flex items-start gap-4 p-4 bg-[#f8f9f6] rounded-md border border-black/6 mt-6">
+                                <div className="flex items-start gap-4 p-4 bg-[#f8f9f6] rounded-xl border border-black/6 mt-6">
                                     <Info className="w-5 h-5 text-deep-green shrink-0 mt-0.5" />
                                     <p className="text-[10px] text-foreground/50 font-medium leading-relaxed italic">
                                         Prices may vary based on market conditions. Final quote will be shared during confirmation.
@@ -369,7 +369,7 @@ export default function CheckoutPage() {
                             form="checkout-form"
                             type="submit"
                             disabled={isSubmitting}
-                            className={`w-full ${isSubmitting ? "bg-deep-green/50" : "bg-deep-green hover:bg-[#0f2f21]"} text-white py-4 rounded-md font-black text-base uppercase tracking-[0.18em] transition-all active:scale-95 flex items-center justify-center gap-4`}
+                            className={`w-full ${isSubmitting ? "bg-deep-green/50" : "bg-deep-green hover:bg-[#0f2f21]"} text-white py-4 rounded-xl font-black text-base uppercase tracking-[0.18em] transition-all active:scale-95 flex items-center justify-center gap-4`}
                         >
                             {isSubmitting ? "PLACING ORDER..." : "PLACE ORDER"}
                             <ChevronRight className="w-6 h-6" />
@@ -380,8 +380,8 @@ export default function CheckoutPage() {
                                 { title: "Secure Checkout", desc: "Protected data handling", icon: ShieldCheck },
                                 { title: "Expert Support", desc: "24h Response guaranteed", icon: Phone },
                             ].map((item, i) => (
-                                <div key={i} className="flex gap-4 items-center bg-white p-6 rounded-md border border-black/6">
-                                    <div className="w-12 h-12 rounded-md bg-[#edf1eb] flex items-center justify-center shrink-0">
+                                <div key={i} className="flex gap-4 items-center bg-white p-6 rounded-xl border border-black/6">
+                                    <div className="w-12 h-12 rounded-xl bg-[#edf1eb] flex items-center justify-center shrink-0">
                                         <item.icon className="w-6 h-6 text-deep-green" />
                                     </div>
                                     <div>

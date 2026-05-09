@@ -25,13 +25,13 @@ export default function CartPage() {
                 </header>
 
                 {items.length === 0 ? (
-                    <div className="bg-white rounded-md p-16 text-center shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 flex flex-col items-center">
+                    <div className="bg-white rounded-xl p-16 text-center shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 flex flex-col items-center">
                         <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
                             <ShoppingCart className="w-10 h-10 text-gray-300" />
                         </div>
                         <h2 className="text-2xl font-black text-deep-green mb-3">Your cart is empty</h2>
                         <p className="text-foreground/50 mb-8 max-w-md">Looks like you haven't added anything to your cart yet. Explore our premium catfish offerings to get started.</p>
-                        <Link href="/" className="inline-flex items-center gap-2 bg-deep-green hover:bg-[#0f2f21] text-white px-8 py-4 rounded-md font-bold transition-all shadow-sm">
+                        <Link href="/" className="inline-flex items-center gap-2 bg-deep-green hover:bg-[#0f2f21] text-white px-8 py-4 rounded-xl font-bold transition-all shadow-sm">
                             Start Shopping
                         </Link>
                     </div>
@@ -47,12 +47,12 @@ export default function CartPage() {
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0, scale: 0.95 }}
-                                        className="bg-white p-4 sm:p-6 rounded-md shadow-[0_18px_40px_-30px_rgba(15,23,42,0.2)] border border-black/6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 group"
+                                        className="bg-white p-4 sm:p-6 rounded-xl shadow-[0_18px_40px_-30px_rgba(15,23,42,0.2)] border border-black/6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 group"
                                     >
                                         {/* Product Image */}
                                         <div className="relative w-full sm:w-28 h-28 bg-gray-50 rounded-xl overflow-hidden shrink-0 border border-gray-100">
                                             <SafeImage
-                                                src={item.imageUrl || "/assets/bgImages/fingerlings.png"}
+                                                src={item.imageUrl}
                                                 alt={item.name}
                                                 fill
                                                 className="object-contain group-hover:scale-105 transition-transform duration-500"
@@ -79,9 +79,9 @@ export default function CartPage() {
                                                     {item.price ? (
                                                         typeof item.price === 'number' ? `₦${item.price.toLocaleString()}` : item.price
                                                     ) : (
-                                                        item.category === "Partner Ad" ? 
-                                                        <span className="text-sm text-leaf/80 font-bold">Price will be communicated via email or phone</span> : 
-                                                        (item.price_range || "Contact for price")
+                                                        item.category === "Partner Ad" ?
+                                                            <span className="text-sm text-leaf/80 font-bold">Price will be communicated via email or phone</span> :
+                                                            (item.price_range || "Contact for price")
                                                     )}
                                                     {(!(item.category === "Partner Ad" && !item.price)) && (
                                                         <span className="text-xs text-gray-400 font-medium ml-1">/{item.unit}</span>
@@ -90,17 +90,17 @@ export default function CartPage() {
 
                                                 {/* Quantity Selector */}
                                                 {(!(item.category === "Partner Ad" && !item.price)) ? (
-                                                <div className="flex items-center gap-3 bg-[#f4f5f1] rounded-md p-1 border border-black/6">
+                                                    <div className="flex items-center gap-3 bg-[#f4f5f1] rounded-xl p-1 border border-black/6">
                                                         <button
                                                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                            className="w-8 h-8 rounded-md bg-white border border-black/8 flex items-center justify-center hover:border-deep-green text-gray-600 hover:text-deep-green transition-colors"
+                                                            className="w-8 h-8 rounded-xl bg-white border border-black/8 flex items-center justify-center hover:border-deep-green text-gray-600 hover:text-deep-green transition-colors"
                                                         >
                                                             <Minus className="w-4 h-4" />
                                                         </button>
                                                         <span className="w-8 text-center font-bold text-gray-900">{item.quantity}</span>
                                                         <button
                                                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                            className="w-8 h-8 rounded-md bg-white border border-black/8 flex items-center justify-center hover:border-deep-green text-gray-600 hover:text-deep-green transition-colors"
+                                                            className="w-8 h-8 rounded-xl bg-white border border-black/8 flex items-center justify-center hover:border-deep-green text-gray-600 hover:text-deep-green transition-colors"
                                                         >
                                                             <Plus className="w-4 h-4" />
                                                         </button>
@@ -116,7 +116,7 @@ export default function CartPage() {
                         </div>
 
                         {/* Order Summary */}
-                        <div className="bg-white rounded-md p-6 sm:p-8 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 sticky top-32">
+                        <div className="bg-white rounded-xl p-6 sm:p-8 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 sticky top-32">
                             <h3 className="text-2xl font-black text-deep-green mb-6">Order Summary</h3>
 
                             <div className="space-y-4 mb-6 text-sm font-medium text-gray-600">
@@ -136,19 +136,19 @@ export default function CartPage() {
 
                             <Link
                                 href="/checkout"
-                                className="w-full flex items-center justify-center gap-2 bg-deep-green hover:bg-[#0f2f21] text-white py-4 rounded-md font-bold transition-all shadow-sm active:scale-95"
+                                className="w-full flex items-center justify-center gap-2 bg-deep-green hover:bg-[#0f2f21] text-white py-4 rounded-xl font-bold transition-all shadow-sm active:scale-95"
                             >
                                 Secure Checkout <ArrowRight className="w-5 h-5" />
                             </Link>
 
                             <Link
                                 href="/shop"
-                                className="mt-4 w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 border border-black/8 text-deep-green py-4 rounded-md font-bold transition-all active:scale-95"
+                                className="mt-4 w-full flex items-center justify-center gap-2 bg-white hover:bg-gray-50 border border-black/8 text-deep-green py-4 rounded-xl font-bold transition-all active:scale-95"
                             >
                                 Continue Shopping
                             </Link>
 
-                            <div className="mt-6 flex items-start gap-3 bg-[#edf1eb] text-deep-green p-4 rounded-md text-xs font-medium">
+                            <div className="mt-6 flex items-start gap-3 bg-[#edf1eb] text-deep-green p-4 rounded-xl text-xs font-medium">
                                 <Tag className="w-4 h-4 shrink-0 mt-0.5" />
                                 <p>For items without a fixed price, our team will provide a quote during confirmation.</p>
                             </div>

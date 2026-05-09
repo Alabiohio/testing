@@ -12,8 +12,10 @@ import {
 import { useRouter } from "next/navigation";
 import ConfirmModal from "./ConfirmModal";
 import { useCart } from "@/lib/cart-context";
-import { getPriceCatalog } from "@/app/actions/price-catalog";
 import { PriceCatalogItem, GrowthStage } from "@/lib/db/schema";
+import ProductCard, { type ProductCardProps as ProductProps, SafeImage, formatPriceRange } from "./ProductCard";
+import { toCategorySlug } from "@/lib/category-slugs";
+
 
 
 
@@ -30,7 +32,7 @@ function useCountdown(targetDate?: Date | string) {
       const target = typeof targetDate === 'string' ? new Date(targetDate) : targetDate;
       const difference = target.getTime() - new Date().getTime();
       if (difference <= 0) return { d: 0, h: 0, m: 0, s: 0, totalHours: 0 };
-      
+
       const totalHours = Math.floor(difference / (1000 * 60 * 60));
       return {
         d: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -53,54 +55,65 @@ function useCountdown(targetDate?: Date | string) {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-interface ProductProps {
-  id: string;
-  name: string;
-  desc: string;
-  img: string;
-  price: string;
-  originalPrice: string;
-  unit: string;
-  category: string;
-  tags: string[];
-  rating: number;
-  reviews: number;
-  badge: string;
-  badgeColor: string;
-  rawPrice: number | null;
-  rawPriceRange: string | null;
-}
+// Redundant local utilities removed. Using exports from ProductCard.tsx
 
-const SafeImage = ({ src, alt, className, width, height, fill, unoptimized }: { src: string, alt: string, className?: string, width?: number, height?: number, fill?: boolean, unoptimized?: boolean }) => {
-  const [error, setError] = useState(false);
+const TestimonialSlider = ({ testimonials }: { testimonials: any[] }) => {
+  const [current, setCurrent] = useState(0);
 
-  if (error || !src) {
-    return (
-      <div className={`flex flex-col items-center justify-center bg-gray-50 border border-gray-100 ${className}`}>
-        <ShoppingBag className="w-8 h-8 text-leaf/20" />
-        <span className="text-[10px] font-black uppercase tracking-widest text-leaf/20 mt-2">No Image</span>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % testimonials.length);
+    }, 10000);
+    return () => clearInterval(timer);
+  }, [testimonials.length]);
 
   return (
-    <Image
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      fill={fill}
-      unoptimized={unoptimized || (typeof src === 'string' && src.startsWith('/'))}
-      className={className}
-      onError={() => setError(true)}
-    />
+    <div className="w-full py-2">
+      <div className="relative min-h-[180px] sm:min-h-[140px] flex items-center justify-center">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
+            className="w-full"
+          >
+            <div className="relative bg-[#F7F7F7] px-8 py-1 md:p-14 rounded-sm mb-2 group">
+              <p className="text-gray-700 text-base md:text-xl font-medium leading-relaxed italic text-center max-w-3xl mx-auto">
+                "{testimonials[current].review}"
+              </p>
+            </div>
+
+            <div className="text-center mt-6">
+              <p className="text-[#888888] font-bold text-sm md:text-base tracking-tight mb-1">{testimonials[current].name}</p>
+              {testimonials[current].role && (
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{testimonials[current].role}</p>
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Pagination Dots */}
+      <div className="flex justify-center gap-3 mt-6">
+        {testimonials.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrent(idx)}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${current === idx ? 'bg-black w-6' : 'bg-gray-300 hover:bg-gray-400'}`}
+            aria-label={`Go to testimonial ${idx + 1}`}
+          />
+        ))}
+      </div>
+    </div>
   );
 };
 
 const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm: (ad: any) => void }) => {
   if (ad.hasLink === false) {
     return (
-      <div className="block rounded-sm overflow-hidden bg-gray-50">
+      <div className="block rounded-xl overflow-hidden bg-gray-50">
         <SafeImage
           src={ad.imageUrl}
           alt={ad.title || "Special offer"}
@@ -118,7 +131,7 @@ const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm
         <Link
           href={ad.linkUrl}
           target={ad.linkUrl.startsWith('http') ? "_blank" : "_self"}
-          className="block rounded-sm overflow-hidden cursor-pointer group transition-all bg-gray-50"
+          className="block rounded-xl overflow-hidden cursor-pointer group transition-all bg-gray-50"
         >
           <SafeImage
             src={ad.imageUrl}
@@ -131,7 +144,7 @@ const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm
       ) : (
         <div
           onClick={() => handleAdOrderConfirm(ad)}
-          className="block rounded-sm overflow-hidden cursor-pointer group transition-all bg-gray-50"
+          className="block rounded-xl overflow-hidden cursor-pointer group transition-all bg-gray-50"
         >
           <SafeImage
             src={ad.imageUrl}
@@ -182,17 +195,17 @@ const HeroCountdown = ({ targetDate }: { targetDate: Date | string | null }) => 
       {showDays ? (
         <>
           <div className="flex items-center gap-1">
-            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.d)}</span>
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-xl text-[11px]">{pad(time.d)}</span>
             <span className="text-[9px] text-foreground/30 font-bold lowercase">d</span>
           </div>
           <span className="text-foreground/10">:</span>
           <div className="flex items-center gap-1">
-            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.h)}</span>
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-xl text-[11px]">{pad(time.h)}</span>
             <span className="text-[9px] text-foreground/30 font-bold lowercase">h</span>
           </div>
           <span className="text-foreground/10">:</span>
           <div className="flex items-center gap-1">
-            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.m)}</span>
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-xl text-[11px]">{pad(time.m)}</span>
             <span className="text-[9px] text-foreground/30 font-bold lowercase">m</span>
           </div>
         </>
@@ -204,12 +217,12 @@ const HeroCountdown = ({ targetDate }: { targetDate: Date | string | null }) => 
           </div>
           <span className="text-foreground/10">:</span>
           <div className="flex items-center gap-1">
-            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.m)}</span>
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-xl text-[11px]">{pad(time.m)}</span>
             <span className="text-[9px] text-foreground/30 font-bold lowercase">m</span>
           </div>
           <span className="text-foreground/10">:</span>
           <div className="flex items-center gap-1">
-            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-sm text-[11px]">{pad(time.s)}</span>
+            <span className="bg-deep-green text-white px-1.5 py-0.5 rounded-xl text-[11px]">{pad(time.s)}</span>
             <span className="text-[9px] text-foreground/30 font-bold lowercase">s</span>
           </div>
         </>
@@ -222,22 +235,22 @@ const PartnerAdSection = ({ initialPartnerAds, handleAdOrderConfirm }: { initial
   if (!initialPartnerAds || initialPartnerAds.length === 0) return null;
 
   // Reverse the order so the last item shows first
-const reversedAds = [...initialPartnerAds].reverse();
+  const reversedAds = [...initialPartnerAds].reverse();
 
   return (
-    <section className="bg-transparent overflow-hidden mb-8">
+    <section className="bg-transparent overflow-hidden mb-8 mt-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 sm:mb-8">
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 md:gap-10 border-b border-gray-100/80 pb-8 md:pb-14">
           <div className="flex-1">
-            <h2 className="text-3xl md:text-5xl font-black text-deep-green tracking-tighter uppercase leading-[0.8] mb-4">
-              Featured<br/>Products
+            <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight mb-4">
+              Featured Products
             </h2>
           </div>
 
           <div className="flex flex-row items-end gap-3 md:gap-8 shrink-0">
             {/* Promotional Flyer */}
             <div className="w-[110px] sm:w-[180px] md:w-[220px] shrink-0 relative group">
-              <div className="relative aspect-[3/4] rounded-sm overflow-hidden border border-black/5 shadow-xl transition-transform duration-500 group-hover:-translate-y-2">
+              <div className="relative aspect-[3/4] rounded-xl overflow-hidden border border-black/5 shadow-xl transition-transform duration-500 group-hover:-translate-y-2">
                 <SafeImage
                   src="/assets/images/garri2goFlyer.jpeg"
                   alt="Garri2go Flyer"
@@ -249,7 +262,7 @@ const reversedAds = [...initialPartnerAds].reverse();
 
             {/* Featured Video Reel */}
             <div className="flex-1 sm:w-[400px] md:w-[500px] sm:shrink-0 relative">
-              <div className="relative aspect-video rounded-sm overflow-hidden border border-black/5 group">
+              <div className="relative aspect-video rounded-xl overflow-hidden border border-black/5 group">
                 <video
                   src="/assets/bgVid/products.mp4"
                   autoPlay
@@ -277,7 +290,7 @@ const reversedAds = [...initialPartnerAds].reverse();
             <div key={set} className="flex gap-4 md:gap-8 pr-4 md:pr-8">
               {reversedAds.map((ad: any, idx: number) => (
                 <div key={`${set}-${idx}`} className="w-[280px] md:w-[350px] shrink-0 group">
-                  <div className="relative bg-white rounded-sm border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden p-2">
+                  <div className="relative bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 overflow-hidden p-2">
                     <AdContent ad={ad} handleAdOrderConfirm={handleAdOrderConfirm} />
                     <div className="mt-3 px-2 pb-2">
                       <h3 className="font-black text-deep-green text-sm uppercase tracking-tight line-clamp-1">{ad.title}</h3>
@@ -394,76 +407,30 @@ export default function HomeClient({
   const products = initialProducts;
 
   const filters = ["Farming", "Consumption", "Breeding"];
-  const typeFilters = ["All Fish", "Fingerlings", "Juvenile", "Broodstock", "Table Size", "Smoked"];
+
+  // Dynamically derive type filters from available products
+  const productCategories = Array.from(new Set(products.map(p => p.category)));
+  const typeFilters = ["All Fish", ...productCategories.map(cat => {
+    // Map internal slugs to display names for standard ones, or just use the name
+    const map: Record<string, string> = {
+      "fingerlings": "Fingerlings",
+      "juveniles": "Juvenile",
+      "broodstock": "Broodstock",
+      "table-size": "Table Size",
+      "smoked": "Smoked"
+    };
+    return map[cat.toLowerCase()] || cat.charAt(0).toUpperCase() + cat.slice(1);
+  })].filter((v, i, a) => a.indexOf(v) === i); // Ensure uniqueness
 
   // Filtered lists for vertical sections are computed inline to avoid redundant state management
 
   const renderProductCard = (product: ProductProps, idx: number) => (
-    <motion.div
+    <ProductCard
       key={product.id}
-      layout
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ delay: idx * 0.08 }}
-      className="group bg-white rounded-sm overflow-hidden border border-gray-100 shadow-sm"
-    >
-      {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-gray-50 ">
-        <SafeImage
-          src={product.img || "/assets/bgImages/fingerlings.png"}
-          alt={product.name}
-          fill
-          className="object-contain group-hover:scale-105 transition-transform duration-500"
-        />
-        {/* Badge */}
-        {product.badge && (
-          <div className={`absolute top-3 left-3 ${product.badgeColor} text-white text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full shadow-md`}>
-            {product.badge}
-          </div>
-        )}
-
-
-      </div>
-
-      {/* Content */}
-      <div className="p-3 sm:p-5">
-        {/* Rating */}
-
-
-        {/* Name */}
-        <h3 className="font-black text-base sm:text-lg text-gray-900  mb-1 tracking-tight truncate sm:whitespace-normal">{product.name}</h3>
-        <p className="text-[11px] sm:text-sm text-gray-500  font-medium mb-2 line-clamp-2">{product.desc}</p>
-
-        {/* Category Badge */}
-        <div className="mb-3">
-          <Link
-            href={`/${product.category}`}
-            className="inline-block text-[10px] font-black bg-leaf/10 text-leaf hover:bg-leaf hover:text-white px-3 py-1.5 rounded-full uppercase tracking-widest transition-all duration-300 shadow-sm hover:shadow-md active:scale-90"
-          >
-            {product.category}
-          </Link>
-        </div>
-
-        {/* Price & CTA */}
-        <div className="flex items-center justify-between border-t border-gray-50 ">
-          <div>
-            <p className="text-base sm:text-xl font-black text-gray-900 ">{product.price}</p>
-            <div className="flex items-center gap-2">
-              {product.originalPrice && <p className="text-[10px] sm:text-xs text-gray-400 font-medium">₦{product.originalPrice}</p>}
-              <span className="text-[9px] sm:text-[10px] font-bold text-gray-400">per {product.unit}</span>
-            </div>
-          </div>
-          <button
-            onClick={() => handleOrderConfirm(product)}
-            className="flex items-center justify-center gap-1.5 bg-leaf text-white p-2 sm:px-4 sm:py-2.5 rounded-sm font-bold text-sm transition-all hover:shadow-lg hover:shadow-leaf/20 active:scale-95 cursor-pointer"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            <span className="hidden sm:inline">Order</span>
-          </button>
-        </div>
-      </div>
-    </motion.div>
+      product={product}
+      index={idx}
+      onOrder={handleOrderConfirm}
+    />
   );
 
 
@@ -509,12 +476,12 @@ export default function HomeClient({
             className="relative group cursor-pointer"
             onClick={() => window.dispatchEvent(new CustomEvent('open-global-search'))}
           >
-            <div className="w-full h-12 pl-14 pr-6 rounded-md border border-white/15 bg-white/92 shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-all flex items-center">
+            <div className="w-full h-12 pl-14 pr-6 rounded-xl border border-white/15 bg-white/92 shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-all flex items-center">
               <span className="text-gray-500 text-sm font-medium">Search products, sizes, or categories</span>
             </div>
             <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-deep-green" />
             <div className="absolute right-5 top-1/2 -translate-y-1/2 hidden sm:flex items-center gap-2">
-              <span className="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-sm uppercase tracking-widest border border-gray-200">⌘K</span>
+              <span className="text-[11px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-xl uppercase tracking-widest border border-gray-200">⌘K</span>
             </div>
           </div>
         </div>
@@ -537,11 +504,11 @@ export default function HomeClient({
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Link href="/category" className="inline-flex items-center justify-center gap-2.5 bg-deep-green hover:bg-[#0f2f21] text-white px-8 py-2.5 rounded-md font-bold text-base transition-all shadow-sm active:scale-95 tracking-wide">
+              <Link href="/category" className="inline-flex items-center justify-center gap-2.5 bg-deep-green hover:bg-[#0f2f21] text-white px-8 py-2.5 rounded-xl font-bold text-base transition-all shadow-sm active:scale-95 tracking-wide">
                 <ShoppingCart className="w-5 h-5" />
                 View Categories
               </Link>
-              <Link href="/contact" className="inline-flex items-center justify-center gap-2 border border-white/18 bg-white text-[0f2f21] px-8 py-2.5 rounded-md font-bold transition-all hover:bg-white/80 text-base">
+              <Link href="/contact" className="inline-flex items-center justify-center gap-2 border border-white/18 bg-white text-[0f2f21] px-8 py-2.5 rounded-xl font-bold transition-all hover:bg-white/80 text-base">
                 <Phone className="w-5 h-5" />
                 Speak with the Team
               </Link>
@@ -554,7 +521,7 @@ export default function HomeClient({
                 { value: "7 Days", label: "Support availability" },
                 { value: "Nationwide", label: "Delivery coverage" },
               ].map(s => (
-                <div key={s.label} className="rounded-md border border-white/10 bg-white/6 px-2 py-2">
+                <div key={s.label} className="rounded-xl border border-white/10 bg-white/6 px-2 py-2">
                   <p className="text-md font-bold text-white">{s.value}</p>
                   <p className="text-xs font-bold text-white/50 uppercase tracking-wider mt-1">{s.label}</p>
                 </div>
@@ -567,7 +534,7 @@ export default function HomeClient({
       {/* ===== MULTIPLE FLASH DEALS SLIDER ===== */}
       {activeFlashDeals.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-          <div className="bg-white rounded-sm overflow-hidden shadow-sm border border-black/5">
+          <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-black/5">
             {/* Red Banner Header */}
             <div className="bg-red-600 text-white px-4 md:px-6 py-3 md:py-4 flex items-center justify-between">
               <div className="flex items-center gap-2 md:gap-3">
@@ -600,7 +567,7 @@ export default function HomeClient({
                     className="shrink-0 w-[140px] md:w-[200px] snap-start group relative flex flex-col cursor-pointer transition-transform hover:-translate-y-1"
                     onClick={() => handleOrderConfirm(product)}
                   >
-                    <div className="relative aspect-square mb-3 bg-white rounded-sm overflow-hidden shrink-0 border border-black/5 flex items-center justify-center">
+                    <div className="relative aspect-square mb-3 bg-white rounded-xl overflow-hidden shrink-0 border border-black/5 flex items-center justify-center">
                       <SafeImage
                         src={deal.imageUrl || product.img}
                         alt={deal.title || product.name}
@@ -608,7 +575,7 @@ export default function HomeClient({
                         className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                       />
                       {deal.discount && (
-                        <div className="absolute top-0 right-0 bg-orange-50 text-orange-500 font-medium text-xs px-1.5 py-0.5 rounded-sm">
+                        <div className="absolute top-0 right-0 bg-orange-50 text-orange-500 font-medium text-xs px-1.5 py-0.5 rounded-xl">
                           {deal.discount.startsWith('-') ? deal.discount : `-${deal.discount}`}
                         </div>
                       )}
@@ -636,14 +603,14 @@ export default function HomeClient({
           <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
             {/* Section Header */}
             <div className="flex items-center gap-2 mb-4">
-              <h2 className="text-lg font-black text-deep-green uppercase tracking-tight">{initialFlashDeal.title}</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight">{initialFlashDeal.title}</h2>
               <div className="flex items-center gap-1.5 ml-auto text-xs font-bold text-foreground/40 uppercase tracking-widest">
                 <HeroCountdown targetDate={initialFlashDeal.endTime} />
               </div>
             </div>
 
             {/* Deal Card */}
-            <div className="bg-white border border-black/5 rounded-sm overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+            <div className="bg-white border border-black/5 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
               <div className="flex flex-col md:flex-row">
                 {/* Product Image */}
                 <div className="relative w-full md:w-[280px] h-[200px] md:h-[240px] bg-zinc-50 shrink-0 overflow-hidden group">
@@ -668,7 +635,7 @@ export default function HomeClient({
                   )}
                   {/* Discount Badge */}
                   {initialFlashDeal.discount && (
-                    <div className="absolute top-4 left-4 bg-leaf text-white px-3 py-1.5 rounded-sm font-black text-sm shadow-sm">
+                    <div className="absolute top-4 left-4 bg-leaf text-white px-3 py-1.5 rounded-xl font-black text-sm shadow-sm">
                       {initialFlashDeal.discount}
                     </div>
                   )}
@@ -703,9 +670,9 @@ export default function HomeClient({
                       <span className="text-red-600">Sold: {initialFlashDeal.stockSold}</span>
                       <span className="text-foreground/30">Total: {initialFlashDeal.stockTotal}</span>
                     </div>
-                    <div className="h-1.5 w-full bg-black/5 rounded-sm overflow-hidden">
+                    <div className="h-1.5 w-full bg-black/5 rounded-xl overflow-hidden">
                       <div
-                        className="h-full rounded-sm bg-red-600 transition-all duration-1000 shadow-sm"
+                        className="h-full rounded-xl bg-red-600 transition-all duration-1000 shadow-sm"
                         style={{ width: `${Math.min(Math.max((initialFlashDeal.stockSold / (initialFlashDeal.stockTotal || 100)) * 100, 5), 100)}%` }}
                       ></div>
                     </div>
@@ -716,7 +683,7 @@ export default function HomeClient({
                       onClick={() => {
                         if (dealProduct) handleOrderConfirm(dealProduct);
                       }}
-                      className="bg-leaf hover:bg-leaf-dark text-white px-6 py-2.5 rounded-sm font-black text-xs uppercase tracking-widest shadow-sm transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-2 group/btn"
+                      className="bg-leaf hover:bg-leaf-dark text-white px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest shadow-sm transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-2 group/btn"
                     >
                       <ShoppingCart className="w-3.5 h-3.5" />
                       Add to Cart
@@ -741,33 +708,59 @@ export default function HomeClient({
 
       {/* ===== PRODUCT GRID BY CATEGORY - VERTICAL SECTIONS ===== */}
       <section id="shop-categories" className="max-w-7xl mx-auto px-4 sm:px-2 lg:px-1 scroll-mt-32">
-        <div className="py-8">
+        <div className="py-8 mb-12">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
             <div>
-              <h2 className="text-2xl md:text-4xl font-black text-deep-green tracking-tight">Shop by Category</h2>
+              <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight">Shop by Category</h2>
             </div>
           </div>
 
-          <div className="space-y-14">
+          <div className="space-y-24">
             {filters.map((catName) => {
-              const catItems = products.filter(p => {
+              // Determine which subcategories belong to this section
+              let subCats: string[] = [];
+              if (catName === "Farming") subCats = ["fingerlings", "juveniles", "farming"];
+              else if (catName === "Consumption") subCats = ["table-size", "smoked", "consumption"];
+              else if (catName === "Breeding") subCats = ["broodstock", "breeding"];
+              else subCats = [catName.toLowerCase()];
+
+              // Group the available products by their exact subcategory
+              const groups: Record<string, typeof products> = {};
+              subCats.forEach(sc => groups[sc] = []);
+              
+              products.forEach(p => {
                 const pCat = p.category.toLowerCase();
-                if (catName === "Farming") return ["fingerlings", "juveniles", "farming"].includes(pCat);
-                if (catName === "Consumption") return ["table-size", "smoked", "consumption"].includes(pCat);
-                if (catName === "Breeding") return ["broodstock", "breeding"].includes(pCat);
-                return p.category === catName;
-              }).slice(0, 2);
+                if (subCats.includes(pCat)) {
+                  groups[pCat].push(p);
+                }
+              });
+
+              // Interleave the products to create a balanced mix (1010 pattern)
+              const catItems: typeof products = [];
+              let added = true;
+              let i = 0;
+              while (catItems.length < 4 && added) {
+                added = false;
+                for (const sc of subCats) {
+                  if (catItems.length >= 4) break;
+                  if (groups[sc] && groups[sc][i]) {
+                    catItems.push(groups[sc][i]);
+                    added = true;
+                  }
+                }
+                i++;
+              }
               if (catItems.length === 0) return null;
 
               return (
                 <div key={catName} className="group/section">
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-2xl md:text-3xl font-bold text-black tracking-tight">{catName}</h3>
+                      <h3 className="text-2xl md:text-3xl font-medium text-black tracking-tight">{catName}</h3>
                     </div>
                     <Link
-                      href={`/category/${catName.toLowerCase()}`}
+                      href={`/category/${toCategorySlug(catName)}`}
                       className="bg-deep-green text-white px-6 py-2.5 rounded-full flex items-center gap-2 font-bold text-[13px] hover:bg-deep-green/90 transition-all shadow-sm group"
                     >
                       More {catName} <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -785,21 +778,22 @@ export default function HomeClient({
       </section>
 
       {/* ===== PRODUCT GRID BY TYPE - VERTICAL SECTIONS ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-1 mb-1">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-1 mb-14">
         <div className="py-4 sm:py-8">
 
           {/* Vertical Categories */}
-          <div className="space-y-14">
+          <div className="space-y-24">
             {typeFilters.filter(f => f !== "All Fish").map((type) => {
               const typeItems = products.filter(p => {
                 const pCat = p.category.toLowerCase();
-                if (type === "Fingerlings") return pCat === "fingerlings";
-                if (type === "Juvenile") return pCat === "juveniles" || pCat === "juvenile";
-                if (type === "Broodstock") return pCat === "broodstock";
-                if (type === "Table Size") return pCat === "table-size" || pCat === "table size";
-                if (type === "Smoked") return pCat === "smoked";
-                return false;
-              }).slice(0, 2);
+                const tLower = type.toLowerCase();
+                if (tLower === "fingerlings") return pCat === "fingerlings";
+                if (tLower === "juvenile") return pCat === "juveniles" || pCat === "juvenile";
+                if (tLower === "broodstock") return pCat === "broodstock";
+                if (tLower === "table size") return pCat === "table-size" || pCat === "table size";
+                if (tLower === "smoked") return pCat === "smoked";
+                return pCat === tLower || p.category === type;
+              }).slice(0, 4);
 
               if (typeItems.length === 0) return null;
 
@@ -807,11 +801,11 @@ export default function HomeClient({
                 <div key={type} className="group/section">
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-2xl md:text-4xl font-bold text-bold tracking-tight">{type}</h3>
+                      <h3 className="text-2xl md:text-4xl font-medium text-black tracking-tight">{type}</h3>
                     </div>
                     <Link
-                      href={`/${type === "Juvenile" ? "juveniles" : type === "Table Size" ? "table-size" : type.toLowerCase()}`}
-                      className="bg-deep-green text-white px-6 py-2.5 rounded-full flex items-center gap-2 font-bold text-[13px] hover:bg-deep-green/90 transition-all shadow-sm group"
+                      href={`/category/${toCategorySlug(type)}`}
+                      className="bg-deep-green text-white px-2 py-2 rounded-full flex items-center gap-2 font-bold text-[10px] truncate hover:bg-deep-green/90 transition-all shadow-sm group"
                     >
                       More {type} <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </Link>
@@ -828,7 +822,7 @@ export default function HomeClient({
           <div className="mt-14 text-center">
             <Link
               href="/shop"
-              className="inline-flex items-center gap-2.5 bg-leaf text-white px-10 py-3 rounded-sm font-black transition-all text-sm tracking-widest uppercase hover:bg-leaf-dark active:scale-95"
+              className="inline-flex items-center gap-2.5 bg-leaf text-white px-10 py-3 rounded-xl font-black transition-all text-sm tracking-widest uppercase hover:bg-leaf-dark active:scale-95"
             >
               Explore Full Catalog <ChevronRight className="w-5 h-5" />
             </Link>
@@ -837,74 +831,64 @@ export default function HomeClient({
       </section>
 
       {/* ===== GROWTH STAGES / SELECTION GUIDE ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="text-center mb-16">
-          <h2 className="text-2 xl md:text-3xl font-black text-deep-green tracking-tight mb-4">From Hatchery to Harvest</h2>
-          <p className="text-gray-500 font-medium max-w-2xl mx-auto">
-            Technical specifications for each growth stage, ensuring you select the right fit for your farming objectives.
+      <section className="max-w-8xl mx-auto px-2 sm:px-6 lg:px-8 mb-22">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-4 pb-10">
+          <div className="max-w-2xl">
+            <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight leading-[0.9]">
+              From Hatchery to Harvest
+            </h2>
+          </div>
+          <p className="text-gray-500 font-medium max-w-sm text-sm leading-relaxed">
+            Technical specifications for each growth stage, ensuring you select the right fit for your specific farming objectives.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-0 rounded-xl overflow-hidden">
           {initialGrowthStages.map((item, idx) => (
             <motion.div
               key={item.title}
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.1, duration: 0.7 }}
-              className="relative group p-8 sm:p-12 bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-lg transition-all duration-700 text-center flex flex-col items-center overflow-hidden"
+              transition={{ delay: idx * 0.1, duration: 0.8 }}
+              className={`relative group p-8 lg:p-12 bg-white flex flex-col ${idx !== 2 ? "md:border-r border-gray-100" : ""} hover:bg-gray-50/50 transition-colors duration-500`}
             >
-              {/* Background Glow */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-leaf/5 -z-0" />
 
-              {/* Image Container */}
-              <div className="relative w-48 h-48 mb-10">
-                <div className="absolute inset-0 bg-leaf/10 rounded-full scale-110 group-hover:scale-105 transition-transform duration-700" />
-                <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-white shadow-sm z-10">
-                  <SafeImage
-                    src={item.imageUrl}
-                    alt={item.title}
-                    fill
-                    className="object-cover scale-110 group-hover:scale-100 transition-transform duration-1000"
-                  />
-                </div>
-
-                {/* Title Badge */}
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-deep-green text-white px-6 py-2 rounded-sm text-[10px] font-black uppercase tracking-[0.25em] shadow-sm z-20 whitespace-nowrap">
-                  {item.title}
-                </div>
+              {/* Title & Description */}
+              <div className="mb-10">
+                <h3 className="text-2xl font-black text-deep-green uppercase tracking-tight mb-4">{item.title}</h3>
+                <p className="text-xs text-gray-500 font-medium leading-relaxed italic">
+                  "{item.description}"
+                </p>
               </div>
 
-              {/* Specifications */}
-              <div className="space-y-6 relative z-10 w-full">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center justify-center gap-3">
-                    <div className="w-8 h-[2px] bg-leaf/20" />
-                    <span className="text-leaf font-black text-[10px] uppercase tracking-widest px-3 py-1 bg-leaf/5 rounded-sm border border-leaf/10">Technical Specs</span>
-                    <div className="w-8 h-[2px] bg-leaf/20" />
-                  </div>
+              {/* Image Container - Rectangular & Sleek */}
+              <div className="relative aspect-[5/3] w-full mb-10 overflow-hidden rounded-xl border border-black/5 bg-gray-50">
+                <SafeImage
+                  src={item.imageUrl}
+                  alt={item.title}
+                  fill
+                  className="object-contain group-hover:scale-105 transition-transform duration-1000"
+                />
+              </div>
 
-                  <div className="grid grid-cols-1 gap-2 pt-2">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Standard Size</span>
-                      <span className="text-2xl font-black text-deep-green tracking-tight">{item.size}</span>
-                    </div>
-                    <div className="flex flex-col pt-2 border-t border-gray-50">
-                      <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Standard Age</span>
-                      <span className="text-2xl font-black text-deep-green tracking-tight">{item.age}</span>
-                    </div>
+              {/* Specifications - Grid Layout */}
+              <div className="mt-auto space-y-6">
+                <div className="grid grid-cols-2 gap-6 pt-6 border-t border-gray-100">
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Average Size</span>
+                    <span className="text-xl font-black text-deep-green tracking-tight">{item.size}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5">Standard Age</span>
+                    <span className="text-xl font-black text-deep-green tracking-tight">{item.age}</span>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 rounded-sm p-4 border border-gray-100 italic font-bold text-[11px] text-gray-500">
-                  "{item.description}"
-                </div>
-
-                <div className="pt-4">
+                <div className="pt-6">
                   <Link href={item.link}>
                     <button
-                      className="inline-flex items-center justify-center gap-2 w-full bg-leaf text-white py-2.5 rounded-sm font-black text-sm transition-all hover:bg-leaf-dark shadow-sm active:scale-95 group/btn cursor-pointer"
+                      className="inline-flex items-center justify-center gap-2 w-full bg-deep-green text-white py-3.5 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all hover:bg-[#0f2f21] shadow-sm active:scale-95 group/btn cursor-pointer"
                     >
                       Order {item.title}
                       <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -915,158 +899,81 @@ export default function HomeClient({
             </motion.div>
           ))}
         </div>
-
-        {/* Footer Tagline */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-14 text-center"
-        >
-          <p className="text-lg md:text-2xl font-black text-deep-green tracking-tight italic">
-            From Hatchery to Harvest — We&apos;ve Got You Covered
-          </p>
-        </motion.div>
-      </section>
-
-      {/* ===== ABOUT + VALUES ===== */}
-      <section id="about" className="bg-gray-50 py-14 mb-8 relative overflow-hidden">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-[0.04] bg-[radial-gradient(#166534_1px,transparent_1px)] [background-size:24px_24px]" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Centered Header */}
-          <div className="text-center max-w-3xl mx-auto mb-20">
-            <h2 className="text-3xl lg:text-5xl font-black text-deep-green mb-8 leading-[1.05] tracking-tight">
-              Quality, Consistency &<br />
-              <span className="text-leaf">Customer Satisfaction</span>
-            </h2>
-            <p className="text-md text-gray-500 leading-relaxed font-medium max-w-2xl mx-auto">
-              A trusted catfish supplier raising fish under controlled conditions with expert handling, proper feeding, and clean water systems for the highest standards.
-            </p>
-          </div>
-
-          {/* 4 Feature Pillars */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-6 mb-16">
-            {[
-              { title: "Hygienic Bio-Security", sub: "Rigorous disease-control standards for every batch.", icon: Shield },
-              { title: "Expert Support", sub: "Professional guidance at every growth stage.", icon: Users },
-              { title: "Organic Feed Only", sub: "Zero hormones or chemicals. Pure nutrition.", icon: Leaf },
-              { title: "Timely Delivery", sub: "Reliable Nationwide & International logistics you can count on.", icon: Truck },
-            ].map(({ title, sub, icon: Icon }) => (
-              <motion.div
-                key={title}
-                whileHover={{ y: -6 }}
-                className="group bg-white border border-gray-100 rounded-sm p-6 lg:p-8 shadow-sm hover:shadow-md hover:border-leaf/20 transition-all duration-500"
-              >
-                <div className="flex items-center justify-between mb-6">
-                  <div className="w-12 h-12 rounded-sm bg-leaf/10 border border-leaf/20 flex items-center justify-center group-hover:bg-leaf group-hover:text-white transition-colors duration-500">
-                    <Icon className="w-5 h-5 text-leaf group-hover:text-white" />
-                  </div>
-                </div>
-                <h4 className="font-black text-gray-900 text-base lg:text-lg mb-3 tracking-tight leading-snug">{title}</h4>
-                <p className="text-sm text-gray-400 leading-relaxed font-medium">{sub}</p>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Bottom Bar: Stats + CTA */}
-          <div className="bg-deep-green rounded-sm p-6 lg:p-4 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-sm">
-            {/* Stats */}
-            <div className="flex items-center gap-6 lg:gap-10 flex-wrap justify-center lg:justify-start">
-              {[
-                { val: "100%", label: "Organic Feed", highlight: true },
-                { val: "24/7", label: "Expert Support" },
-                { val: "48h", label: "Delivery Time" },
-              ].map(({ val, label, highlight }, i) => (
-                <div key={label} className="flex items-center gap-4">
-                  {i > 0 && <div className="w-px h-8 bg-white/15 hidden lg:block" />}
-                  <div className="text-center lg:text-left px-2">
-                    <p className={`text-2xl font-black ${highlight ? 'text-leaf' : 'text-white'} mb-0.5 tracking-tight`}>{val}</p>
-                    <p className="text-[9px] font-bold text-white/35 uppercase tracking-[0.2em]">{label}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <Link
-              href="/category"
-              className="inline-flex items-center gap-3 bg-leaf hover:bg-leaf-dark text-white px-8 py-4 rounded-sm font-black text-sm transition-all hover:shadow-sm active:scale-95 group shrink-0"
-            >
-              Shop Our Products
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </div>
       </section>
 
       {/* ===== PRICE CATALOGUE ===== */}
       {catalogItems.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
-            <div className="max-w-2xl">
-              <h2 className="text-4xl lg:text-5xl font-black text-deep-green tracking-tight leading-tight">
-                Transparent & <br />
-                <span className="text-leaf">Competitive Pricing</span>
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-32">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-20">
+            {/* Header Column */}
+            <div className="lg:col-span-4 lg:sticky lg:top-32 h-fit">
+              <h2 className="text-3xl md:text-5xl font-black text-deep-green tracking-tighter leading-[0.9] mb-8">
+                Transparent <br />
+                <span className="text-leaf">Pricing.</span>
               </h2>
-              <p className="text-gray-500 mt-4 text-lg font-medium leading-relaxed">
+              <p className="text-gray-500 text-lg font-medium leading-relaxed max-w-sm">
                 We provide honest market rates for our premium stock. No hidden fees, just pure value for your investment.
               </p>
+
+              <div className="mt-12 hidden lg:block">
+                <div className="p-6 bg-surface-alt rounded-2xl border border-border">
+                  <p className="text-xs font-bold text-deep-green mb-2">Need a custom quote?</p>
+                  <p className="text-xs text-muted leading-relaxed mb-4">For bulk orders or specific growth requirements, contact our sales team directly.</p>
+                  <button className="text-[10px] font-black uppercase tracking-widest text-leaf hover:underline">Contact Us &rarr;</button>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-            {catalogItems.map((item, idx) => {
-              const accentClasses = "bg-leaf/5 border-leaf/10 text-leaf";
+            {/* Grid Column */}
+            <div className="lg:col-span-8">
+              <div className="grid grid-cols-2 gap-4 md:gap-6">
+                {catalogItems.map((item, idx) => {
+                  const slug = toCategorySlug(item.name);
+                  return (
+                    <Link
+                      key={idx}
+                      href={`/book-order/?cat=${slug}`}
+                      className="block group"
+                    >
+                      <motion.div
+                        initial={{ opacity: 0, y: 24 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 overflow-hidden h-full"
+                      >
+                        {/* Image Section */}
+                        <div className="relative h-56 md:h-80 w-full overflow-hidden bg-gray-50">
+                          <SafeImage
+                            src={item.imageUrl}
+                            alt={item.name}
+                            fill
+                            className="object-contain group-hover:scale-105 transition-transform duration-700"
+                          />
+                          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full border border-gray-100">
+                            <p className="text-[10px] font-black text-deep-green uppercase tracking-widest">{item.unit}</p>
+                          </div>
+                        </div>
 
-              return (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className={`group relative bg-white border border-gray-100 p-0 rounded-sm md:rounded-sm shadow-sm hover:shadow-lg transition-all duration-700 overflow-hidden cursor-pointer`}
-                >
+                        <div className="p-4 md:p-8">
+                          <h3 className="text-sm md:text-xl font-black text-gray-900 tracking-tight mb-4 line-clamp-1">{item.name}</h3>
 
-                  {/* Image Section */}
-                  {item.imageUrl ? (
-                    <div className="relative h-32 md:h-48 w-full overflow-hidden">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.name}
-                        fill
-                        className="object-contain group-hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                    </div>
-                  ) : (
-                    <div className="px-6 md:px-10 pt-6 md:pt-10">
-                      <div className={`w-12 h-12 md:w-16 md:h-16 rounded-sm ${accentClasses} border flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}>
-                        <Tag className="w-6 h-6 md:w-8 md:h-8" />
-                      </div>
-                    </div>
-                  )}
-
-
-                  <div className="px-6 md:px-10 pb-6 md:pb-10 pt-3 md:pt-3 relative z-10">
-                    <h3 className="text-lg md:text-2xl font-black text-gray-900 tracking-tight">{item.name}</h3>
-                    <p className="text-[10px] md:text-sm font-medium text-gray-400 leading-relaxed line-clamp-2">{item.description}</p>
-
-
-                    <div className="pt-4 md:pt-8 border-t border-gray-50">
-                      <p className="text-[8px] md:text-[10px] uppercase font-black text-gray-400 tracking-[0.2em] md:tracking-[0.25em] mb-1 md:mb-3">Price Range</p>
-                      <div className="flex flex-wrap items-baseline gap-1">
-                        <span className="text-sm md:text-xl font-black text-deep-green tracking-tighter">{item.priceRange}</span>
-                        <span className="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-widest">/ {item.unit}</span>
-                      </div>
-                    </div>
-
-                  </div>
-
-                </motion.div>
-              );
-            })}
+                          <div className="flex items-end justify-between pt-4 md:pt-6 border-t border-gray-50">
+                            <div>
+                              <p className="text-[7px] md:text-[9px] uppercase font-black text-gray-400 tracking-[0.2em] mb-1">Standard Rate</p>
+                              <p className="text-sm md:text-2xl font-black text-leaf tracking-tighter">{item.priceRange}</p>
+                            </div>
+                            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-surface-alt border border-border flex items-center justify-center group-hover:bg-leaf group-hover:border-leaf transition-all shrink-0">
+                              <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-deep-green group-hover:text-white transition-colors" />
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </section>
       )}
@@ -1076,7 +983,7 @@ export default function HomeClient({
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))]" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-14">
-            <h2 className="text-white text-3xl lg:text-4xl font-black mb-4 tracking-tight">Why buyers stay with CCB Farms</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-4">Why buyers stay with CCB Farms</h2>
             <p className="text-white/60 text-base max-w-2xl mx-auto font-medium">
               A mature supply operation is about consistency, handling discipline, and responsive service at every order size.
             </p>
@@ -1093,9 +1000,9 @@ export default function HomeClient({
               <motion.div
                 key={idx}
                 whileHover={{ y: -4 }}
-                className="bg-white/[0.04] border border-white/10 p-7 rounded-md hover:bg-white/[0.06] hover:border-white/16 transition-all"
+                className="bg-white/[0.04] border border-white/10 p-7 rounded-xl hover:bg-white/[0.06] hover:border-white/16 transition-all"
               >
-                <div className="w-12 h-12 bg-white/8 rounded-md flex items-center justify-center mb-5 border border-white/10">
+                <div className="w-12 h-12 bg-white/8 rounded-xl flex items-center justify-center mb-5 border border-white/10">
                   <Icon className="w-6 h-6 text-[#9cc4a7]" />
                 </div>
                 <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
@@ -1109,7 +1016,7 @@ export default function HomeClient({
       {/* ===== HOW IT WORKS ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-black text-deep-green tracking-tight">A clear ordering process</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight">A clear ordering process</h2>
         </div>
         <div className="grid md:grid-cols-4 gap-6">
           {[
@@ -1124,10 +1031,10 @@ export default function HomeClient({
               )}
               <motion.div
                 whileHover={{ y: -3 }}
-                className="bg-white border border-black/6 p-7 rounded-md hover:border-black/12 hover:shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] transition-all group"
+                className="bg-white border border-black/6 p-7 rounded-xl hover:border-black/12 hover:shadow-[0_18px_40px_-28px_rgba(15,23,42,0.35)] transition-all group"
               >
                 <div className="flex items-center justify-between mb-5">
-                  <div className="w-11 h-11 bg-deep-green/8 rounded-md flex items-center justify-center group-hover:bg-deep-green transition-colors">
+                  <div className="w-11 h-11 bg-deep-green/8 rounded-xl flex items-center justify-center group-hover:bg-deep-green transition-colors">
                     <item.icon className="w-5 h-5 text-deep-green group-hover:text-white transition-colors" />
                   </div>
                   <span className="text-3xl font-black text-gray-200">{item.step}</span>
@@ -1140,45 +1047,25 @@ export default function HomeClient({
         </div>
       </section>
 
-      {/* ===== TESTIMONIALS ===== */}
+      {/* ===== TESTIMONIALS (Centered Slider) ===== */}
       {initialTestimonials.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-black text-deep-green tracking-tight">What Our Customers Say</h2>
+        <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-14">
+          <div className="text-center mb-2">
+            <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight">Hear What People Say About Us</h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {initialTestimonials.map((t, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="bg-white border border-gray-100 rounded-sm p-7 shadow-sm hover:shadow-md hover:border-leaf/20 transition-all"
-              >
-                <p className="text-gray-600 text-sm leading-relaxed font-medium mb-6 italic">"{t.review}"</p>
-                <div className="flex items-center gap-3 pt-5 border-t border-gray-50">
-                  <div className="w-10 h-10 rounded-sm bg-gradient-to-br from-leaf to-deep-green flex items-center justify-center text-white text-xs font-black shrink-0">
-                    {t.initials || (t.name?.split(' ').map((n: any) => n[0]).join('') || 'U')}
-                  </div>
-                  <div>
-                    <p className="font-bold text-gray-800 text-sm">{t.name}</p>
-                    <p className="text-xs text-gray-400 font-medium">{t.role}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+          <div className="relative">
+            <TestimonialSlider testimonials={initialTestimonials} />
           </div>
         </section>
       )}
 
       {/* ===== SERVING FARMERS & FAMILIES ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-        <div className="bg-gray-50 rounded-sm p-8 md:p-16 border border-gray-100 relative overflow-hidden">
+        <div className="bg-gray-50 rounded-xl p-8 md:p-16 border border-gray-100 relative overflow-hidden">
           <div className="relative z-10 grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-black text-deep-green mb-8 tracking-tight">
+              <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight mb-8">
                 Serving Farmers &<br />Families Alike
               </h2>
               <div className="space-y-6">
@@ -1187,7 +1074,7 @@ export default function HomeClient({
                   { title: "For Families & Restaurants", desc: "Hygienically handled catfish delivered straight to your home or kitchen for a premium dining experience.", icon: ShoppingBag },
                 ].map(({ title, desc, icon: Icon }) => (
                   <div key={title} className="flex gap-5">
-                    <div className="w-12 h-12 rounded-sm bg-white shadow-sm flex items-center justify-center shrink-0 border border-gray-100">
+                    <div className="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center shrink-0 border border-gray-100">
                       <Icon className="w-6 h-6 text-leaf" />
                     </div>
                     <div>
@@ -1198,7 +1085,7 @@ export default function HomeClient({
                 ))}
               </div>
             </div>
-            <div className="relative aspect-[4/3] rounded-sm overflow-hidden shadow-sm border-4 border-white">
+            <div className="relative aspect-[4/3] rounded-xl overflow-hidden shadow-sm border-4 border-white">
               <Image src="/happyFamily.png" alt="Happy Family eating at a dining table" fill className="object-cover" />
             </div>
           </div>
@@ -1207,7 +1094,7 @@ export default function HomeClient({
 
       {/* ===== HEALTH BENEFITS SECTION ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 scroll-mt-24" id="health-benefits">
-        <div className="bg-white rounded-sm p-8 md:p-16 border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="bg-white rounded-xl p-8 md:p-16 border border-gray-100 shadow-sm relative overflow-hidden">
 
           <div className="relative z-10 grid lg:grid-cols-2 gap-16 items-center">
             {/* Visual Content */}
@@ -1217,7 +1104,7 @@ export default function HomeClient({
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="aspect-[4/3] relative rounded-sm overflow-hidden shadow-sm border-8 border-white group">
+              <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-sm border-8 border-white group">
                 <Image
                   src="/assets/bgImages/tablesize.png"
                   alt="Healthy Catfish"
@@ -1225,9 +1112,9 @@ export default function HomeClient({
                   className="object-contain group-hover:scale-110 transition-transform duration-1000"
                 />
                 <div className="absolute bottom-6 left-6">
-                  <div className="bg-white p-4 rounded-sm shadow-sm w-fit border border-gray-100">
+                  <div className="bg-white p-4 rounded-xl shadow-sm w-fit border border-gray-100">
                     <div className="flex items-center gap-3 mb-1.5">
-                      <div className="w-8 h-8 bg-leaf rounded-sm flex items-center justify-center text-white">
+                      <div className="w-8 h-8 bg-leaf rounded-xl flex items-center justify-center text-white">
                         <Star className="w-4 h-4 fill-current" />
                       </div>
                       <h4 className="font-black text-deep-green tracking-tight text-sm">Superfood Choice</h4>
@@ -1242,7 +1129,7 @@ export default function HomeClient({
 
             {/* Textual Content */}
             <div>
-              <h2 className="text-3xl md:text-5xl font-black text-deep-green mb-8 tracking-tight leading-tight">
+              <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight mb-8">
                 The Health Benefits of<br />
                 <span className="text-leaf">Eating Catfish</span>
               </h2>
@@ -1290,8 +1177,8 @@ export default function HomeClient({
                     transition={{ delay: idx * 0.1 }}
                     className="group"
                   >
-                    <div className="flex gap-4 p-4 rounded-sm hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
-                      <div className={`w-12 h-12 shrink-0 ${item.bgColor} rounded-sm flex items-center justify-center`}>
+                    <div className="flex gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+                      <div className={`w-12 h-12 shrink-0 ${item.bgColor} rounded-xl flex items-center justify-center`}>
                         <item.icon className={`w-6 h-6 ${item.color}`} />
                       </div>
                       <div>
@@ -1309,9 +1196,9 @@ export default function HomeClient({
 
       {/* ===== NEWSLETTER ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
-        <div className="bg-[#1a231d] rounded-md p-10 md:p-16 relative overflow-hidden text-center">
+        <div className="bg-[#1a231d] rounded-xl p-10 md:p-16 relative overflow-hidden text-center">
           <div className="relative z-10 max-w-2xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">Stay informed without the noise</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-4">Stay informed without the noise</h2>
             <p className="text-white/60 text-base mb-8 font-medium">
               Get periodic pricing updates, product availability, and useful farm notes in a more measured cadence.
             </p>
@@ -1323,11 +1210,11 @@ export default function HomeClient({
                 required
                 type="email"
                 placeholder="Enter your email address"
-                className="flex-grow bg-white/8 border border-white/12 focus:border-[#87a08e] rounded-md px-5 py-3.5 outline-none font-medium text-white placeholder-white/40 text-sm transition-all"
+                className="flex-grow bg-white/8 border border-white/12 focus:border-[#87a08e] rounded-xl px-5 py-3.5 outline-none font-medium text-white placeholder-white/40 text-sm transition-all"
               />
               <button
                 type="submit"
-                className="bg-[#2c5b43] hover:bg-[#214734] text-white px-7 py-3.5 rounded-md font-bold uppercase tracking-wide transition-all active:scale-95 shadow-sm text-sm whitespace-nowrap"
+                className="bg-[#2c5b43] hover:bg-[#214734] text-white px-7 py-3.5 rounded-xl font-bold uppercase tracking-wide transition-all active:scale-95 shadow-sm text-sm whitespace-nowrap"
               >
                 Subscribe
               </button>
@@ -1339,20 +1226,20 @@ export default function HomeClient({
 
       {/* ===== CALL TO ACTION ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-24">
-        <div className="bg-[#dfe6dc] rounded-md p-10 md:p-20 text-center relative overflow-hidden border border-black/6">
+        <div className="bg-[#dfe6dc] rounded-xl p-10 md:p-20 text-center relative overflow-hidden border border-black/6">
           <div className="absolute inset-0 bg-[url('/hero.png')] opacity-[0.05] bg-cover bg-center" />
           <div className="relative z-10">
-            <h2 className="text-3xl md:text-5xl font-black mb-6 tracking-tight text-deep-green">
+            <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight mb-6">
               Ready to place an order?
             </h2>
             <p className="text-gray-600 text-base md:text-lg font-medium mb-10 max-w-xl mx-auto">
               We can help you choose the right size, quantity, and delivery arrangement for your needs.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/book-order" className="bg-deep-green text-white hover:bg-[#0f2f21] px-8 py-4 rounded-md font-black text-base transition-all shadow-sm text-center tracking-wide">
+              <Link href="/book-order" className="bg-deep-green text-white hover:bg-[#0f2f21] px-8 py-4 rounded-xl font-black text-base transition-all shadow-sm text-center tracking-wide">
                 Start Order
               </Link>
-              <Link href="/contact" className="bg-white/70 hover:bg-white text-deep-green border border-black/8 px-8 py-4 rounded-md font-bold text-base transition-all text-center tracking-wide">
+              <Link href="/contact" className="bg-white/70 hover:bg-white text-deep-green border border-black/8 px-8 py-4 rounded-xl font-bold text-base transition-all text-center tracking-wide">
                 Talk to the Team
               </Link>
             </div>

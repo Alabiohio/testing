@@ -38,7 +38,7 @@ export default function ContactPage() {
         <div className="min-h-screen bg-background pt-8 pb-24 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <header className="mb-8">
-                    
+
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -63,9 +63,9 @@ export default function ContactPage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: idx * 0.1 }}
-                                    className="bg-white p-8 rounded-md shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 group hover:border-black/12 transition-all"
+                                    className="bg-white p-8 rounded-xl shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 group hover:border-black/12 transition-all"
                                 >
-                                    <div className={`w-14 h-14 rounded-md flex items-center justify-center mb-6 ${method.bgColor}`}>
+                                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center mb-6 ${method.bgColor}`}>
                                         <method.icon className={`w-7 h-7 ${method.iconColor}`} />
                                     </div>
                                     <h3 className="text-xl font-black text-deep-green  mb-2">{method.title}</h3>
@@ -74,7 +74,7 @@ export default function ContactPage() {
                                 </motion.div>
                             ))}
 
-                             {/**]
+                            {/**]
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -100,9 +100,9 @@ export default function ContactPage() {
                             </motion.div>**/}
                         </div>
 
-                        <div className="bg-white p-10 rounded-md border border-black/6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
+                        <div className="bg-white p-10 rounded-xl border border-black/6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
                             <div className="flex gap-6 mb-8">
-                                <div className="w-16 h-16 rounded-md bg-[#f4f5f1] flex items-center justify-center shrink-0">
+                                <div className="w-16 h-16 rounded-xl bg-[#f4f5f1] flex items-center justify-center shrink-0">
                                     <MapPin className="w-8 h-8 text-deep-green" />
                                 </div>
                                 <div>
@@ -112,7 +112,7 @@ export default function ContactPage() {
                                         Internationally.
                                     </p>
                                 </div>
-                            </div>                
+                            </div>
                         </div>
                     </div>
 
@@ -121,15 +121,15 @@ export default function ContactPage() {
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.4 }}
-                        className="bg-white p-10 md:p-14 rounded-md shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6"
+                        className="bg-white p-10 md:p-14 rounded-xl shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6"
                     >
                         <h2 className="text-3xl font-black text-deep-green  mb-10 tracking-tight">Send Message</h2>
-                        
+
                         <ContactForm />
 
                         <div className="mt-12 pt-12 border-t border-earth/5 flex justify-center gap-6">
                             {[Facebook, Instagram, Twitter].map((Icon, i) => (
-                                <a key={i} href="#" className="w-12 h-12 rounded-md bg-[#f4f5f1] flex items-center justify-center text-deep-green hover:bg-deep-green hover:text-white transition-all">
+                                <a key={i} href="#" className="w-12 h-12 rounded-xl bg-[#f4f5f1] flex items-center justify-center text-deep-green hover:bg-deep-green hover:text-white transition-all">
                                     <Icon className="w-6 h-6" />
                                 </a>
                             ))}
@@ -199,9 +199,9 @@ function ContactForm() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
-        
+
         const result = await createContact(formData);
-        
+
         setIsSubmitting(false);
         if (result.success) {
             setIsSuccess(true);
@@ -219,10 +219,10 @@ function ContactForm() {
 
     if (isSuccess) {
         return (
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-[#edf1eb] border border-deep-green/15 rounded-md p-12 text-center space-y-6"
+                className="bg-[#edf1eb] border border-deep-green/15 rounded-xl p-12 text-center space-y-6"
             >
                 <div className="w-20 h-20 bg-deep-green rounded-full flex items-center justify-center mx-auto shadow-sm">
                     <CheckCircle className="w-10 h-10 text-white" />
@@ -231,7 +231,7 @@ function ContactForm() {
                 <p className="text-foreground/60 font-medium leading-relaxed">
                     Thank you for reaching out. We&apos;ve received your message and will get back to you within 24 hours.
                 </p>
-                <button 
+                <button
                     onClick={() => setIsSuccess(false)}
                     className="text-deep-green font-black uppercase tracking-widest text-xs hover:underline pt-4"
                 >
@@ -245,32 +245,32 @@ function ContactForm() {
         <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-4">
                 <label className="text-xs font-black uppercase tracking-widest text-foreground/30 ml-2">Full Name</label>
-                <input 
-                    required 
-                    type="text" 
+                <input
+                    required
+                    type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-md py-3 px-8 outline-none transition-all font-bold" 
-                    placeholder="How should we address you?" 
+                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-xl py-3 px-8 outline-none transition-all font-bold"
+                    placeholder="How should we address you?"
                 />
             </div>
             <div className="space-y-4">
                 <label className="text-xs font-black uppercase tracking-widest text-foreground/30 ml-2">Email Address</label>
-                <input 
-                    required 
-                    type="email" 
+                <input
+                    required
+                    type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-md py-3 px-8 outline-none transition-all font-bold" 
-                    placeholder="your@email.com" 
+                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-xl py-3 px-8 outline-none transition-all font-bold"
+                    placeholder="your@email.com"
                 />
             </div>
             <div className="space-y-4">
                 <label className="text-xs font-black uppercase tracking-widest text-foreground/30 ml-2">Subject</label>
-                <select 
+                <select
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-md py-3 px-8 outline-none transition-all font-bold appearance-none"
+                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none"
                 >
                     <option>Product Inquiry</option>
                     <option>Training Enrolment</option>
@@ -280,18 +280,18 @@ function ContactForm() {
             </div>
             <div className="space-y-4">
                 <label className="text-xs font-black uppercase tracking-widest text-foreground/30 ml-2">Message</label>
-                <textarea 
-                    required 
+                <textarea
+                    required
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-md py-3 px-8 outline-none transition-all font-bold min-h-[150px]" 
-                    placeholder="Tell us what you need help with..." 
+                    className="w-full bg-[#f4f5f1] border border-transparent focus:border-deep-green focus:bg-white rounded-xl py-3 px-8 outline-none transition-all font-bold min-h-[150px]"
+                    placeholder="Tell us what you need help with..."
                 />
             </div>
-            <button 
-                type="submit" 
+            <button
+                type="submit"
                 disabled={isSubmitting}
-                className={`w-full ${isSubmitting ? 'bg-deep-green/50' : 'bg-deep-green hover:bg-[#0f2f21]'} text-white py-5 rounded-md font-black text-base uppercase tracking-[0.18em] transition-all flex items-center justify-center gap-4`}
+                className={`w-full ${isSubmitting ? 'bg-deep-green/50' : 'bg-deep-green hover:bg-[#0f2f21]'} text-white py-5 rounded-xl font-black text-base uppercase tracking-[0.18em] transition-all flex items-center justify-center gap-4`}
             >
                 {isSubmitting ? 'SENDING...' : 'SEND MESSAGE'}
                 <ArrowRight className="w-6 h-6" />

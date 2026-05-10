@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ShopPage() {
-    const products = await getMappedProducts();
+    const products = await getMappedProducts({ limit: 20 });
 
     return (
         <div className="min-h-screen bg-background text-foreground">

@@ -3,129 +3,120 @@ import { products as productsTable, flashDeals as flashDealsTable, type Product 
 import { and, eq, gte, desc, inArray } from "drizzle-orm";
 import { resolveCategoryName } from "@/lib/category-slugs";
 import { type ProductCardProps } from "@/components/ProductCard";
+import { safeQuery } from "@/lib/db/safe-query";
 
-export async function getMappedProducts(category?: string): Promise<ProductCardProps[]> {
-    try {
-        const normalizedCategory = category?.trim().toLowerCase();
-        const resolvedCategoryName = normalizedCategory
-            ? resolveCategoryName(normalizedCategory, await getUniqueCategories()) || category
-            : undefined;
-
-        const dbProducts = resolvedCategoryName
-            ? await db.select().from(productsTable).where(eq(productsTable.category, resolvedCategoryName)).orderBy(desc(productsTable.createdAt))
-            : await db.select().from(productsTable).orderBy(desc(productsTable.createdAt));
-
-        // Fetch active flash deals
-        const deals = await db
-            .select()
-            .from(flashDealsTable)
-            .where(and(eq(flashDealsTable.isActive, true), gte(flashDealsTable.endTime, new Date())))
-            .orderBy(desc(flashDealsTable.createdAt));
-
-        // Map products
-        return dbProducts.map((p: Product) => {
-            // Find if there's an active flash deal for this product
-            const productDeal = deals.find(d => d.productId === p.id);
-
-            let displayPrice = p.price ? `₦${p.price.toLocaleString()}` : (p.price_range || "Contact for price");
-            let discountedFrom = undefined;
-
-            if (productDeal && productDeal.flashPrice) {
-                discountedFrom = displayPrice;
-                displayPrice = productDeal.flashPrice.startsWith('₦') ? productDeal.flashPrice : `₦${productDeal.flashPrice}`;
-            }
-
-            return {
-                id: p.id,
-                name: p.name,
-                desc: p.description || "",
-                img: p.imageUrl || null,
-                price: displayPrice,
-                priceRange: p.price_range || "",
-                discountedFrom: discountedFrom,
-                unit: p.unit,
-                category: p.category,
-                tags: [] as string[],
-                rating: 4.9,
-                reviews: 10,
-                badge: productDeal ? "Flash Deal" : (p.available ? "In Stock" : "Out of Stock"),
-                badgeColor: productDeal ? "bg-red-500" : (p.available ? "bg-leaf" : "bg-gray-400"),
-                rawPrice: p.price ?? null,
-                rawPriceRange: p.price_range ?? null,
-            };
-        });
-    } catch (error) {
-        console.error("Failed to fetch and map products:", error);
-        return [];
-    }
+// Helper to format price with Naira symbol
+function formatNaira(amount: number | null): string {
+    if (amount === null || amount === undefined) return "Contact";
+    return `₦${amount.toLocaleString()}`;
 }
 
-export async function getMappedProductsByCategoryNames(categoryNames: string[]): Promise<ProductCardProps[]> {
-    try {
-        const normalizedCategoryNames = Array.from(new Set(categoryNames.filter(Boolean)));
+// Helper to map DB product to Card Props
+function mapProductToCard(p: Product, deals: any[]): ProductCardProps {
+    const deal = deals.find(d => d.productId === p.id);
+    const displayPrice = deal 
+        ? (deal.flashPrice ? formatNaira(deal.flashPrice) : formatNaira(p.price))
+        : formatNaira(p.price);
 
-        if (normalizedCategoryNames.length === 0) {
-            return [];
-        }
-
-        const dbProducts = await db
-            .select()
-            .from(productsTable)
-            .where(inArray(productsTable.category, normalizedCategoryNames))
-            .orderBy(desc(productsTable.createdAt));
-
-        const deals = await db
-            .select()
-            .from(flashDealsTable)
-            .where(and(eq(flashDealsTable.isActive, true), gte(flashDealsTable.endTime, new Date())))
-            .orderBy(desc(flashDealsTable.createdAt));
-
-        return dbProducts.map((p: Product) => {
-            const productDeal = deals.find(d => d.productId === p.id);
-
-            let displayPrice = p.price ? `₦${p.price.toLocaleString()}` : (p.price_range || "Contact for price");
-            let discountedFrom = undefined;
-
-            if (productDeal && productDeal.flashPrice) {
-                discountedFrom = displayPrice;
-                displayPrice = productDeal.flashPrice.startsWith('₦') ? productDeal.flashPrice : `₦${productDeal.flashPrice}`;
-            }
-
-            return {
-                id: p.id,
-                name: p.name,
-                desc: p.description || "",
-                img: p.imageUrl || null,
-                price: displayPrice,
-                priceRange: p.price_range || "",
-                discountedFrom,
-                unit: p.unit,
-                category: p.category,
-                tags: [] as string[],
-                rating: 4.9,
-                reviews: 10,
-                badge: productDeal ? "Flash Deal" : (p.available ? "In Stock" : "Out of Stock"),
-                badgeColor: productDeal ? "bg-red-500" : (p.available ? "bg-leaf" : "bg-gray-400"),
-                rawPrice: p.price ?? null,
-                rawPriceRange: p.price_range ?? null,
-            };
-        });
-    } catch (error) {
-        console.error("Failed to fetch mapped products for category names:", {
-            categoryNames,
-            error,
-        });
-        return [];
-    }
+    return {
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        img: p.imageUrl || "/fish-bg.jpg",
+        price: displayPrice,
+        priceRange: p.price_range || "",
+        rawPrice: p.price || 0,
+        rawPriceRange: p.price_range || null,
+        unit: p.unit,
+        badge: !p.available ? "Sold Out" : deal ? deal.discount || "Flash Sale" : "",
+        badgeColor: !p.available ? "bg-gray-500" : deal ? "bg-red-500" : "bg-leaf",
+        rating: 5,
+        reviews: 0,
+        tags: [],
+        desc: p.description || ""
+    };
 }
 
-export async function getUniqueCategories() {
-    try {
-        const allProducts = await db.select({ category: productsTable.category }).from(productsTable);
-        const uniqueCategories = Array.from(new Set(allProducts.map(p => p.category)));
-        return uniqueCategories.filter(Boolean);
-    } catch (err) {
-        console.error("Error fetching unique categories:", err);
-        return [];
-    }
+async function getActiveDeals() {
+    const dealsResult = await safeQuery(() => 
+        db.select().from(flashDealsTable).where(and(eq(flashDealsTable.isActive, true), gte(flashDealsTable.endTime, new Date())))
+    );
+    return dealsResult.data ?? [];
+}
+
+/**
+ * Fetches products from the database with support for category filtering,
+ * pagination (limit/offset), and graceful error handling via safeQuery.
+ */
+export async function getMappedProducts(options?: { 
+    category?: string; 
+    limit?: number; 
+    offset?: number;
+}): Promise<ProductCardProps[]> {
+    const { category, limit = 100, offset = 0 } = options || {};
+    
+    // Resolve display category name to DB category name if slug is passed
+    const resolvedCategoryName = category ? resolveCategoryName(category, await getUniqueCategories()) : null;
+
+    const productsResult = resolvedCategoryName
+        ? await safeQuery(() => 
+            db.select()
+              .from(productsTable)
+              .where(eq(productsTable.category, resolvedCategoryName))
+              .orderBy(desc(productsTable.createdAt))
+              .limit(limit)
+              .offset(offset)
+          )
+        : await safeQuery(() => 
+            db.select()
+              .from(productsTable)
+              .orderBy(desc(productsTable.createdAt))
+              .limit(limit)
+              .offset(offset)
+          );
+
+    const dbProducts = productsResult.data ?? [];
+    if (dbProducts.length === 0) return [];
+
+    const deals = await getActiveDeals();
+    return dbProducts.map((p: Product) => mapProductToCard(p, deals));
+}
+
+/**
+ * Fetches products matching any of the provided category names.
+ * Supports pagination and returns props ready for ProductCard components.
+ */
+export async function getMappedProductsByCategoryNames(
+    categoryNames: string[], 
+    options?: { limit?: number; offset?: number }
+): Promise<ProductCardProps[]> {
+    if (categoryNames.length === 0) return [];
+    
+    const { limit = 100, offset = 0 } = options || {};
+
+    const productsResult = await safeQuery(() => 
+        db.select()
+          .from(productsTable)
+          .where(inArray(productsTable.category, categoryNames))
+          .orderBy(desc(productsTable.createdAt))
+          .limit(limit)
+          .offset(offset)
+    );
+
+    const dbProducts = productsResult.data ?? [];
+    if (dbProducts.length === 0) return [];
+
+    const deals = await getActiveDeals();
+    return dbProducts.map((p: Product) => mapProductToCard(p, deals));
+}
+
+/**
+ * Returns a list of all unique category names present in the products table.
+ */
+export async function getUniqueCategories(): Promise<string[]> {
+    const categoriesResult = await safeQuery(() => 
+        db.select({ category: productsTable.category }).from(productsTable)
+    );
+    const rows = categoriesResult.data ?? [];
+    return Array.from(new Set(rows.map(r => r.category)));
 }

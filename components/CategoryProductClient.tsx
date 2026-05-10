@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useMemo, useTransition } from "react";
+import React, { useState, useMemo, useTransition, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingCart, Star, ShieldCheck, Clock, Search, SlidersHorizontal, ArrowUpDown, ChevronDown, Check } from "lucide-react";
+import { ShoppingCart, Star, ShieldCheck, Clock, Search, SlidersHorizontal, ArrowUpDown, ChevronDown, Check, Loader2, Package } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import ConfirmModal from "./ConfirmModal";
@@ -11,15 +11,20 @@ import ConfirmModal from "./ConfirmModal";
 import { type Product } from "@/lib/db/schema";
 import { useCart } from "@/lib/cart-context";
 import ProductCard, { type ProductCardProps } from "./ProductCard";
+import { fetchMoreCategoryProductsAction } from "@/app/actions/products";
 
 interface CategoryProductClientProps {
     products: ProductCardProps[];
     displayTitle: string;
+    categoryNames: string[];
 }
 
-// Local formatPriceRange removed. Using export from ProductCard.tsx
+const CategoryProductClient = ({ products: initialProducts, displayTitle, categoryNames }: CategoryProductClientProps) => {
+    const [allProducts, setAllProducts] = useState<ProductCardProps[]>(initialProducts);
+    const [offset, setOffset] = useState(initialProducts.length);
+    const [hasMore, setHasMore] = useState(initialProducts.length === 20);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-const CategoryProductClient = ({ products, displayTitle }: CategoryProductClientProps) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [priceRange, setPriceRange] = useState<[number, number]>([0, 50000]);
     const [onlyAvailable, setOnlyAvailable] = useState(false);
@@ -28,6 +33,9 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
     const [isFilterOpen, setIsFilterOpen] = useState(false);
     const router = useRouter();
     const [, startTransition] = useTransition();
+
+    // Sentinel for infinite scroll
+    const sentinelRef = useRef<HTMLDivElement>(null);
 
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean;
@@ -67,14 +75,50 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
         });
     };
 
+    const handleLoadMore = async () => {
+        if (isLoadingMore || !hasMore) return;
+        
+        setIsLoadingMore(true);
+        // Small delay for professional feel
+        await new Promise(resolve => setTimeout(resolve, 400));
+        const result = await fetchMoreCategoryProductsAction(categoryNames, offset, 20);
+        
+        if (result.success && result.products.length > 0) {
+            setAllProducts(prev => [...prev, ...result.products]);
+            setOffset(prev => prev + result.products.length);
+            setHasMore(result.products.length === 20);
+        } else {
+            setHasMore(false);
+        }
+        setIsLoadingMore(false);
+    };
+
+    // Infinite Scroll Implementation
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasMore && !isLoadingMore) {
+                    handleLoadMore();
+                }
+            },
+            { threshold: 0.1, rootMargin: "100px" }
+        );
+
+        if (sentinelRef.current) {
+            observer.observe(sentinelRef.current);
+        }
+
+        return () => observer.disconnect();
+    }, [hasMore, isLoadingMore, offset, categoryNames]);
+
     // Derived values for the price range slider
     const maxProductPrice = useMemo(() => {
-        const prices = products.map(p => p.rawPrice || 0);
+        const prices = allProducts.map(p => p.rawPrice || 0);
         return prices.length > 0 ? Math.max(...prices, 10000) : 50000;
-    }, [products]);
+    }, [allProducts]);
 
     const filteredProducts = useMemo(() => {
-        let result = [...products];
+        let result = [...allProducts];
 
         // Search filter
         if (searchQuery) {
@@ -110,7 +154,7 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
         });
 
         return result;
-    }, [products, searchQuery, priceRange, onlyAvailable, sortBy, minRating]);
+    }, [allProducts, searchQuery, priceRange, onlyAvailable, sortBy, minRating]);
 
     return (
         <div className="space-y-8">
@@ -237,15 +281,45 @@ const CategoryProductClient = ({ products, displayTitle }: CategoryProductClient
 
             {/* Results */}
             {filteredProducts.length > 0 ? (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
-                    {filteredProducts.map((product, idx) => (
-                        <ProductCard
-                            key={product.id}
-                            product={product}
-                            index={idx}
-                            onOrder={handleOrderConfirm}
-                        />
-                    ))}
+                <div className="space-y-12 pb-20">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
+                        <AnimatePresence mode="popLayout">
+                            {filteredProducts.map((product, idx) => (
+                                <ProductCard
+                                    key={product.id}
+                                    product={product}
+                                    index={idx}
+                                    onOrder={handleOrderConfirm}
+                                />
+                            ))}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Infinite Scroll Sentinel / Loading Indicator */}
+                    <div 
+                        ref={sentinelRef}
+                        className="flex justify-center py-12"
+                    >
+                        {isLoadingMore && (
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="relative">
+                                    <Loader2 className="w-10 h-10 text-deep-green animate-spin" />
+                                    <div className="absolute inset-0 bg-deep-green/10 rounded-full animate-ping" />
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-deep-green animate-pulse">
+                                    Loading more {displayTitle.toLowerCase()}...
+                                </span>
+                            </div>
+                        )}
+                        {!hasMore && allProducts.length > 20 && (
+                            <div className="flex flex-col items-center gap-2 text-gray-300">
+                                <Package className="w-6 h-6" />
+                                <span className="text-[9px] font-black uppercase tracking-[0.2em]">
+                                    End of collection
+                                </span>
+                            </div>
+                        )}
+                    </div>
                 </div>
             ) : (
                 <div className="bg-white rounded-xl p-16 text-center border border-black/6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] overflow-hidden relative">

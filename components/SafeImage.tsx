@@ -22,7 +22,6 @@ export default function SafeImage({ src, alt, className, width, height, fill, un
     return (
       <div className={`flex flex-col items-center justify-center bg-gray-50 border border-gray-100 ${className}`}>
         <ShoppingBag className="w-10 h-10 text-leaf/10" />
-        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-leaf/20 mt-4">No Image</span>
       </div>
     );
   }

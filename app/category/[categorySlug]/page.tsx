@@ -77,7 +77,7 @@ export default async function CategoryProductPage({ params }: { params: Promise<
         );
     }
 
-    const products = await getMappedProductsByCategoryNames(resolvedCategoryNames);
+    const products = await getMappedProductsByCategoryNames(resolvedCategoryNames, { limit: 20 });
 
     console.info("[category-route] products loaded", {
         slug,
@@ -107,7 +107,11 @@ export default async function CategoryProductPage({ params }: { params: Promise<
                     </div>
                 </div>
 
-                <CategoryProductClient products={products} displayTitle={displayTitle} />
+                <CategoryProductClient 
+                    products={products} 
+                    displayTitle={displayTitle} 
+                    categoryNames={resolvedCategoryNames} 
+                />
             </div>
         </div>
     );

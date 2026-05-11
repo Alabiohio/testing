@@ -14,10 +14,10 @@
   --color-text1: var(--text1);
   --color-primary-dark: var(--primary-deep);
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-body);
   --font-mono: var(--font-geist-mono);
-  --font-belanosima: var(--belanosima-font), sans-serif;
-  --font-saira: var(--saira-font), sans-serif;
+  --font-display: var(--font-display), serif;
+  --font-body: var(--font-body), sans-serif;
 }
 
 :root {
@@ -42,14 +42,14 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), sans-serif;
+  font-family: var(--font-body), sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* === PROMO BAR === */
 .promo-bar {
   background: #16211b;
-  font-family: var(--font-saira), sans-serif;
+  font-family: var(--font-body), sans-serif;
 }
 
 /* === Navbar === */

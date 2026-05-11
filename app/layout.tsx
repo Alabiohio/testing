@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Belanosima, Saira } from "next/font/google";
+import { Geist_Mono, Bree_Serif, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -7,25 +7,20 @@ import CookieConsent from "@/components/CookieConsent";
 import { CartProvider } from "@/lib/cart-context";
 import { GoogleAnalytics } from '@next/third-parties/google';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-const belanosima = Belanosima({
-  weight: ["400", "600", "700"],
-  variable: "--belanosima-font",
+const breeSerif = Bree_Serif({
+  weight: "400",
+  variable: "--font-display",
   subsets: ["latin"],
 });
 
-const saira = Saira({
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
-  variable: "--saira-font",
+const sourceSans = Source_Sans_3({
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-body",
   style: ["normal", "italic"],
   subsets: ["latin"],
 });
@@ -78,7 +73,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${belanosima.variable} ${saira.variable} antialiased`}
+        className={`${geistMono.variable} ${breeSerif.variable} ${sourceSans.variable} antialiased`}
       >
         <CartProvider>
           <SavedProvider>

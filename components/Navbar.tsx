@@ -14,11 +14,21 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const promoVisible = true;
-    const [isHeroSearchVisible, setIsHeroSearchVisible] = useState(false);
+    // On home page, initially hide search. On other pages, show search.
+    const [isHeroSearchVisible, setIsHeroSearchVisible] = useState(pathname === '/');
     const { totalItems: cartCount } = useCart();
 
     // Hero Search Visibility Observer
     useEffect(() => {
+        const isHomePage = pathname === '/';
+        
+        if (!isHomePage) {
+            // On non-home pages, always show the navbar search
+            setIsHeroSearchVisible(false);
+            return;
+        }
+
+        // On home page, use intersection observer to track hero search visibility
         const observer = new IntersectionObserver(
             ([entry]) => {
                 setIsHeroSearchVisible(entry.isIntersecting);
@@ -26,15 +36,20 @@ const Navbar = () => {
             { threshold: 0.1 }
         );
 
-        const heroSearch = document.getElementById('hero-search-bar');
-        if (heroSearch) {
-            observer.observe(heroSearch);
-        } else {
-            // If we're not on a page with the hero search, always show the nav search
-            setIsHeroSearchVisible(false);
-        }
+        // Retry looking for the element with a small delay to ensure DOM is ready
+        const timer = setTimeout(() => {
+            const heroSearch = document.getElementById('hero-search-bar');
+            if (heroSearch) {
+                observer.observe(heroSearch);
+            } else {
+                // If we're not on a page with the hero search, show the nav search
+                setIsHeroSearchVisible(false);
+            }
+        }, 100);
 
         return () => {
+            clearTimeout(timer);
+            const heroSearch = document.getElementById('hero-search-bar');
             if (heroSearch) observer.unobserve(heroSearch);
         };
     }, [pathname]); // Re-run when path changes to look for the element again

@@ -67,7 +67,7 @@ export default async function CategoryProductPage({ params }: { params: Promise<
                         <Package className="w-10 h-10" />
                     </div>
                     <h1 className="text-3xl font-black text-deep-green mb-4">Category Not Found</h1>
-                    <p className="text-gray-500 mb-8 italic">Sorry, the category &quot;{slug}&quot; doesn&apos;t exist or has been moved.</p>
+                    <p className="text-gray-500 mb-8 italic">Sorry, the category &quot;{slug}&quot; doesn&apos;t exist, has no products, or has been moved.</p>
                     <Link href="/category" className="inline-flex items-center gap-2 bg-deep-green hover:bg-[#0f2f21] text-white px-8 py-4 rounded-xl font-bold transition-all shadow-sm">
                         <ArrowLeft className="w-4 h-4" />
                         Back to Categories

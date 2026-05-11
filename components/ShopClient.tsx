@@ -1,15 +1,13 @@
 "use client";
 
-import React, { useState, useMemo, useTransition, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, Star, Search, SlidersHorizontal, ArrowUpDown, ChevronDown, Check, Package, X, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
-import ConfirmModal from "./ConfirmModal";
-
 import { type Product } from "@/lib/db/schema";
 import { useCart } from "@/lib/cart-context";
+import { toast } from 'sonner';
 import ProductCard, { type ProductCardProps } from "./ProductCard";
 import { fetchMoreProductsAction } from "@/app/actions/products";
 
@@ -53,45 +51,20 @@ const ShopClient = ({ products: initialProducts }: ShopClientProps) => {
     const [onlyAvailable, setOnlyAvailable] = useState(false);
     const [sortBy, setSortBy] = useState<"price-asc" | "price-desc" | "name" | "newest">("newest");
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const router = useRouter();
-    const [, startTransition] = useTransition();
-
-    const [confirmModal, setConfirmModal] = useState<{
-        isOpen: boolean;
-        title: string;
-        message: string;
-        onConfirm: () => void;
-    }>({
-        isOpen: false,
-        title: "",
-        message: "",
-        onConfirm: () => { },
-    });
 
     const { addItem } = useCart();
 
     const handleOrderConfirm = (product: any) => {
-        setConfirmModal({
-            isOpen: true,
-            title: `Add to Cart: ${product.name}`,
-            message: `Would you like to add ${product.name} to your cart and proceed to checkout?`,
-            onConfirm: () => {
-                setConfirmModal(prev => ({ ...prev, isOpen: false }));
-                addItem({
-                    id: product.id,
-                    name: product.name,
-                    price: product.rawPrice,
-                    price_range: product.rawPriceRange,
-                    unit: product.unit,
-                    category: product.category,
-                    imageUrl: product.img || product.imageUrl
-                }, 1);
-
-                startTransition(() => {
-                    router.push("/cart");
-                });
-            },
-        });
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: product.rawPrice,
+            price_range: product.rawPriceRange,
+            unit: product.unit,
+            category: product.category,
+            imageUrl: product.img || product.imageUrl
+        }, 1);
+        toast.success(`${product.name} added to cart`);
     };
 
     const handleLoadMore = async () => {
@@ -176,26 +149,17 @@ const ShopClient = ({ products: initialProducts }: ShopClientProps) => {
 
     return (
         <div className="space-y-8">
-            <ConfirmModal
-                isOpen={confirmModal.isOpen}
-                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                onConfirm={confirmModal.onConfirm}
-                title={confirmModal.title}
-                message={confirmModal.message}
-                type="info"
-                confirmText="Yes, Proceed"
-                cancelText="Maybe Later"
-            />
 
-            {/* Category Tabs */}
-            <div className="flex overflow-x-auto pb-0.5 gap-3 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+
+            {/* Category Navigation */}
+            <div className="flex overflow-x-auto pb-4 gap-3 no-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
                 {categories.map((cat) => (
                     <button
                         key={cat.id}
                         onClick={() => setSelectedCategory(cat.id)}
-                        className={`whitespace-nowrap px-8 py-2.5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 ${selectedCategory === cat.id
-                                ? "bg-deep-green text-white shadow-sm"
-                                : "bg-white text-foreground/50 border border-black/6 hover:border-deep-green/20 hover:text-deep-green"
+                        className={`whitespace-nowrap px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-[0.15em] transition-all duration-300 border-2 ${selectedCategory === cat.id
+                            ? "bg-deep-green text-white border-deep-green shadow-lg shadow-deep-green/20"
+                            : "bg-white text-foreground/40 border-black/[0.05] hover:border-deep-green/20 hover:text-deep-green"
                             }`}
                     >
                         {cat.name}
@@ -203,50 +167,49 @@ const ShopClient = ({ products: initialProducts }: ShopClientProps) => {
                 ))}
             </div>
 
-            {/* Control Bar */}
-            <div className="bg-white rounded-xl p-6 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 flex flex-col lg:flex-row items-center gap-6">
-                {/* Search */}
-                <div className="relative flex-grow w-full">
-                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-6 h-6 text-foreground/20" />
+            {/* Sticky Search Header */}
+            <div className="sticky top-[72px] z-30 bg-white/80 backdrop-blur-xl border-b border-black/5 -mx-4 px-4 sm:mx-0 sm:px-0 py-4 mb-6 transition-all duration-300">
+                <div className="relative group max-w-3xl mx-auto lg:mx-0 px-2">
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30 group-focus-within:text-deep-green transition-colors" />
                     <input
                         type="text"
-                        placeholder="Search products..."
+                        placeholder="Search our catalog..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-16 pr-6 py-3 bg-[#f4f5f1] rounded-xl outline-none focus:ring-2 focus:ring-deep-green/10 transition-all font-semibold text-base"
+                        className="w-full pl-14 pr-6 py-2 bg-black/[0.03] hover:bg-black/[0.05] focus:bg-white border-2 border-transparent focus:border-deep-green/10 rounded-2xl outline-none transition-all font-bold text-base placeholder:text-foreground/20 placeholder:font-medium"
                     />
                 </div>
+            </div>
 
-                <div className="flex items-center gap-4 w-full lg:w-auto">
-                    {/* Filter Toggle */}
-                    <button
-                        onClick={() => setIsFilterOpen(!isFilterOpen)}
-                        className={`flex items-center gap-3 px-8 py-2.5 rounded-xl font-black text-sm uppercase tracking-widest transition-all border-2 ${isFilterOpen
-                                ? 'bg-deep-green text-white border-deep-green shadow-sm'
-                                : 'bg-white text-foreground/60 border-black/8 hover:border-deep-green/20'
-                            }`}
+            {/* Filter/Sort Toolbar */}
+            <div className="flex items-center justify-between gap-3 mb-10 bg-[#f8f9f6] rounded-2xl p-2 border border-black/5">
+                {/* Filter Icon Button */}
+                <button
+                    onClick={() => setIsFilterOpen(!isFilterOpen)}
+                    className={`flex items-center justify-center w-11 h-11 rounded-xl flex-shrink-0 transition-all border shadow-sm ${isFilterOpen
+                        ? 'bg-deep-green text-white border-deep-green'
+                        : 'bg-white text-foreground/40 border-black/5 hover:border-deep-green/20 hover:text-deep-green'
+                        }`}
+                >
+                    <SlidersHorizontal className="w-4 h-4" />
+                    {(priceRange[0] > 0 || priceRange[1] < maxProductPrice || onlyAvailable) && (
+                        <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-leaf shadow-[0_0_6px_rgba(34,197,94,0.5)]" />
+                    )}
+                </button>
+
+                {/* Sort Dropdown */}
+                <div className="relative flex-1 max-w-[220px]">
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as any)}
+                        className="appearance-none w-full bg-white border border-black/5 px-5 py-3 pr-10 rounded-xl font-black text-[10px] uppercase tracking-[0.15em] text-foreground/60 outline-none cursor-pointer transition-all hover:border-deep-green/20 shadow-sm"
                     >
-                        <SlidersHorizontal className="w-5 h-5" />
-                        Filters
-                        {(priceRange[0] > 0 || priceRange[1] < maxProductPrice || onlyAvailable) && (
-                            <span className="w-2.5 h-2.5 rounded-full bg-leaf animate-pulse" />
-                        )}
-                    </button>
-
-                    {/* Sort Dropdown */}
-                    <div className="relative flex-grow lg:flex-grow-0">
-                        <select
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value as any)}
-                            className="appearance-none w-full bg-[#f4f5f1] border border-transparent hover:border-black/8 px-8 py-2.5 pr-14 rounded-xl font-black text-sm uppercase tracking-widest text-foreground/60 outline-none cursor-pointer transition-all"
-                        >
-                            <option value="newest">Latest</option>
-                            <option value="price-asc">Price: Low</option>
-                            <option value="price-desc">Price: High</option>
-                            <option value="name">A - Z</option>
-                        </select>
-                        <ArrowUpDown className="absolute right-6 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/20 pointer-events-none" />
-                    </div>
+                        <option value="newest">Latest Arrivals</option>
+                        <option value="price-asc">Price: Lowest</option>
+                        <option value="price-desc">Price: Highest</option>
+                        <option value="name">Alphabetical</option>
+                    </select>
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-foreground/25 pointer-events-none" />
                 </div>
             </div>
 
@@ -281,20 +244,6 @@ const ShopClient = ({ products: initialProducts }: ShopClientProps) => {
                                     <span>min: ₦0</span>
                                     <span>max: ₦{maxProductPrice.toLocaleString()}</span>
                                 </div>
-                            </div>
-
-                            {/* Availability Toggle */}
-                            <div className="space-y-6">
-                                <h4 className="font-black text-deep-green uppercase tracking-[0.2em] text-[10px]">Inventory</h4>
-                                <label className="flex items-center gap-4 cursor-pointer group">
-                                    <div
-                                        onClick={() => setOnlyAvailable(!onlyAvailable)}
-                                        className={`w-16 h-8 rounded-full transition-all relative border ${onlyAvailable ? 'bg-deep-green border-deep-green' : 'bg-white border-black/8'}`}
-                                    >
-                                        <div className={`absolute top-1 w-5 h-5 rounded-full transition-all ${onlyAvailable ? 'left-9 bg-white' : 'left-1 bg-earth/20'}`} />
-                                    </div>
-                                    <span className="font-black text-foreground/60 group-hover:text-leaf transition-colors text-sm uppercase tracking-widest">Ready for pickup</span>
-                                </label>
                             </div>
 
                             {/* Reset Filters */}

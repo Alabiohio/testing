@@ -66,6 +66,7 @@ export const metadata: Metadata = {
 };
 
 import { SavedProvider } from "@/lib/saved-context";
+import { Toaster } from 'sonner';
 
 export default function RootLayout({
   children,
@@ -79,6 +80,7 @@ export default function RootLayout({
       >
         <CartProvider>
           <SavedProvider>
+            <Toaster position="bottom-right" richColors closeButton />
             <Navbar />
             <main>
               {children}

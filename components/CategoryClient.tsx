@@ -26,8 +26,8 @@ const categorySpecs: Record<string, string[]> = {
 
 export default function CategoryClient({ initialPriceCatalog }: CategoryClientProps) {
     return (
-        <div className="min-h-screen bg-background pt-12 pb-24 overflow-x-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen pt-12 pb-24 overflow-x-hidden">
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
                 <div className="grid gap-12 max-w-5xl mx-auto">
                     {initialPriceCatalog.map((cat, idx) => {
                         const slug = toCategorySlug(cat.name);
@@ -49,7 +49,7 @@ export default function CategoryClient({ initialPriceCatalog }: CategoryClientPr
                                             src={image}
                                             alt={cat.name}
                                             fill
-                                            className="object-cover group-hover:scale-105 transition-transform duration-1000"
+                                            className="object-contain group-hover:scale-105 transition-transform duration-1000"
                                         />
                                     </Link>
                                 </div>

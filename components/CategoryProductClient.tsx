@@ -1,15 +1,13 @@
 "use client";
 
-import React, { useState, useMemo, useTransition, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, Star, ShieldCheck, Clock, Search, SlidersHorizontal, ArrowUpDown, ChevronDown, Check, Loader2, Package } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
-import ConfirmModal from "./ConfirmModal";
-
 import { type Product } from "@/lib/db/schema";
 import { useCart } from "@/lib/cart-context";
+import { toast } from 'sonner';
 import ProductCard, { type ProductCardProps } from "./ProductCard";
 import { fetchMoreCategoryProductsAction } from "@/app/actions/products";
 
@@ -31,48 +29,21 @@ const CategoryProductClient = ({ products: initialProducts, displayTitle, catego
     const [sortBy, setSortBy] = useState<"price-asc" | "price-desc" | "name" | "newest">("newest");
     const [minRating, setMinRating] = useState(0);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const router = useRouter();
-    const [, startTransition] = useTransition();
-
-    // Sentinel for infinite scroll
     const sentinelRef = useRef<HTMLDivElement>(null);
-
-    const [confirmModal, setConfirmModal] = useState<{
-        isOpen: boolean;
-        title: string;
-        message: string;
-        onConfirm: () => void;
-    }>({
-        isOpen: false,
-        title: "",
-        message: "",
-        onConfirm: () => { },
-    });
 
     const { addItem } = useCart();
 
     const handleOrderConfirm = (product: any) => {
-        setConfirmModal({
-            isOpen: true,
-            title: `Add to Cart: ${product.name}`,
-            message: `Would you like to add ${product.name} to your cart and proceed?`,
-            onConfirm: () => {
-                setConfirmModal(prev => ({ ...prev, isOpen: false }));
-                addItem({
-                    id: product.id,
-                    name: product.name,
-                    price: product.rawPrice,
-                    price_range: product.rawPriceRange,
-                    unit: product.unit,
-                    category: product.category,
-                    imageUrl: product.img || product.imageUrl
-                }, 1);
-
-                startTransition(() => {
-                    router.push("/cart");
-                });
-            },
-        });
+        addItem({
+            id: product.id,
+            name: product.name,
+            price: product.rawPrice,
+            price_range: product.rawPriceRange,
+            unit: product.unit,
+            category: product.category,
+            imageUrl: product.img || product.imageUrl
+        }, 1);
+        toast.success(`${product.name} added to cart`);
     };
 
     const handleLoadMore = async () => {
@@ -158,16 +129,7 @@ const CategoryProductClient = ({ products: initialProducts, displayTitle, catego
 
     return (
         <div className="space-y-8">
-            <ConfirmModal
-                isOpen={confirmModal.isOpen}
-                onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-                onConfirm={confirmModal.onConfirm}
-                title={confirmModal.title}
-                message={confirmModal.message}
-                type="info"
-                confirmText="Yes, Proceed"
-                cancelText="Maybe Later"
-            />
+
             {/* Control Bar */}
             <div className="bg-white rounded-xl p-4 shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 flex flex-col lg:flex-row items-center gap-4">
                 {/* Search */}

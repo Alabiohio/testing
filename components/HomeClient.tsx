@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useTransition } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,9 +9,8 @@ import {
   Shield, Truck, Clock, Star, ArrowRight, CheckCircle,
   Zap, Tag, Phone, MapPin, Users, Leaf, Package, Heart, Activity, Brain, Asterisk, MessageSquare
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import ConfirmModal from "./ConfirmModal";
 import { useCart } from "@/lib/cart-context";
+import { toast } from 'sonner';
 import { PriceCatalogItem, GrowthStage } from "@/lib/db/schema";
 import ProductCard, { type ProductCardProps as ProductProps, SafeImage, formatPriceRange } from "./ProductCard";
 import { toCategorySlug } from "@/lib/category-slugs";
@@ -144,7 +143,7 @@ const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm
       ) : (
         <div
           onClick={() => handleAdOrderConfirm(ad)}
-          className="block rounded-xl overflow-hidden cursor-pointer group transition-all bg-gray-50"
+          className="block rounded-xl overflow-hidden cursor-pointer group transition-all bg-gray-50 relative"
         >
           <SafeImage
             src={ad.imageUrl}
@@ -153,6 +152,12 @@ const AdContent = ({ ad, handleAdOrderConfirm }: { ad: any, handleAdOrderConfirm
             height={400}
             className="w-full h-[180px] md:h-[280px] object-contain group-hover:scale-[1.02] transition-transform duration-500"
           />
+          {/* Add to Cart Overlay */}
+          <div className="absolute inset-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-start justify-end p-3">
+            <div className="bg-white/90 p-2.5 md:p-3 rounded-full shadow-lg transform translate-y-0 md:-translate-y-2 group-hover:translate-y-0 transition-transform">
+              <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 text-deep-green" />
+            </div>
+          </div>
         </div>
       )}
     </>
@@ -337,72 +342,37 @@ export default function HomeClient({
     ? [...activeFlashDeals].sort((a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime())[0]?.endTime
     : null);
 
-  const router = useRouter();
-  const [, startTransition] = useTransition();
-
-  const [confirmModal, setConfirmModal] = useState<{
-    isOpen: boolean;
-    title: string;
-    message: string;
-    onConfirm: () => void;
-  }>({
-    isOpen: false,
-    title: "",
-    message: "",
-    onConfirm: () => { },
-  });
-
   const { addItem } = useCart();
   const [catalogItems, setCatalogItems] = useState<PriceCatalogItem[]>(initialPriceCatalog || []);
 
   const handleAdOrderConfirm = (ad: any) => {
-    setConfirmModal({
-      isOpen: true,
-      title: `Add to Cart: ${ad.title}`,
-      message: `Would you like to add this special offer (${ad.title}) to your cart and proceed?`,
-      onConfirm: () => {
-        setConfirmModal(prev => ({ ...prev, isOpen: false }));
-        const rawPrice = ad.price ? ad.price.toString().replace(/[^0-9.]/g, '') : '';
-        const parsedPrice = rawPrice ? parseFloat(rawPrice) : null;
+    const rawPrice = ad.price ? ad.price.toString().replace(/[^0-9.]/g, '') : '';
+    const parsedPrice = rawPrice ? parseFloat(rawPrice) : null;
 
-        addItem({
-          id: ad.id,
-          name: ad.title,
-          price: parsedPrice,
-          price_range: parsedPrice ? null : "Special Offer",
-          unit: "offer",
-          category: "Partner Ad",
-          imageUrl: ad.imageUrl
-        }, 1);
-        startTransition(() => {
-          router.push("/cart");
-        });
-      },
-    });
+    addItem({
+      id: ad.id,
+      name: ad.title,
+      price: parsedPrice,
+      price_range: parsedPrice ? null : "Special Offer",
+      unit: "offer",
+      category: "Partner Ad",
+      imageUrl: ad.imageUrl
+    }, 1);
+    toast.success(`${ad.title} added to cart`);
   };
 
   const handleOrderConfirm = (product: ProductProps) => {
-    setConfirmModal({
-      isOpen: true,
-      title: `Add to Cart: ${product.name}`,
-      message: `Would you like to add ${product.name} to your cart and proceed?`,
-      onConfirm: () => {
-        setConfirmModal(prev => ({ ...prev, isOpen: false }));
-        addItem({
-          id: product.id,
-          name: product.name,
-          price: product.rawPrice,
-          price_range: product.rawPriceRange,
-          unit: product.unit,
-          category: product.category,
-          imageUrl: product.img
-        }, 1);
-        startTransition(() => {
-          router.push("/cart");
-        });
-      },
-    });
-  };
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.rawPrice,
+      price_range: product.rawPriceRange,
+      unit: product.unit,
+      category: product.category,
+      imageUrl: product.img
+    }, 1);
+    toast.success(`${product.name} added to cart`);
+    };
 
   const products = initialProducts;
 
@@ -443,16 +413,7 @@ export default function HomeClient({
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300 relative overflow-x-clip">
-      <ConfirmModal
-        isOpen={confirmModal.isOpen}
-        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
-        onConfirm={confirmModal.onConfirm}
-        title={confirmModal.title}
-        message={confirmModal.message}
-        type="info"
-        confirmText="Yes, Proceed"
-        cancelText="Maybe Later"
-      />
+
 
 
       {/* ===== HERO ===== */}
@@ -574,6 +535,12 @@ export default function HomeClient({
                         fill
                         className="object-contain p-2 group-hover:scale-105 transition-transform duration-300"
                       />
+                      {/* Add to Cart Overlay */}
+                      <div className="absolute inset-0 md:bg-black/5 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity flex items-start justify-end p-2">
+                        <div className="bg-white/90 p-1.5 md:p-2 rounded-full shadow-md transform translate-y-0 md:-translate-y-2 group-hover:translate-y-0 transition-transform">
+                          <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-deep-green" />
+                        </div>
+                      </div>
                       {deal.discount && (
                         <div className="absolute top-0 right-0 bg-orange-50 text-orange-500 font-medium text-xs px-1.5 py-0.5 rounded-xl">
                           {deal.discount.startsWith('-') ? deal.discount : `-${deal.discount}`}
@@ -1094,77 +1061,89 @@ export default function HomeClient({
 
       {/* ===== HEALTH BENEFITS SECTION ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 scroll-mt-24" id="health-benefits">
-        <div className="bg-white rounded-xl p-8 md:p-16 border border-gray-100 shadow-sm relative overflow-hidden">
+        <div className="bg-white rounded-3xl p-8 md:p-16 border border-earth/10 relative overflow-hidden">
+          {/* Decorative background element */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-leaf/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 grid lg:grid-cols-2 gap-16 items-center">
+          <div className="relative z-10 grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
             {/* Visual Content */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="aspect-[4/3] relative rounded-xl overflow-hidden shadow-sm border-8 border-white group">
+              <div className="aspect-square sm:aspect-[4/3] relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white group">
                 <Image
-                  src="/assets/bgImages/tablesize.png"
+                  src="/assets/images/catfish.png"
                   alt="Healthy Catfish"
                   fill
-                  className="object-contain group-hover:scale-110 transition-transform duration-1000"
+                  className="object-contain group-hover:scale-105 transition-transform duration-1000 p-4"
                 />
-                <div className="absolute bottom-6 left-6">
-                  <div className="bg-white p-4 rounded-xl shadow-sm w-fit border border-gray-100">
-                    <div className="flex items-center gap-3 mb-1.5">
-                      <div className="w-8 h-8 bg-leaf rounded-xl flex items-center justify-center text-white">
-                        <Star className="w-4 h-4 fill-current" />
-                      </div>
-                      <h4 className="font-black text-deep-green tracking-tight text-sm">Superfood Choice</h4>
-                    </div>
-                    <p className="text-gray-500 text-[9px] font-black leading-none uppercase tracking-[0.15em] ml-11">
-                      Protein • Omega-3 • B12
-                    </p>
-                  </div>
+                
+                {/* Catchy Nutrients Badges */}
+                <div className="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2">
+                  {[
+                    { label: "High Protein", icon: Zap, color: "bg-amber-500" },
+                    { label: "Omega-3", icon: Heart, color: "bg-red-500" },
+                    { label: "Vitamin B12", icon: Brain, color: "bg-blue-500" },
+                  ].map((badge, i) => (
+                    <motion.div
+                      key={badge.label}
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.5 + i * 0.1 }}
+                      className="flex items-center gap-2 px-3 py-1.5 backdrop-blur-xl bg-white/80 rounded-full border border-white/20 shadow-lg"
+                    >
+                      <div className={`w-2 h-2 rounded-full ${badge.color}`} />
+                      <span className="text-[10px] font-black uppercase tracking-widest text-deep-green">{badge.label}</span>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
             </motion.div>
 
             {/* Textual Content */}
-            <div>
+            <div className="space-y-10">
+              <div>
               <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight mb-8">
                 The Health Benefits of<br />
                 <span className="text-leaf">Eating Catfish</span>
-              </h2>
+                </h2>
+              </div>
 
-              <p className="text-gray-500 font-medium mb-10 leading-relaxed max-w-lg">
-                Catfish is more than just a tasty meal—it&apos;s a nutritional powerhouse. High in protein yet low in calories, it provides essential fatty acids and vitamins that are vital for your longevity and daily energy.
+              <p className="text-foreground/60 text-lg leading-relaxed font-medium">
+                Catfish isn&apos;t just a meal; it&apos;s an investment in your longevity. Packed with essential minerals and low in unhealthy fats, it&apos;s the perfect choice for the modern, health-conscious family.
               </p>
 
-              <div className="grid sm:grid-cols-2 gap-x-8 gap-y-6">
+              <div className="grid sm:grid-cols-2 gap-4 lg:gap-6">
                 {[
                   {
                     title: "Heart Health",
-                    desc: "Excellent source of Omega-3 fatty acids that lower blood pressure and protect against heart disease.",
-                    icon: Activity,
-                    color: "text-red-600",
+                    desc: "Rich in Omega-3 to protect your arteries and keep your heart pumping strong.",
+                    icon: Heart,
+                    color: "text-red-500",
                     bgColor: "bg-red-50"
                   },
                   {
-                    title: "Regulates Sugar",
-                    desc: "An ideal protein source for managing Type 2 Diabetes by helping to maintain stable blood sugar levels.",
+                    title: "Brain Power",
+                    desc: "Vitamin B12 supports cognitive function and long-term memory health.",
+                    icon: Brain,
+                    color: "text-blue-500",
+                    bgColor: "bg-blue-50"
+                  },
+                  {
+                    title: "Sugar Balance",
+                    desc: "Low glycemic index makes it safe and effective for diabetes management.",
                     icon: Zap,
                     color: "text-amber-500",
                     bgColor: "bg-amber-50"
                   },
                   {
-                    title: "Joint Care",
-                    desc: "Natural anti-inflammatory properties help reduce joint pain, stiffness, and chronic inflammation.",
+                    title: "Immune Boost",
+                    desc: "High quality protein and minerals to fortify your body's natural defenses.",
                     icon: Shield,
-                    color: "text-blue-500",
-                    bgColor: "bg-blue-50"
-                  },
-                  {
-                    title: "Liver Vitality",
-                    desc: "Supplies crucial B-vitamins and minerals that support liver detoxification and overall metabolic health.",
-                    icon: Brain,
                     color: "text-leaf",
                     bgColor: "bg-leaf/10"
                   },
@@ -1177,14 +1156,12 @@ export default function HomeClient({
                     transition={{ delay: idx * 0.1 }}
                     className="group"
                   >
-                    <div className="flex gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
-                      <div className={`w-12 h-12 shrink-0 ${item.bgColor} rounded-xl flex items-center justify-center`}>
+                    <div className="h-full p-6 rounded-2xl bg-white border border-earth/5 hover:border-leaf/30 hover:bg-leaf/[0.02] transition-all duration-300">
+                      <div className={`w-12 h-12 shrink-0 ${item.bgColor} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                         <item.icon className={`w-6 h-6 ${item.color}`} />
                       </div>
-                      <div>
-                        <h4 className="font-bold text-deep-green text-sm mb-1">{item.title}</h4>
-                        <p className="text-[11px] text-gray-400 leading-relaxed font-medium line-clamp-2 md:line-clamp-none">{item.desc}</p>
-                      </div>
+                      <h4 className="font-black text-deep-green text-sm uppercase tracking-wider mb-2">{item.title}</h4>
+                      <p className="text-xs text-foreground/50 leading-relaxed font-medium">{item.desc}</p>
                     </div>
                   </motion.div>
                 ))}

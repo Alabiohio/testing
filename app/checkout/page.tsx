@@ -10,6 +10,8 @@ import { useCart } from "@/lib/cart-context";
 import { useRouter } from "next/navigation";
 import { createOrder } from "../actions/order";
 import { Country, State, City } from "country-state-city";
+import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
 
 const deliveryOptions = [
     "Pickup",
@@ -35,30 +37,89 @@ export default function CheckoutPage() {
         notes: "",
     });
 
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const validateForm = () => {
+        const newErrors: Record<string, string> = {};
+
+        if (!formData.name.trim()) newErrors.name = "Full name is required";
+        if (!formData.phone.trim()) {
+            newErrors.phone = "Phone number is required";
+        } else if (formData.phone.trim().length < 10) {
+            newErrors.phone = "Please enter a valid phone number";
+        }
+
+        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            newErrors.email = "Please enter a valid email address";
+        }
+
+        if (!formData.country) newErrors.country = "Country is required";
+        if (!formData.state) newErrors.state = "State is required";
+
+        if (formData.deliveryOption !== "Pickup") {
+            if (!formData.city) newErrors.city = "City is required";
+            if (!formData.streetAddress.trim()) newErrors.streetAddress = "Street address is required";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const isFormComplete = 
+        formData.name.trim() !== "" && 
+        formData.phone.trim().length >= 10 && 
+        formData.country !== "" && 
+        formData.state !== "" && 
+        (formData.deliveryOption === "Pickup" || (formData.city !== "" && formData.streetAddress.trim() !== ""));
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (items.length === 0) {
-            alert("Your cart is empty. Please add items before checking out.");
+            toast.error("Your cart is empty", {
+                description: "Please add items before checking out."
+            });
+            return;
+        }
+
+        if (!validateForm()) {
+            toast.error("Form validation failed", {
+                description: "Please check the fields marked in red."
+            });
             return;
         }
 
         setIsSubmitting(true);
-        const result = await createOrder({
-            ...formData,
-            items: items,
-            totalAmount: totalPrice
-        });
-        setIsSubmitting(false);
+        const toastId = toast.loading("Processing your order...");
 
-        if (result.success) {
-            alert("Thank you! Your order has been placed successfully. Our team will contact you within 24 hours.");
-            clearCart();
-            router.push("/");
-        } else {
-            alert(result.error || "Something went wrong. Please try again.");
+        try {
+            const result = await createOrder({
+                ...formData,
+                items: items,
+                totalAmount: totalPrice
+            });
+
+            if (result.success) {
+                toast.success("Order placed successfully!", {
+                    id: toastId,
+                    description: "Thank you! Our team will contact you within 24 hours."
+                });
+                clearCart();
+                router.push(`/checkout/success?orderId=${result.orderId}`);
+            } else {
+                toast.error("Order failed", {
+                    id: toastId,
+                    description: result.error || "Something went wrong. Please try again."
+                });
+            }
+        } catch (error) {
+            toast.error("An unexpected error occurred", {
+                id: toastId,
+                description: "Please try again later."
+            });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -75,13 +136,9 @@ export default function CheckoutPage() {
     }
 
     return (
-        <div className="min-h-screen bg-background pt-24 pb-24 relative overflow-hidden">
+        <div className="min-h-screen bg-background pt-8 pb-24 relative overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <header className="mb-12">
-                    <Link href="/cart" className="inline-flex items-center gap-2 text-foreground/50 hover:text-deep-green transition-colors font-bold text-sm uppercase tracking-wider mb-8">
-                        <ArrowLeft className="w-4 h-4" /> Back to Cart
-                    </Link>
-
+                <header className="mb-8">
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -105,12 +162,11 @@ export default function CheckoutPage() {
                             onSubmit={handleSubmit}
                             className="bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 p-6 md:p-10 rounded-xl space-y-10 relative overflow-hidden"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#edf1eb] rounded-bl-[72px] -z-0" />
-
+                        
                             {/* Section: Customer Info */}
                             <div className="space-y-6 relative z-10">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white">
                                         <User className="w-5 h-5" />
                                     </div>
                                     <h2 className="text-2xl font-black text-deep-green uppercase tracking-tight">Customer Detail</h2>
@@ -119,42 +175,64 @@ export default function CheckoutPage() {
                                     <div className="space-y-2">
                                         <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Full Name</label>
                                         <input
-                                            required
                                             type="text"
-                                            className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-4 px-6 outline-none transition-all font-bold"
+                                            className={`w-full bg-leaf/5 border-2 ${errors.name ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-6 outline-none transition-all font-bold`}
                                             placeholder="John Doe"
                                             value={formData.name}
-                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            onChange={(e) => {
+                                                setFormData({ ...formData, name: e.target.value });
+                                                if (errors.name) setErrors({ ...errors, name: "" });
+                                            }}
                                         />
+                                        {errors.name && (
+                                            <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                                <AlertCircle className="w-3 h-3" /> {errors.name}
+                                            </p>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Phone Number</label>
                                         <input
-                                            required
                                             type="tel"
-                                            className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-4 px-6 outline-none transition-all font-bold"
+                                            className={`w-full bg-leaf/5 border-2 ${errors.phone ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-6 outline-none transition-all font-bold`}
                                             placeholder="0909 300 9400"
                                             value={formData.phone}
-                                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                            onChange={(e) => {
+                                                setFormData({ ...formData, phone: e.target.value });
+                                                if (errors.phone) setErrors({ ...errors, phone: "" });
+                                            }}
                                         />
+                                        {errors.phone && (
+                                            <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                                <AlertCircle className="w-3 h-3" /> {errors.phone}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Email (Optional)</label>
                                     <input
                                         type="email"
-                                        className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-4 px-6 outline-none transition-all font-bold"
+                                        className={`w-full bg-leaf/5 border-2 ${errors.email ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-6 outline-none transition-all font-bold`}
                                         placeholder="john@example.com"
                                         value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                        onChange={(e) => {
+                                            setFormData({ ...formData, email: e.target.value });
+                                            if (errors.email) setErrors({ ...errors, email: "" });
+                                        }}
                                     />
+                                    {errors.email && (
+                                        <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                            <AlertCircle className="w-3 h-3" /> {errors.email}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
                             {/* Section: Delivery */}
                             <div className="space-y-6 relative z-10">
                                 <div className="flex items-center gap-4 border-t border-gray-100 pt-8 mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white">
                                         <Truck className="w-5 h-5" />
                                     </div>
                                     <h2 className="text-2xl font-black text-deep-green uppercase tracking-tight">Delivery Info</h2>
@@ -165,8 +243,17 @@ export default function CheckoutPage() {
                                         <button
                                             key={opt}
                                             type="button"
-                                            onClick={() => setFormData({ ...formData, deliveryOption: opt })}
-                                            className={`p-4 rounded-xl border transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
+                                            onClick={() => {
+                                                setFormData({ ...formData, deliveryOption: opt });
+                                                // Clear city/address errors if switching to Pickup
+                                                if (opt === "Pickup") {
+                                                    const newErrors = { ...errors };
+                                                    delete newErrors.city;
+                                                    delete newErrors.streetAddress;
+                                                    setErrors(newErrors);
+                                                }
+                                            }}
+                                            className={`p-3 rounded-xl border transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
                                                 ? "border-deep-green bg-[#edf1eb] text-deep-green"
                                                 : "border-black/8 hover:border-deep-green/30"
                                                 }`}
@@ -182,8 +269,7 @@ export default function CheckoutPage() {
                                             <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Country</label>
                                             <div className="relative group">
                                                 <select
-                                                    required
-                                                    className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer"
+                                                    className={`w-full bg-leaf/5 border-2 ${errors.country ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer`}
                                                     value={formData.country}
                                                     onChange={(e) => {
                                                         const newCountry = e.target.value;
@@ -193,6 +279,7 @@ export default function CheckoutPage() {
                                                             state: "",
                                                             city: ""
                                                         });
+                                                        if (errors.country) setErrors({ ...errors, country: "" });
                                                     }}
                                                 >
                                                     <option value="">Select Country</option>
@@ -204,17 +291,24 @@ export default function CheckoutPage() {
                                                 </select>
                                                 <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
                                             </div>
+                                            {errors.country && (
+                                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                                    <AlertCircle className="w-3 h-3" /> {errors.country}
+                                                </p>
+                                            )}
                                         </div>
 
                                         <div className="space-y-4">
                                             <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">State / Province</label>
                                             <div className="relative group">
                                                 <select
-                                                    required
-                                                    className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer disabled:opacity-50"
+                                                    className={`w-full bg-leaf/5 border-2 ${errors.state ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer disabled:opacity-50`}
                                                     value={formData.state}
                                                     disabled={!formData.country}
-                                                    onChange={(e) => setFormData({ ...formData, state: e.target.value, city: "" })}
+                                                    onChange={(e) => {
+                                                        setFormData({ ...formData, state: e.target.value, city: "" });
+                                                        if (errors.state) setErrors({ ...errors, state: "" });
+                                                    }}
                                                 >
                                                     <option value="">Select State</option>
                                                     {formData.country &&
@@ -227,6 +321,11 @@ export default function CheckoutPage() {
                                                 </select>
                                                 <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
                                             </div>
+                                            {errors.state && (
+                                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                                    <AlertCircle className="w-3 h-3" /> {errors.state}
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -235,11 +334,13 @@ export default function CheckoutPage() {
                                             <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">City / Town</label>
                                             <div className="relative group">
                                                 <select
-                                                    required={formData.deliveryOption !== "Pickup"}
-                                                    className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer disabled:opacity-50"
+                                                    className={`w-full bg-leaf/5 border-2 ${errors.city ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer disabled:opacity-50`}
                                                     value={formData.city}
                                                     disabled={!formData.state}
-                                                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                                    onChange={(e) => {
+                                                        setFormData({ ...formData, city: e.target.value });
+                                                        if (errors.city) setErrors({ ...errors, city: "" });
+                                                    }}
                                                 >
                                                     <option value="">Select City</option>
                                                     {formData.state && formData.country && (() => {
@@ -261,6 +362,11 @@ export default function CheckoutPage() {
                                                 </select>
                                                 <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
                                             </div>
+                                            {errors.city && (
+                                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                                    <AlertCircle className="w-3 h-3" /> {errors.city}
+                                                </p>
+                                            )}
                                         </div>
 
                                         <div className="space-y-4">
@@ -280,9 +386,8 @@ export default function CheckoutPage() {
                                             {formData.deliveryOption === "Pickup" ? "Preferred Pickup Area" : "Street Address"}
                                         </label>
                                         <input
-                                            required={formData.deliveryOption !== "Pickup"}
                                             type="text"
-                                            className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold"
+                                            className={`w-full bg-leaf/5 border-2 ${errors.streetAddress ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-8 outline-none transition-all font-bold`}
                                             placeholder={
                                                 formData.deliveryOption === "Pickup"
                                                     ? "e.g. Near Sagamu Interchange"
@@ -291,15 +396,17 @@ export default function CheckoutPage() {
                                                         : "e.g. 123 Business Way"
                                             }
                                             value={formData.streetAddress}
-                                            onChange={(e) => setFormData({ ...formData, streetAddress: e.target.value })}
+                                            onChange={(e) => {
+                                                setFormData({ ...formData, streetAddress: e.target.value });
+                                                if (errors.streetAddress) setErrors({ ...errors, streetAddress: "" });
+                                            }}
                                         />
+                                        {errors.streetAddress && (
+                                            <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                                <AlertCircle className="w-3 h-3" /> {errors.streetAddress}
+                                            </p>
+                                        )}
                                     </div>
-
-                                    {formData.deliveryOption === "Pickup" && (
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 ml-2">
-                                            📌 Note: Pickup points are currently only available across Lagos and Ogun State.
-                                        </p>
-                                    )}
                                 </div>
                             </div>
 
@@ -368,8 +475,8 @@ export default function CheckoutPage() {
                         <button
                             form="checkout-form"
                             type="submit"
-                            disabled={isSubmitting}
-                            className={`w-full ${isSubmitting ? "bg-deep-green/50" : "bg-deep-green hover:bg-[#0f2f21]"} text-white py-4 rounded-xl font-black text-base uppercase tracking-[0.18em] transition-all active:scale-95 flex items-center justify-center gap-4`}
+                            disabled={isSubmitting || !isFormComplete}
+                            className={`w-full ${isSubmitting || !isFormComplete ? "bg-deep-green/30 cursor-not-allowed" : "bg-deep-green hover:bg-[#0f2f21]"} text-white py-4 rounded-xl font-black text-base uppercase tracking-[0.18em] transition-all active:scale-95 flex items-center justify-center gap-4`}
                         >
                             {isSubmitting ? "PLACING ORDER..." : "PLACE ORDER"}
                             <ChevronRight className="w-6 h-6" />

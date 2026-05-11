@@ -30,21 +30,42 @@ export async function createOrder(data: any) {
         // Send confirmation email if client email is provided
         if (data.email) {
             try {
-                const emailResponse = await resend.emails.send({
+                await resend.emails.send({
                     from: 'CCB Farms <order@notify.ccb.farm>',
                     to: data.email,
                     subject: 'Order Confirmation - CCB Farms',
                     react: <OrderConfirmationEmail orderData={data} />,
                 });
-                
-                if (emailResponse.error) {
-                    console.error("Resend API Error (Order):", emailResponse.error);
-                } else {
-                    console.log("Order confirmation email sent successfully:", emailResponse.data?.id);
-                }
             } catch (emailErr) {
-                console.error("Failed to send confirmation email (Exception):", emailErr);
+                console.error("Failed to send customer confirmation email:", emailErr);
             }
+        }
+
+        // Send admin notification
+        try {
+            await resend.emails.send({
+                from: 'CCB Farms System <system@notify.ccb.farm>',
+                to: 'info@ccb.farm', // Replace with actual admin email
+                subject: `NEW ORDER: ${data.name} - ₦${data.totalAmount.toLocaleString()}`,
+                text: `
+                    New order received from ${data.name}
+                    
+                    Customer Details:
+                    - Name: ${data.name}
+                    - Phone: ${data.phone}
+                    - Email: ${data.email || 'Not provided'}
+                    - Delivery: ${data.deliveryOption}
+                    - Location: ${data.city}, ${data.state}, ${data.country}
+                    
+                    Order Total: ₦${data.totalAmount.toLocaleString()}
+                    
+                    Notes: ${data.notes || 'None'}
+                    
+                    View details in the dashboard.
+                `.trim().replace(/^\s+/gm, ''),
+            });
+        } catch (adminEmailErr) {
+            console.error("Failed to send admin notification email:", adminEmailErr);
         }
 
         revalidatePath("/booked-order");

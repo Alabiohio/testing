@@ -7,6 +7,7 @@ import { Menu, X, Search, ShoppingCart, ArrowRight, Truck, ShieldCheck, RefreshC
 import { motion, AnimatePresence } from 'framer-motion';
 import GlobalSearch from './GlobalSearch';
 import { usePathname } from 'next/navigation';
+import { useCart } from '@/lib/cart-context';
 
 const Navbar = () => {
     const pathname = usePathname();
@@ -14,7 +15,7 @@ const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const promoVisible = true;
     const [isHeroSearchVisible, setIsHeroSearchVisible] = useState(false);
-    const [cartCount] = useState(0);
+    const { totalItems: cartCount } = useCart();
 
     // Hero Search Visibility Observer
     useEffect(() => {
@@ -216,13 +217,13 @@ const Navbar = () => {
 
                             {/* Cart Icon */}
                             <Link
-                                href="/book-order"
+                                href="/cart"
                                 className="relative p-2.5 rounded-xl transition-all hover:bg-deep-green/8 active:scale-95 group"
                                 aria-label="Shopping Cart"
                             >
                                 <ShoppingCart className="w-5 h-5 text-gray-600 group-hover:text-deep-green transition-colors" />
                                 {cartCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-leaf text-white text-[10px] font-black rounded-full flex items-center justify-center cart-badge-pulse">
+                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-leaf text-white text-[10px] font-black rounded-full flex items-center justify-center">
                                         {cartCount}
                                     </span>
                                 )}
@@ -230,7 +231,7 @@ const Navbar = () => {
 
                             {/* Shop CTA - Desktop */}
                             <Link
-                                href="/book-order"
+                                href="/cart"
                                 className="hidden lg:inline-flex items-center gap-2 bg-deep-green hover:bg-[#0f2f21] text-white px-5 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm active:scale-95 tracking-wide"
                             >
                                 Start Order
@@ -239,20 +240,14 @@ const Navbar = () => {
 
                             {/* Mobile Controls */}
                             <div className="lg:hidden flex items-center gap-2">
-                                <AnimatePresence>
                                     {!isHeroSearchVisible && (
-                                        <motion.button
-                                            key="mobile-search"
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.8 }}
+                                        <button
                                             onClick={() => setIsSearchOpen(true)}
                                             className="p-2.5 rounded-xl bg-white border border-black/8 text-gray-600 active:scale-90 transition-all"
                                         >
                                             <Search className="w-5 h-5" />
-                                        </motion.button>
+                                        </button>
                                     )}
-                                </AnimatePresence>
                                 <button
                                     onClick={() => setIsOpen(!isOpen)}
                                     className="p-2.5 rounded-xl bg-white border border-black/8 text-gray-700 active:scale-90 transition-all"
@@ -275,6 +270,7 @@ const Navbar = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
                             onClick={() => setIsOpen(false)}
                             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] lg:hidden"
                         />
@@ -284,7 +280,7 @@ const Navbar = () => {
                             initial={{ x: '100%' }}
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
-                            transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+                            transition={{ duration: 0.3, ease: "easeOut" }}
                             className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[120] lg:hidden shadow-[-20px_0_60px_rgba(0,0,0,0.25)] flex flex-col"
                         >
                             {/* Header */}
@@ -324,12 +320,7 @@ const Navbar = () => {
                                     {menuItems.map((item, idx) => {
                                         const isActive = pathname === item.href;
                                         return (
-                                            <motion.div
-                                                key={item.name}
-                                                initial={{ x: 24, opacity: 0 }}
-                                                animate={{ x: 0, opacity: 1 }}
-                                                transition={{ delay: 0.08 + idx * 0.05 }}
-                                            >
+                                            <div key={item.name}>
                                                 <Link
                                                     href={item.href}
                                                     onClick={() => setIsOpen(false)}
@@ -344,7 +335,7 @@ const Navbar = () => {
                                                         : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'}`}
                                                     />
                                                 </Link>
-                                            </motion.div>
+                                            </div>
                                         );
                                     })}
                                 </div>
@@ -368,7 +359,7 @@ const Navbar = () => {
                             {/* Footer CTA */}
                             <div className="p-5 border-t border-gray-100">
                                 <Link
-                                    href="/book-order"
+                                    href="/cart"
                                     onClick={() => setIsOpen(false)}
                                     className="w-full bg-deep-green hover:bg-[#0f2f21] text-white py-4 rounded-xl font-black text-base shadow-sm active:scale-95 transition-all flex items-center justify-center gap-2 tracking-wide"
                                 >

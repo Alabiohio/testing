@@ -117,7 +117,7 @@ const ProductCard = ({ product, index, onOrder, layout = true }: ProductCardComp
 
       {/* Content */}
       <div className="p-3 sm:p-5 flex flex-col flex-grow">
-        <div className="flex-grow mb-3">
+        <div className="flex-grow mb-2">
           <h4 className="font-bold text-base sm:text-lg text-gray-900 mb-1 tracking-tight line-clamp-1">
             {product.name}
           </h4>
@@ -129,7 +129,7 @@ const ProductCard = ({ product, index, onOrder, layout = true }: ProductCardComp
         </div>
 
         {/* Footer: Price & CTA */}
-        <div className="mt-auto pt-3 border-t border-gray-50 flex items-center justify-between gap-2">
+        <div className="mt-auto border-t border-gray-50 flex items-center justify-between gap-2">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-base sm:text-xl font-black text-gray-900 truncate">

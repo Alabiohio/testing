@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useMemo } from "react";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Truck, User, Phone, MapPin, Mail, ChevronRight, Info, ShieldCheck, Check, CheckCircle } from "lucide-react";
+import { ShoppingBag, Truck, User, Phone, MapPin, Mail, ChevronRight, Info, ShieldCheck, Check, CheckCircle, AlertCircle } from "lucide-react";
 import { Country, State, City } from "country-state-city";
 import { createOrder } from "../actions/order";
 import { getOrderCategories } from "../actions/order-categories";
+import { toast } from "sonner";
 
 const deliveryOptions = [
     "Pickup",
@@ -16,6 +17,7 @@ const deliveryOptions = [
 ];
 
 export default function BookedOrderPage() {
+    const router = useRouter();
     const [categoryGroups, setCategoryGroups] = useState<Record<string, CategoryGroup>>({});
     const [isLoading, setIsLoading] = useState(true);
     const [formData, setFormData] = useState({
@@ -39,15 +41,7 @@ export default function BookedOrderPage() {
             if (result.success && result.categories) {
                 setCategoryGroups(result.categories);
 
-                // Initialize form with the first category if not already set
-                const firstCat = Object.keys(result.categories)[0];
-                if (firstCat) {
-                    setFormData(prev => ({
-                        ...prev,
-                        categories: [firstCat],
-                        items: [{ categoryId: firstCat, subCategory: "", quantity: "" }]
-                    }));
-                }
+                // Removed auto-initialization of first category per request
             }
             setIsLoading(false);
         }
@@ -58,37 +52,81 @@ export default function BookedOrderPage() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsSubmitting(true);
 
-        const firstItem = formData.items[0];
-        const submissionData = {
+        // Validation
+        if (formData.categories.length === 0) {
+            alert("Please select at least one product category.");
+            return;
+        }
+
+        for (const catId of formData.categories) {
+            const hasItem = formData.items.some((i: any) => i.categoryId === catId);
+            if (!hasItem) {
+                const group = categoryGroups[catId as keyof typeof categoryGroups];
+                alert(`Please select a size/weight for ${group?.name || 'a selected product'}.`);
+                return;
+            }
+        }
+
+        for (const item of formData.items) {
+            const group = categoryGroups[item.categoryId as keyof typeof categoryGroups];
+            if (!item.quantity || Number(item.quantity) <= 0) {
+                alert(`Please enter a valid quantity for ${group?.name || 'a product'}${item.subCategory ? ` (${item.subCategory})` : ''}.`);
+                return;
+            }
+        }
+
+        setIsSubmitting(true);
+        const toastId = toast.loading("Processing your order...");
+
+        const submissionData = { 
             ...formData,
-            category: firstItem?.categoryId,
-            subCategory: firstItem?.subCategory,
-            quantity: firstItem?.quantity,
+            category: formData.categories.map(catId => categoryGroups[catId]?.name || catId).join(', '),
+            subCategory: formData.items.map((i: any) => i.subCategory).filter(Boolean).join(', '),
+            quantity: formData.items.map((i: any) => {
+                const group = categoryGroups[i.categoryId];
+                return `${i.quantity}${group?.unit || ''}${i.subCategory ? ` (${i.subCategory})` : ''}`;
+            }).join('; ')
         };
 
-        const result = await createOrder(submissionData);
-        setIsSubmitting(false);
+        try {
+            const result = await createOrder(submissionData);
+            setIsSubmitting(false);
 
-        if (result.success) {
-            alert("Thank you! Your order has been placed successfully. Our team will contact you within 24 hours.");
-            setFormData({
-                name: "",
-                email: "",
-                phone: "",
-                streetAddress: "",
-                city: "",
-                country: "Nigeria",
-                state: "Lagos",
-                postalCode: "",
-                categories: Object.keys(categoryGroups).slice(0, 1),
-                items: [{ categoryId: Object.keys(categoryGroups)[0], subCategory: "", quantity: "" }],
-                deliveryOption: "Home Delivery",
-                notes: "",
+            if (result.success) {
+                toast.success("Order placed successfully!", {
+                    id: toastId,
+                    description: "Thank you! Our team will contact you within 24 hours."
+                });
+                
+                router.push(`/checkout/success?orderId=${result.orderId}`);
+                
+                setFormData({
+                    name: "",
+                    email: "",
+                    phone: "",
+                    streetAddress: "",
+                    city: "",
+                    country: "Nigeria",
+                    state: "Lagos",
+                    postalCode: "",
+                    categories: [],
+                    items: [],
+                    deliveryOption: "Home Delivery",
+                    notes: "",
+                });
+            } else {
+                toast.error("Order failed", {
+                    id: toastId,
+                    description: result.error || "Something went wrong. Please try again."
+                });
+            }
+        } catch (error) {
+            toast.error("An unexpected error occurred", {
+                id: toastId,
+                description: "Please try again later."
             });
-        } else {
-            alert(result.error || "Something went wrong. Please try again.");
+            setIsSubmitting(false);
         }
     };
 
@@ -143,6 +181,26 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
         }
     }, [catParam, categoryGroups, setFormData]);
 
+    const isFormValid = useMemo(() => {
+        // Standard fields
+        if (!formData.name || !formData.streetAddress || !formData.country || !formData.state) return false;
+        if (formData.deliveryOption !== "Pickup" && (!formData.city || !formData.postalCode)) return false;
+
+        if (formData.categories.length === 0) return false;
+
+        for (const catId of formData.categories) {
+            const hasItem = formData.items.some((i: any) => i.categoryId === catId);
+            if (!hasItem) return false;
+        }
+
+        for (const item of formData.items) {
+            if (!item.quantity || Number(item.quantity) <= 0) return false;
+        }
+
+        return true;
+    }, [formData, categoryGroups]);
+
+
     return (
         <div className="min-h-screen bg-background pt-8 pb-24 relative overflow-x-clip">
             <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
@@ -155,47 +213,46 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3 }}
                             onSubmit={handleSubmit}
-                            className="bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 py-8 px-4 md:py-10 md:px-8 rounded-xl space-y-12 relative overflow-hidden"
+                            className="md:bg-white md:border md:border-earth/10 py-1 px-2 md:py-10 md:px-8 md:rounded-xl space-y-12 relative overflow-hidden"
                         >
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#edf1eb] rounded-bl-[72px] -z-0" />
 
                             {/* Section: Customer Info */}
                             <div className="space-y-8">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white shadow-lg shadow-amber-500/20">
-                                        <User className="w-5 h-5" />
+                                    <div className="w-8 h-8 flex items-center justify-center text-leaf">
+                                        <User className="w-6 h-6" strokeWidth={1.5} />
                                     </div>
-                                    <h2 className="text-2xl font-black text-deep-green  uppercase tracking-tight">Customer Information</h2>
+                                    <h2 className="text-xl font-semibold text-foreground tracking-tight">Customer Information</h2>
                                 </div>
                                 <div className="grid md:grid-cols-2 gap-5">
-                                    <div className="space-y-4">
-                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Full Name</label>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Full Name</label>
                                         <input
                                             required
                                             type="text"
-                                            className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-white border border-earth/10 focus:border-foreground/30 rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30"
                                             placeholder="John Doe"
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                         />
                                     </div>
-                                    <div className="space-y-4">
-                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Phone Number</label>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Phone Number</label>
                                         <input
                                             required
                                             type="tel"
-                                            className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30"
                                             placeholder="0909 300 9400"
                                             value={formData.phone}
                                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                         />
                                     </div>
                                 </div>
-                                <div className="space-y-4">
-                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Email (Optional)</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Email (Optional)</label>
                                     <input
                                         type="email"
-                                        className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold"
+                                        className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30"
                                         placeholder="john@example.com"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -206,152 +263,188 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                             {/* Section: Product Selection */}
                             <div className="space-y-8">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white">
-                                        <ShoppingBag className="w-5 h-5" />
+                                    <div className="w-8 h-8 flex items-center justify-center text-leaf">
+                                        <ShoppingBag className="w-6 h-6" strokeWidth={1.5} />
                                     </div>
-                                    <h2 className="text-2xl font-black text-deep-green  uppercase tracking-tight">Product Selection</h2>
+                                    <h2 className="text-xl font-semibold text-foreground tracking-tight">Product Selection</h2>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Select Main Category</label>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {Object.entries(categoryGroups).map(([id, group]: [string, CategoryGroup]) => (
-                                            <button
-                                                key={id}
-                                                type="button"
-                                                onClick={() => {
-                                                    const isSelected = formData.categories.includes(id);
-                                                    let newCategories = [...formData.categories];
-                                                    let newItems = [...formData.items];
+                                <div className="space-y-8">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Select Products & Quantities</label>
+                                    <div className="space-y-4">
+                                        {Object.entries(categoryGroups).map(([id, group]: [string, CategoryGroup]) => {
+                                            const isSelected = formData.categories.includes(id);
+                                            const categoryItems = formData.items.filter((i: any) => i.categoryId === id);
 
-                                                    if (isSelected) {
-                                                        if (newCategories.length > 1) {
-                                                            newCategories = newCategories.filter(c => c !== id);
-                                                            newItems = newItems.filter(i => i.categoryId !== id);
-                                                        }
-                                                    } else {
-                                                        newCategories.push(id);
-                                                        newItems.push({ categoryId: id, subCategory: "", quantity: "" });
-                                                    }
+                                            return (
+                                                <div key={id} className={`rounded-xl border transition-all overflow-hidden ${isSelected ? "border-foreground bg-white" : "border-earth/10 bg-white hover:border-earth/20"}`}>
+                                                    {/* Selection Header */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            let newCategories = [...formData.categories];
+                                                            let newItems = [...formData.items];
 
-                                                    setFormData({ ...formData, categories: newCategories, items: newItems });
-                                                }}
-                                                className={`p-4 rounded-xl border-2 transition-all text-left group relative overflow-hidden flex items-center gap-4 ${formData.categories.includes(id)
-                                                    ? "border-amber-500 bg-amber-50"
-                                                    : "border-earth/10 bg-earth/5 hover:border-amber-500/30"
-                                                    }`}
-                                            >
-                                                <div className="relative w-16 h-12 rounded-lg overflow-hidden shrink-0 border border-leaf/10">
-                                                    <Image
-                                                        src={group.image}
-                                                        alt={group.name}
-                                                        fill
-                                                        className="object-contain group-hover:scale-110 transition-transform duration-500"
-                                                    />
-                                                </div>
-                                                <div className="flex-grow">
-                                                    <p className={`font-black uppercase tracking-wider text-[10px] mb-1 ${formData.categories.includes(id) ? "text-amber-600" : "text-foreground/40"}`}>
-                                                        {id.replace('-', ' ')}
-                                                    </p>
-                                                    <p className="font-black text-deep-green  leading-tight text-sm">{group.name}</p>
-                                                </div>
-                                                {formData.categories.includes(id) && (
-                                                    <div className="text-amber-600 shrink-0">
-                                                        <Check className="w-5 h-5" />
-                                                    </div>
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
+                                                            if (isSelected) {
+                                                                newCategories = newCategories.filter(c => c !== id);
+                                                                newItems = newItems.filter((i: any) => i.categoryId !== id);
+                                                            } else {
+                                                                newCategories.push(id);
+                                                                if (!group.options || group.options.length === 0) {
+                                                                    newItems.push({ categoryId: id, subCategory: "", quantity: "" });
+                                                                }
+                                                            }
 
-                                <div className="space-y-12">
-                                    {formData.items.map((item: any, itemIdx: number) => {
-                                        const group = categoryGroups[item.categoryId as keyof typeof categoryGroups];
-                                        return (
-                                            <motion.div
-                                                key={item.categoryId}
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                className="p-8 rounded-[32px] bg-white border-2 border-earth/5 space-y-8"
-                                            >
-                                                <div className="flex items-center gap-4 pb-4 border-b border-earth/5">
-                                                    <div className="w-10 h-10 rounded-xl bg-leaf/10 flex items-center justify-center text-leaf">
-                                                        <CheckCircle className="w-5 h-5" />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="font-black text-deep-green uppercase tracking-tight">{group.name}</h3>                                                                                                       </div>
-                                                </div>
-
-                                                {group.options && group.options.length > 0 && (
-                                                    <div className="space-y-6">
-                                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Choose Size/Weight</label>
-                                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                                            {group.options.map((opt: CategoryOption) => (
-                                                                <button
-                                                                    key={opt.value}
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        const newItems = [...formData.items];
-                                                                        newItems[itemIdx].subCategory = opt.label;
-                                                                        setFormData({ ...formData, items: newItems });
-                                                                    }}
-                                                                    className={`px-3 py-3 rounded-xl border-2 transition-all text-left flex items-center justify-between ${item.subCategory === opt.label
-                                                                        ? "border-amber-500 bg-amber-50 text-amber-600"
-                                                                        : "border-amber-500/10 hover:border-amber-500/40"
-                                                                        }`}
-                                                                >
-                                                                    <span className="font-bold text-sm">{opt.label}</span>
-                                                                    {item.subCategory === opt.label && <Check className="w-4 h-4" />}
-                                                                </button>
-                                                            ))}
+                                                            setFormData({ ...formData, categories: newCategories, items: newItems });
+                                                        }}
+                                                        className={`w-full py-5 px-3 flex items-center gap-6 text-left transition-colors ${isSelected ? "bg-foreground/[0.02]" : "hover:bg-foreground/[0.01]"}`}
+                                                    >
+                                                        <div className="relative w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                                                            <Image
+                                                                src={group.image}
+                                                                alt={group.name}
+                                                                fill
+                                                                className="object-contain"
+                                                            />
                                                         </div>
-                                                    </div>
-                                                )}
+                                                        <div className="flex-grow">
+                                                            <p className={`font-bold uppercase tracking-widest text-[10px] mb-1 ${isSelected ? "text-foreground/70" : "text-foreground/40"}`}>
+                                                                {id.replace('-', ' ')}
+                                                            </p>
+                                                            <h3 className="font-medium text-foreground leading-tight text-lg">{group.name}</h3>
+                                                        </div>
+                                                        <div className={`shrink-0 w-5 h-5 rounded-full border flex items-center justify-center transition-all ${isSelected ? "bg-leaf border-leaf text-white" : "border-earth/20"}`}>
+                                                            {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                                                        </div>
+                                                    </button>
 
-                                                <div className="space-y-4">
-                                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">
-                                                        Quantity Required ({group.unit})
-                                                    </label>
-                                                    <div className="relative">
-                                                        <input
-                                                            required
-                                                            type="text"
-                                                            className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold"
-                                                            placeholder={`e.g. 1000 ${group.unit}`}
-                                                            value={item.quantity}
-                                                            onChange={(e) => {
-                                                                const newItems = [...formData.items];
-                                                                newItems[itemIdx].quantity = e.target.value;
-                                                                setFormData({ ...formData, items: newItems });
-                                                            }}
-                                                        />
-                                                    </div>
+                                                    {/* Inline Configuration Form */}
+                                                    <AnimatePresence>
+                                                        {isSelected && (
+                                                            <motion.div
+                                                                initial={{ height: 0, opacity: 0 }}
+                                                                animate={{ height: "auto", opacity: 1 }}
+                                                                exit={{ height: 0, opacity: 0 }}
+                                                                className="overflow-hidden"
+                                                            >
+                                                                <div className="p-6 pt-0 space-y-8 border-t border-earth/5 mt-4">
+                                                                    <div className="pt-6">
+                                                                        {group.options && group.options.length > 0 ? (
+                                                                            <div className="space-y-4">
+                                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Select Sizes & Quantities</label>
+                                                                                <div className="grid sm:grid-cols-2 gap-4">
+                                                                                    {group.options.map((opt: CategoryOption) => {
+                                                                                        const catItem = categoryItems.find((i: any) => i.subCategory === opt.label);
+                                                                                        const isOptSelected = !!catItem;
+                                                                                        
+                                                                                        return (
+                                                                                            <div key={opt.value} className={`p-4 rounded-xl border transition-all ${isOptSelected ? 'border-leaf bg-leaf/[0.03]' : 'border-earth/10 hover:border-earth/20 bg-white'}`}>
+                                                                                                <div className="flex items-center justify-between gap-4">
+                                                                                                    <span className={`text-xs font-bold uppercase tracking-wider ${isOptSelected ? 'text-leaf' : 'text-foreground/60'}`}>{opt.label}</span>
+                                                                                                    <button
+                                                                                                        type="button"
+                                                                                                        onClick={() => {
+                                                                                                            let newItems = [...formData.items];
+                                                                                                            if (isOptSelected) {
+                                                                                                                newItems = newItems.filter((i: any) => !(i.categoryId === id && i.subCategory === opt.label));
+                                                                                                            } else {
+                                                                                                                newItems.push({ categoryId: id, subCategory: opt.label, quantity: "" });
+                                                                                                            }
+                                                                                                            setFormData({ ...formData, items: newItems });
+                                                                                                        }}
+                                                                                                        className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all ${isOptSelected ? 'bg-leaf border-leaf text-white' : 'border-earth/20'}`}
+                                                                                                    >
+                                                                                                        {isOptSelected && <Check className="w-3 h-3 stroke-[3]" />}
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                                <AnimatePresence>
+                                                                                                    {isOptSelected && (
+                                                                                                        <motion.div
+                                                                                                            initial={{ height: 0, opacity: 0 }}
+                                                                                                            animate={{ height: "auto", opacity: 1 }}
+                                                                                                            exit={{ height: 0, opacity: 0 }}
+                                                                                                            className="overflow-hidden"
+                                                                                                        >
+                                                                                                            <div className="pt-4">
+                                                                                                                <input
+                                                                                                                    required
+                                                                                                                    type="text"
+                                                                                                                    className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-2 px-3 outline-none transition-all text-sm font-medium placeholder:text-foreground/30"
+                                                                                                                    placeholder={`Qty (${group.unit})`}
+                                                                                                                    value={catItem.quantity}
+                                                                                                                    onChange={(e) => {
+                                                                                                                        const newItems = [...formData.items];
+                                                                                                                        const updateIdx = newItems.findIndex((i: any) => i.categoryId === id && i.subCategory === opt.label);
+                                                                                                                        if (updateIdx > -1) {
+                                                                                                                            newItems[updateIdx].quantity = e.target.value;
+                                                                                                                            setFormData({ ...formData, items: newItems });
+                                                                                                                        }
+                                                                                                                    }}
+                                                                                                                />
+                                                                                                            </div>
+                                                                                                        </motion.div>
+                                                                                                    )}
+                                                                                                </AnimatePresence>
+                                                                                            </div>
+                                                                                        );
+                                                                                    })}
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : (
+                                                                            /* Simple Quantity Input for categories without sub-options */
+                                                                            <div className="space-y-3">
+                                                                                <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">
+                                                                                    Quantity ({group.unit})
+                                                                                </label>
+                                                                                <div className="relative">
+                                                                                    <input
+                                                                                        required
+                                                                                        type="text"
+                                                                                        className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30"
+                                                                                        placeholder={`e.g. 1000 ${group.unit}`}
+                                                                                        value={categoryItems[0]?.quantity || ""}
+                                                                                        onChange={(e) => {
+                                                                                            const newItems = [...formData.items];
+                                                                                            const updateIdx = newItems.findIndex((i: any) => i.categoryId === id);
+                                                                                            if (updateIdx > -1) {
+                                                                                                newItems[updateIdx].quantity = e.target.value;
+                                                                                                setFormData({ ...formData, items: newItems });
+                                                                                            }
+                                                                                        }}
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </motion.div>
+                                                        )}
+                                                    </AnimatePresence>
                                                 </div>
-                                            </motion.div>
-                                        );
-                                    })}
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Section: Delivery */}
                             <div className="space-y-8">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white">
-                                        <Truck className="w-5 h-5" />
+                                    <div className="w-8 h-8 flex items-center justify-center text-leaf">
+                                        <Truck className="w-6 h-6" strokeWidth={1.5} />
                                     </div>
-                                    <h2 className="text-2xl font-black text-deep-green  uppercase tracking-tight">Delivery Details</h2>
+                                    <h2 className="text-xl font-semibold text-foreground tracking-tight">Delivery Details</h2>
                                 </div>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div className="grid sm:grid-cols-3 gap-3 md:gap-4">
                                     {deliveryOptions.map((opt: string) => (
                                         <button
                                             key={opt}
                                             type="button"
                                             onClick={() => setFormData({ ...formData, deliveryOption: opt })}
-                                            className={`px-3 py-3 rounded-xl border-2 transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
-                                                ? "border-amber-500 bg-amber-500 text-white"
-                                                : "border-amber-500/10  hover:border-amber-500/30"
+                                            className={`px-1 py-3 rounded-lg border transition-all text-center text-[10px] font-bold uppercase tracking-widest ${formData.deliveryOption === opt
+                                                ? "bg-deep-green text-white"
+                                                : "border-earth/10 text-foreground/50 hover:border-earth/30"
                                                 }`}
                                         >
                                             {opt}
@@ -361,12 +454,12 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
 
                                 <div className="space-y-6">
                                     <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="space-y-4">
-                                            <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Country</label>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Country</label>
                                             <div className="relative group">
                                                 <select
                                                     required
-                                                    className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer"
+                                                    className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium appearance-none cursor-pointer text-foreground"
                                                     value={formData.country}
                                                     onChange={(e) => {
                                                         const newCountry = e.target.value;
@@ -385,16 +478,16 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                         </option>
                                                     ))}
                                                 </select>
-                                                <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
+                                                <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30 rotate-90 pointer-events-none transition-colors" />
                                             </div>
                                         </div>
 
-                                        <div className="space-y-4">
-                                            <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">State / Province</label>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">State / Province</label>
                                             <div className="relative group">
                                                 <select
                                                     required
-                                                    className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer disabled:opacity-50"
+                                                    className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium appearance-none cursor-pointer disabled:opacity-50 text-foreground"
                                                     value={formData.state}
                                                     disabled={!formData.country}
                                                     onChange={(e) => setFormData({ ...formData, state: e.target.value, city: "" })}
@@ -408,49 +501,42 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                         ))
                                                     }
                                                 </select>
-                                                <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
+                                                <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30 rotate-90 pointer-events-none transition-colors" />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="space-y-4">
-                                            <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">City / Town</label>
-                                            <div className="relative group">
-                                                <select
-                                                    required={formData.deliveryOption !== "Pickup"}
-                                                    className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer disabled:opacity-50"
-                                                    value={formData.city}
-                                                    disabled={!formData.state}
-                                                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                                                >
-                                                    <option value="">Select City</option>
-                                                    {formData.state && formData.country && (() => {
-                                                        const countryCode = Country.getAllCountries().find(c => c.name === formData.country)?.isoCode || "";
-                                                        const stateCode = State.getStatesOfCountry(countryCode).find(s => s.name === formData.state)?.isoCode || "";
-                                                        const cities = City.getCitiesOfState(countryCode, stateCode);
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">City / Town</label>
+                                            <input
+                                                required={formData.deliveryOption !== "Pickup"}
+                                                type="text"
+                                                list="city-suggestions"
+                                                className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30 disabled:opacity-50 text-foreground"
+                                                placeholder="e.g. Ikeja"
+                                                value={formData.city}
+                                                disabled={!formData.state}
+                                                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                                            />
+                                            <datalist id="city-suggestions">
+                                                {formData.state && formData.country && (() => {
+                                                    const countryCode = Country.getAllCountries().find(c => c.name === formData.country)?.isoCode || "";
+                                                    const stateCode = State.getStatesOfCountry(countryCode).find(s => s.name === formData.state)?.isoCode || "";
+                                                    const cities = City.getCitiesOfState(countryCode, stateCode);
 
-                                                        // Fallback if no cities found for the state
-                                                        if (cities.length === 0) {
-                                                            return <option value={formData.state}>{formData.state} (Entire Region)</option>;
-                                                        }
-
-                                                        return cities.map((city) => (
-                                                            <option key={city.name} value={city.name}>
-                                                                {city.name}
-                                                            </option>
-                                                        ));
-                                                    })()}
-                                                </select>
-                                                <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
-                                            </div>
+                                                    return cities.map((city) => (
+                                                        <option key={city.name} value={city.name} />
+                                                    ));
+                                                })()}
+                                            </datalist>
                                         </div>
 
-                                        <div className="space-y-4">
-                                            <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Postal / Zip Code</label>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Postal / Zip Code</label>
                                             <input
                                                 type="text"
-                                                className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold"
+                                                className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30"
                                                 placeholder="e.g. 100001"
                                                 value={formData.postalCode}
                                                 onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
@@ -458,14 +544,14 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4">
-                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">
                                             {formData.deliveryOption === "Pickup" ? "Preferred Pickup Area" : "Street Address"}
                                         </label>
                                         <input
                                             required={formData.deliveryOption !== "Pickup"}
                                             type="text"
-                                            className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold"
+                                            className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30"
                                             placeholder={
                                                 formData.deliveryOption === "Pickup"
                                                     ? "e.g. Near Sagamu Interchange"
@@ -479,73 +565,77 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                     </div>
 
                                     {formData.deliveryOption === "Pickup" && (
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 ml-2">
-                                            📌 Note: Pickup points are currently only available across Lagos and Ogun State.
+                                        <p className="text-[10px] font-medium text-foreground/50 ml-1">
+                                            Note: Pickup points are currently only available across Lagos and Ogun State.
                                         </p>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="space-y-4">
-                                <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Additional Notes (Optional)</label>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Additional Notes (Optional)</label>
                                 <textarea
-                                    className="w-full bg-leaf/5  border-2 border-transparent focus:border-leaf rounded-xl py-5 px-8 outline-none transition-all font-bold min-h-[100px]"
+                                    className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-4 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30 min-h-[100px]"
                                     placeholder="Special size requests, bulk discounts, event orders, etc."
                                     value={formData.notes}
                                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                                 />
                             </div>
 
-                            <p className="text-center text-xs font-bold text-foreground/40 uppercase tracking-widest">
-                                📌 Our team will contact you within 24 hours to confirm total cost and delivery.
+                            <p className="text-center text-[10px] font-bold text-foreground/30 uppercase tracking-widest">
+                                Our team will contact you within 24 hours to confirm total cost.
                             </p>
                         </motion.form>
                     </div>
 
                     {/* Sidebar / Summary */}
-                    <div className="space-y-8 sticky top-32">
-                        <div className="bg-white rounded-xl p-8 md:p-10 border border-black/6 relative overflow-hidden shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
-                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#edf1eb] rounded-full blur-3xl" />
-                            <h3 className="text-3xl font-black text-deep-green  mb-10 leading-none">Order <br /> Summary</h3>
+                    <div className="space-y-6 lg:sticky lg:top-32">
+                        <div className="bg-white rounded-xl md:rounded-3xl p-6 md:p-8 border border-earth/10 relative overflow-hidden">
+                            <h3 className="text-2xl font-semibold text-deep-green mb-8 leading-tight">Order Summary</h3>
 
-                            <div className="space-y-8">
+                            <div className="space-y-6">
                                 {formData.items.map((item: any, idx: number) => {
                                     const group = categoryGroups[item.categoryId as keyof typeof categoryGroups];
                                     if (!group) return null;
 
                                     return (
-                                        <div key={idx} className="space-y-4 pb-8 border-b border-amber-500/10 last:border-0 last:pb-0">
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Category {formData.items.length > 1 ? `#${idx + 1}` : ""}</p>
-                                                <p className="font-black text-deep-green uppercase text-lg">{group.name}</p>
+                                        <div key={idx} className="flex gap-4 pb-6 border-b border-earth/5 last:border-0 last:pb-0">
+                                            <div className="relative w-12 h-12 rounded-xl border border-earth/5 bg-[#fafafa] shrink-0 overflow-hidden">
+                                                <Image src={group.image} alt={group.name} fill className="object-contain" />
                                             </div>
-
-                                            {item.subCategory && (
-                                                <div className="space-y-1">
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Size/Weight</p>
-                                                    <p className="font-black text-amber-600 text-lg uppercase">{item.subCategory}</p>
+                                            
+                                            <div className="flex-grow flex flex-col justify-center">
+                                                <p className="font-semibold text-foreground text-sm leading-tight mb-1">{group.name}</p>
+                                                
+                                                <div className="flex items-center text-xs font-medium text-foreground/50">
+                                                    {item.subCategory ? (
+                                                        <span>{item.subCategory}</span>
+                                                    ) : (
+                                                        <span className="text-earth/40 italic">No size selected</span>
+                                                    )}
+                                                    
+                                                    <span className="mx-2 text-earth/30">•</span>
+                                                    
+                                                    {item.quantity ? (
+                                                        <span className="text-leaf">{item.quantity} {group.unit}</span>
+                                                    ) : (
+                                                        <span className="text-earth/40 italic">Qty required</span>
+                                                    )}
                                                 </div>
-                                            )}
-
-                                            <div className="space-y-1">
-                                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Quantity</p>
-                                                <p className="font-black text-deep-green text-lg uppercase">
-                                                    {item.quantity ? `${item.quantity} ${group.unit}` : "—"}
-                                                </p>
                                             </div>
                                         </div>
                                     );
                                 })}
 
-                                <div className="pt-2 border-t border-amber-500/10">
+                                <div className="pt-2 border-t border-earth/5">
                                     <div className="space-y-1 mb-6">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Delivery Method</p>
-                                        <p className="font-black text-deep-green text-lg uppercase">{formData.deliveryOption}</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40">Delivery Method</p>
+                                        <p className="font-bold text-foreground text-base">{formData.deliveryOption}</p>
                                     </div>
 
-                                    <div className="flex items-start gap-4 p-4 bg-white/50 rounded-xl border border-amber-500/5">
-                                        <Info className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                                        <p className="text-[10px] text-foreground/50 font-medium leading-relaxed italic">
+                                    <div className="flex items-start gap-3 p-4 bg-foreground/[0.02] rounded-xl border border-earth/5">
+                                        <Info className="w-4 h-4 text-foreground/40 shrink-0 mt-0.5" />
+                                        <p className="text-[10px] text-foreground/50 font-medium leading-relaxed">
                                             Prices may vary based on market conditions. Final quote will be shared during confirmation.
                                         </p>
                                     </div>
@@ -556,26 +646,26 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                         <button
                             form="order-form"
                             type="submit"
-                            disabled={isSubmitting}
-                            className={`w-full ${isSubmitting ? "bg-deep-green/50" : "bg-deep-green hover:bg-[#0f2f21]"} text-white py-4 rounded-xl font-black text-base uppercase tracking-[0.18em] transition-all active:scale-95 flex items-center justify-center gap-4`}
+                            disabled={isSubmitting || !isFormValid}
+                            className={`w-full ${isSubmitting || !isFormValid ? "bg-deep-green/50 text-white/40 cursor-not-allowed" : "bg-deep-green hover:bg-[#0f2f21] text-white"} py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-4`}
                         >
                             {isSubmitting ? "PLACING ORDER..." : "PLACE ORDER"}
-                            <ChevronRight className="w-6 h-6" />
+                            <ChevronRight className="w-5 h-5" />
                         </button>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {[
                                 { title: "Secure Booking", desc: "Encrypted data handling", icon: ShieldCheck },
                                 { title: "Expert Care", desc: "Hygienic processing", icon: Check },
                                 { title: "Fast Support", desc: "24h Response guaranteed", icon: Phone },
                             ].map((item, i) => (
-                                <div key={i} className="flex gap-4 items-center bg-white/50  p-6 rounded-2xl border border-earth/5  backdrop-blur-sm">
-                                    <div className="w-12 h-12 rounded-xl bg-leaf/10 flex items-center justify-center shrink-0">
-                                        <item.icon className="w-6 h-6 text-leaf" />
+                                <div key={i} className="flex gap-4 items-center bg-white p-5 rounded-2xl border border-earth/5">
+                                    <div className="w-10 h-10 rounded-lg bg-foreground/[0.03] flex items-center justify-center shrink-0">
+                                        <item.icon className="w-5 h-5 text-foreground/60" strokeWidth={1.5} />
                                     </div>
                                     <div>
-                                        <h4 className="font-black text-deep-green  text-sm uppercase tracking-tight">{item.title}</h4>
-                                        <p className="text-[10px] text-foreground/30 font-black uppercase tracking-widest">{item.desc}</p>
+                                        <h4 className="font-medium text-foreground text-sm tracking-tight">{item.title}</h4>
+                                        <p className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest mt-0.5">{item.desc}</p>
                                     </div>
                                 </div>
                             ))}

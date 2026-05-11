@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, X, Cookie, ArrowRight, Settings, Check, Lock, ArrowLeft } from 'lucide-react';
+import { ShieldCheck, X, Settings, Check, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 const CookieConsent = () => {
@@ -56,8 +56,8 @@ const CookieConsent = () => {
           transition={{ type: "spring", damping: 25, stiffness: 200 }}
           className="fixed bottom-0 left-0 right-0 z-[100] px-0 md:px-0 md:pb-0 rounded-xl"
         >
-          <div className="bg-primary-deep w-full mx-auto rounded-md">
-            <div className="bg-primary-deep border border-black/5 md:border-x-0 md:border-b-0 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] p-2 md:p-6 relative overflow-hidden">
+          <div className="w-full mx-auto rounded-md bg-[#133d2a]">
+            <div className="relative overflow-hidden border border-black/5 bg-[#133d2a] p-2 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] md:border-x-0 md:border-b-0 md:p-6">
               {!showPreferences ? (
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                   <div className="flex items-center gap-4">
@@ -79,7 +79,7 @@ const CookieConsent = () => {
                     </button>
                     <button
                       onClick={handleAcceptAll}
-                      className="bg-white text-primary-deep px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg active:scale-95 flex items-center gap-2"
+                      className="flex items-center gap-2 rounded-xl bg-white px-8 py-3 text-[10px] font-black uppercase tracking-widest text-[#133d2a] shadow-lg transition-all active:scale-95"
                     >
                       Accept All
                       <ShieldCheck className="w-3.5 h-3.5" />

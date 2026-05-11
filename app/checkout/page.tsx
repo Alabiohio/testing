@@ -126,28 +126,31 @@ export default function CheckoutPage() {
     if (items.length === 0) {
         return (
             <div className="min-h-screen bg-background pt-24 pb-24 flex flex-col items-center justify-center font-black text-deep-green gap-4 relative">
-                <h2 className="text-3xl">Your cart is empty</h2>
-                <p className="text-foreground/50 font-medium font-sans max-w-md text-center mb-4">You need to add items to your cart before proceeding to checkout.</p>
-                <Link href="/shop" className="text-deep-green bg-[#edf1eb] p-4 rounded-xl flex items-center gap-2 hover:bg-[#e2e9df] transition-colors">
-                    <ArrowLeft className="w-5 h-5" /> Back to Shop
+                <div className="w-16 h-16 bg-[#edf1eb] rounded-2xl flex items-center justify-center text-deep-green mb-2">
+                    <ShoppingBag className="w-8 h-8" />
+                </div>
+                <h2 className="text-3xl font-black tracking-tight">Your cart is empty</h2>
+                <p className="text-foreground/50 font-medium max-w-md text-center mb-6">You need to add items to your cart before proceeding to checkout.</p>
+                <Link href="/shop" className="text-deep-green bg-[#edf1eb] px-8 py-4 rounded-xl flex items-center gap-2 hover:bg-[#e2e9df] transition-all font-black uppercase tracking-widest text-xs">
+                    <ArrowLeft className="w-4 h-4" /> Back to Shop
                 </Link>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-background pt-8 pb-24 relative overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <header className="mb-8">
+        <div className="min-h-screen bg-background pt-8 pb-24 relative overflow-x-clip">
+            <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+                <header className="mb-12 px-2">
                     <motion.h1
-                        initial={{ opacity: 0, y: 30 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-4xl md:text-6xl font-black text-deep-green mb-4 tracking-tighter"
+                        className="text-3xl md:text-5xl font-black text-deep-green mb-3 tracking-tighter"
                     >
                         Secure <span className="text-deep-green/75">Checkout</span>
                     </motion.h1>
-                    <p className="text-lg text-foreground/50 max-w-2xl font-medium">
-                        Complete your details below. Our team will contact you to finalize the payment and delivery.
+                    <p className="text-base text-foreground/50 max-w-2xl font-medium">
+                        Complete your details below. Our team will contact you within 24 hours to finalize the payment and delivery.
                     </p>
                 </header>
 
@@ -160,23 +163,23 @@ export default function CheckoutPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
                             onSubmit={handleSubmit}
-                            className="bg-white shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)] border border-black/6 p-6 md:p-10 rounded-xl space-y-10 relative overflow-hidden"
+                            className="md:bg-white md:border md:border-earth/10 py-1 px-2 md:py-10 md:px-8 md:rounded-xl space-y-12 relative overflow-hidden"
                         >
                         
                             {/* Section: Customer Info */}
-                            <div className="space-y-6 relative z-10">
+                            <div className="space-y-8">
                                 <div className="flex items-center gap-4 mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white">
-                                        <User className="w-5 h-5" />
+                                    <div className="w-8 h-8 flex items-center justify-center text-leaf">
+                                        <User className="w-6 h-6" strokeWidth={1.5} />
                                     </div>
-                                    <h2 className="text-2xl font-black text-deep-green uppercase tracking-tight">Customer Detail</h2>
+                                    <h2 className="text-xl font-semibold text-foreground tracking-tight">Customer Information</h2>
                                 </div>
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Full Name</label>
+                                <div className="grid md:grid-cols-2 gap-5">
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Full Name</label>
                                         <input
                                             type="text"
-                                            className={`w-full bg-leaf/5 border-2 ${errors.name ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-6 outline-none transition-all font-bold`}
+                                            className={`w-full bg-white border ${errors.name ? 'border-red-500 bg-red-50' : 'border-earth/10 focus:border-foreground/30'} rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30`}
                                             placeholder="John Doe"
                                             value={formData.name}
                                             onChange={(e) => {
@@ -185,16 +188,16 @@ export default function CheckoutPage() {
                                             }}
                                         />
                                         {errors.name && (
-                                            <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                            <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-1 flex items-center gap-1">
                                                 <AlertCircle className="w-3 h-3" /> {errors.name}
                                             </p>
                                         )}
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Phone Number</label>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Phone Number</label>
                                         <input
                                             type="tel"
-                                            className={`w-full bg-leaf/5 border-2 ${errors.phone ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-6 outline-none transition-all font-bold`}
+                                            className={`w-full bg-white border ${errors.phone ? 'border-red-500 bg-red-50' : 'border-earth/10 focus:border-foreground/30'} rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30`}
                                             placeholder="0909 300 9400"
                                             value={formData.phone}
                                             onChange={(e) => {
@@ -203,17 +206,17 @@ export default function CheckoutPage() {
                                             }}
                                         />
                                         {errors.phone && (
-                                            <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                            <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-1 flex items-center gap-1">
                                                 <AlertCircle className="w-3 h-3" /> {errors.phone}
                                             </p>
                                         )}
                                     </div>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Email (Optional)</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Email (Optional)</label>
                                     <input
                                         type="email"
-                                        className={`w-full bg-leaf/5 border-2 ${errors.email ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-6 outline-none transition-all font-bold`}
+                                        className={`w-full bg-white border ${errors.email ? 'border-red-500 bg-red-50' : 'border-earth/10 focus:border-foreground/30'} rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30`}
                                         placeholder="john@example.com"
                                         value={formData.email}
                                         onChange={(e) => {
@@ -222,7 +225,7 @@ export default function CheckoutPage() {
                                         }}
                                     />
                                     {errors.email && (
-                                        <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                        <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-1 flex items-center gap-1">
                                             <AlertCircle className="w-3 h-3" /> {errors.email}
                                         </p>
                                     )}
@@ -230,12 +233,12 @@ export default function CheckoutPage() {
                             </div>
 
                             {/* Section: Delivery */}
-                            <div className="space-y-6 relative z-10">
-                                <div className="flex items-center gap-4 border-t border-gray-100 pt-8 mb-4">
-                                    <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white">
-                                        <Truck className="w-5 h-5" />
+                            <div className="space-y-8">
+                                <div className="flex items-center gap-4 mb-4">
+                                    <div className="w-8 h-8 flex items-center justify-center text-leaf">
+                                        <Truck className="w-6 h-6" strokeWidth={1.5} />
                                     </div>
-                                    <h2 className="text-2xl font-black text-deep-green uppercase tracking-tight">Delivery Info</h2>
+                                    <h2 className="text-xl font-semibold text-foreground tracking-tight">Delivery Details</h2>
                                 </div>
 
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -253,9 +256,9 @@ export default function CheckoutPage() {
                                                     setErrors(newErrors);
                                                 }
                                             }}
-                                            className={`p-3 rounded-xl border transition-all text-center text-xs font-black uppercase tracking-widest ${formData.deliveryOption === opt
-                                                ? "border-deep-green bg-[#edf1eb] text-deep-green"
-                                                : "border-black/8 hover:border-deep-green/30"
+                                            className={`px-1 py-3 rounded-lg border transition-all text-center text-[10px] font-bold uppercase tracking-widest ${formData.deliveryOption === opt
+                                                ? "bg-deep-green text-white"
+                                                : "border-earth/10 text-foreground/50 hover:border-earth/30"
                                                 }`}
                                         >
                                             {opt}
@@ -265,11 +268,11 @@ export default function CheckoutPage() {
 
                                 <div className="space-y-6">
                                     <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="space-y-4">
-                                            <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Country</label>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Country</label>
                                             <div className="relative group">
                                                 <select
-                                                    className={`w-full bg-leaf/5 border-2 ${errors.country ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer`}
+                                                    className={`w-full bg-white border ${errors.country ? 'border-red-500 bg-red-50' : 'border-earth/10 focus:border-leaf'} rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium appearance-none cursor-pointer text-foreground`}
                                                     value={formData.country}
                                                     onChange={(e) => {
                                                         const newCountry = e.target.value;
@@ -289,20 +292,20 @@ export default function CheckoutPage() {
                                                         </option>
                                                     ))}
                                                 </select>
-                                                <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
+                                                <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30 rotate-90 pointer-events-none transition-colors" />
                                             </div>
                                             {errors.country && (
-                                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-1 flex items-center gap-1">
                                                     <AlertCircle className="w-3 h-3" /> {errors.country}
                                                 </p>
                                             )}
                                         </div>
 
-                                        <div className="space-y-4">
-                                            <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">State / Province</label>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">State / Province</label>
                                             <div className="relative group">
                                                 <select
-                                                    className={`w-full bg-leaf/5 border-2 ${errors.state ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer disabled:opacity-50`}
+                                                    className={`w-full bg-white border ${errors.state ? 'border-red-500 bg-red-50' : 'border-earth/10 focus:border-leaf'} rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium appearance-none cursor-pointer disabled:opacity-50 text-foreground`}
                                                     value={formData.state}
                                                     disabled={!formData.country}
                                                     onChange={(e) => {
@@ -319,10 +322,10 @@ export default function CheckoutPage() {
                                                         ))
                                                     }
                                                 </select>
-                                                <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
+                                                <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30 rotate-90 pointer-events-none transition-colors" />
                                             </div>
                                             {errors.state && (
-                                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-1 flex items-center gap-1">
                                                     <AlertCircle className="w-3 h-3" /> {errors.state}
                                                 </p>
                                             )}
@@ -330,50 +333,48 @@ export default function CheckoutPage() {
                                     </div>
 
                                     <div className="grid md:grid-cols-2 gap-6">
-                                        <div className="space-y-4">
-                                            <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">City / Town</label>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">City / Town</label>
                                             <div className="relative group">
-                                                <select
-                                                    className={`w-full bg-leaf/5 border-2 ${errors.city ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-8 outline-none transition-all font-bold appearance-none cursor-pointer disabled:opacity-50`}
+                                                <input
+                                                    list="city-suggestions"
+                                                    className={`w-full bg-white border ${errors.city ? 'border-red-500 bg-red-50' : 'border-earth/10 focus:border-leaf'} rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium disabled:opacity-50 text-foreground placeholder:text-foreground/20`}
                                                     value={formData.city}
                                                     disabled={!formData.state}
+                                                    placeholder="Enter or select city"
                                                     onChange={(e) => {
                                                         setFormData({ ...formData, city: e.target.value });
                                                         if (errors.city) setErrors({ ...errors, city: "" });
                                                     }}
-                                                >
-                                                    <option value="">Select City</option>
+                                                />
+                                                <datalist id="city-suggestions">
                                                     {formData.state && formData.country && (() => {
                                                         const countryCode = Country.getAllCountries().find(c => c.name === formData.country)?.isoCode || "";
                                                         const stateCode = State.getStatesOfCountry(countryCode).find(s => s.name === formData.state)?.isoCode || "";
                                                         const cities = City.getCitiesOfState(countryCode, stateCode);
 
-                                                        // Fallback if no cities found for the state
                                                         if (cities.length === 0) {
-                                                            return <option value={formData.state}>{formData.state} (Entire Region)</option>;
+                                                            return <option value={formData.state} />;
                                                         }
 
                                                         return cities.map((city) => (
-                                                            <option key={city.name} value={city.name}>
-                                                                {city.name}
-                                                            </option>
+                                                            <option key={city.name} value={city.name} />
                                                         ));
                                                     })()}
-                                                </select>
-                                                <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/20 rotate-90 pointer-events-none group-focus-within:text-leaf transition-colors" />
+                                                </datalist>
                                             </div>
                                             {errors.city && (
-                                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-1 flex items-center gap-1">
                                                     <AlertCircle className="w-3 h-3" /> {errors.city}
                                                 </p>
                                             )}
                                         </div>
 
-                                        <div className="space-y-4">
-                                            <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Postal / Zip Code</label>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Postal / Zip Code (Optional)</label>
                                             <input
                                                 type="text"
-                                                className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-3 px-8 outline-none transition-all font-bold"
+                                                className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30"
                                                 placeholder="e.g. 100001"
                                                 value={formData.postalCode}
                                                 onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
@@ -381,13 +382,13 @@ export default function CheckoutPage() {
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4">
-                                        <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">
                                             {formData.deliveryOption === "Pickup" ? "Preferred Pickup Area" : "Street Address"}
                                         </label>
                                         <input
                                             type="text"
-                                            className={`w-full bg-leaf/5 border-2 ${errors.streetAddress ? 'border-red-500 bg-red-50' : 'border-transparent focus:border-leaf'} rounded-xl py-3 px-8 outline-none transition-all font-bold`}
+                                            className={`w-full bg-white border ${errors.streetAddress ? 'border-red-500 bg-red-50' : 'border-earth/10 focus:border-leaf'} rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30`}
                                             placeholder={
                                                 formData.deliveryOption === "Pickup"
                                                     ? "e.g. Near Sagamu Interchange"
@@ -402,7 +403,7 @@ export default function CheckoutPage() {
                                             }}
                                         />
                                         {errors.streetAddress && (
-                                            <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-2 flex items-center gap-1">
+                                            <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider ml-1 flex items-center gap-1">
                                                 <AlertCircle className="w-3 h-3" /> {errors.streetAddress}
                                             </p>
                                         )}
@@ -410,10 +411,10 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            <div className="space-y-2 border-t border-gray-100 pt-8 relative z-10">
-                                <label className="text-xs font-black uppercase tracking-[0.2em] text-foreground/30 ml-2">Order Notes (Optional)</label>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Order Notes (Optional)</label>
                                 <textarea
-                                    className="w-full bg-leaf/5 border-2 border-transparent focus:border-leaf rounded-xl py-4 px-6 outline-none transition-all font-bold min-h-[100px]"
+                                    className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-4 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30 min-h-[100px]"
                                     placeholder="Special size requests, delivery instructions, etc."
                                     value={formData.notes}
                                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -423,48 +424,48 @@ export default function CheckoutPage() {
                     </div>
 
                     {/* Sidebar / Summary */}
-                    <div className="space-y-8 sticky top-32">
-                        <div className="bg-white rounded-xl p-8 md:p-10 border border-black/6 relative overflow-hidden shadow-[0_18px_40px_-30px_rgba(15,23,42,0.25)]">
-                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#edf1eb] rounded-full blur-3xl" />
-                            <h3 className="text-3xl font-black text-deep-green mb-10 leading-none">Order <br /> Summary</h3>
+                    <div className="space-y-6 lg:sticky lg:top-32">
+                        <div className="bg-white rounded-xl md:rounded-3xl p-6 md:p-8 border border-earth/10 relative overflow-hidden shadow-sm">
+                            <h3 className="text-2xl font-semibold text-deep-green mb-8 leading-tight">Order Summary</h3>
 
-                            <div className="space-y-8 mb-10">
+                            <div className="space-y-6 mb-8">
                                 {items.map((item) => (
-                                    <div key={item.id} className="flex items-start gap-4 pb-6 border-b border-amber-500/10 last:border-0 last:pb-0">
-                                        <div className="w-16 h-16 bg-white rounded-xl flex-shrink-0 relative overflow-hidden border border-gray-100 shadow-sm">
-                                            <SafeImage src={item.imageUrl} alt={item.name} fill className="object-contain" />
+                                    <div key={item.id} className="flex gap-4 pb-6 border-b border-earth/5 last:border-0 last:pb-0">
+                                        <div className="relative w-14 h-14 rounded-xl border border-earth/5 bg-[#fafafa] shrink-0 overflow-hidden">
+                                            <SafeImage src={item.imageUrl} alt={item.name} fill className="object-contain p-1" />
                                         </div>
-                                        <div className="flex-grow min-w-0 pt-1">
-                                            <p className="font-black text-sm text-deep-green uppercase tracking-tight truncate">{item.name}</p>
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30 mt-1">
-                                                {(!(item.category === "Partner Ad" && !item.price)) ? `Qty: ${item.quantity} ${item.unit || 'units'}` : 'Qty Pending'}
-                                            </p>
-                                            <p className="font-black text-amber-600 text-sm mt-1">
-                                                {item.price ? `₦${item.price.toLocaleString()}` : 'Quote Pending'}
-                                            </p>
+                                        <div className="flex-grow flex flex-col justify-center min-w-0">
+                                            <p className="font-semibold text-foreground text-sm leading-tight truncate mb-1">{item.name}</p>
+                                            <div className="flex items-center text-[10px] font-bold uppercase tracking-widest text-foreground/40">
+                                                <span>Qty: {item.quantity} {item.unit || 'units'}</span>
+                                                <span className="mx-2 text-earth/20">•</span>
+                                                <span className="text-amber-600">
+                                                    {item.price ? `₦${item.price.toLocaleString()}` : 'Quote Pending'}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="pt-2 border-t border-amber-500/10 space-y-4">
+                            <div className="pt-2 border-t border-earth/5 space-y-4">
                                 <div className="flex justify-between items-center">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Subtotal</p>
-                                    <p className="font-black text-deep-green">{hasUndeterminedPrice ? "Quote Pending" : `₦${totalPrice.toLocaleString()}`}</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40">Subtotal</p>
+                                    <p className="font-bold text-foreground text-sm">{hasUndeterminedPrice ? "Quote Pending" : `₦${totalPrice.toLocaleString()}`}</p>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30">Delivery</p>
-                                    <p className="text-deep-green font-black text-[10px] uppercase tracking-widest bg-[#edf1eb] px-2 py-1 rounded-xl">Calculated later</p>
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40">Delivery</p>
+                                    <p className="text-leaf font-bold text-[10px] uppercase tracking-widest bg-leaf/5 px-2 py-1 rounded-lg">Calculated later</p>
                                 </div>
-                                <div className="pt-4 border-t border-amber-500/10">
-                                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/30 mb-1">Total Value</p>
+                                <div className="pt-4 border-t border-earth/5">
+                                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 mb-1">Total Value</p>
                                     <p className="text-3xl font-black text-deep-green tracking-tighter">
                                         {hasUndeterminedPrice ? "Quote Required" : `₦${totalPrice.toLocaleString()}`}
                                     </p>
                                 </div>
 
-                                <div className="flex items-start gap-4 p-4 bg-[#f8f9f6] rounded-xl border border-black/6 mt-6">
-                                    <Info className="w-5 h-5 text-deep-green shrink-0 mt-0.5" />
+                                <div className="flex items-start gap-3 p-4 bg-foreground/[0.02] rounded-xl border border-earth/5 mt-6">
+                                    <Info className="w-4 h-4 text-foreground/40 shrink-0 mt-0.5" />
                                     <p className="text-[10px] text-foreground/50 font-medium leading-relaxed italic">
                                         Prices may vary based on market conditions. Final quote will be shared during confirmation.
                                     </p>
@@ -476,24 +477,24 @@ export default function CheckoutPage() {
                             form="checkout-form"
                             type="submit"
                             disabled={isSubmitting || !isFormComplete}
-                            className={`w-full ${isSubmitting || !isFormComplete ? "bg-deep-green/30 cursor-not-allowed" : "bg-deep-green hover:bg-[#0f2f21]"} text-white py-4 rounded-xl font-black text-base uppercase tracking-[0.18em] transition-all active:scale-95 flex items-center justify-center gap-4`}
+                            className={`w-full ${isSubmitting || !isFormComplete ? "bg-deep-green/50 text-white/40 cursor-not-allowed" : "bg-deep-green hover:bg-[#0f2f21] text-white"} py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-4`}
                         >
                             {isSubmitting ? "PLACING ORDER..." : "PLACE ORDER"}
-                            <ChevronRight className="w-6 h-6" />
+                            <ChevronRight className="w-5 h-5" />
                         </button>
 
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {[
                                 { title: "Secure Checkout", desc: "Protected data handling", icon: ShieldCheck },
                                 { title: "Expert Support", desc: "24h Response guaranteed", icon: Phone },
                             ].map((item, i) => (
-                                <div key={i} className="flex gap-4 items-center bg-white p-6 rounded-xl border border-black/6">
-                                    <div className="w-12 h-12 rounded-xl bg-[#edf1eb] flex items-center justify-center shrink-0">
-                                        <item.icon className="w-6 h-6 text-deep-green" />
+                                <div key={i} className="flex gap-4 items-center bg-white p-5 rounded-2xl border border-earth/5">
+                                    <div className="w-10 h-10 rounded-lg bg-foreground/[0.03] flex items-center justify-center shrink-0">
+                                        <item.icon className="w-5 h-5 text-foreground/60" strokeWidth={1.5} />
                                     </div>
                                     <div>
-                                        <h4 className="font-black text-deep-green text-sm uppercase tracking-tight">{item.title}</h4>
-                                        <p className="text-[10px] text-foreground/30 font-black uppercase tracking-widest">{item.desc}</p>
+                                        <h4 className="font-medium text-foreground text-sm tracking-tight">{item.title}</h4>
+                                        <p className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest mt-0.5">{item.desc}</p>
                                     </div>
                                 </div>
                             ))}

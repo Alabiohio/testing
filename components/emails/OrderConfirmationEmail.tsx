@@ -8,11 +8,12 @@ interface OrderConfirmationEmailProps {
     streetAddress?: string | null;
     city?: string | null;
     state?: string | null;
+    country?: string | null;
     category?: string | null;
     subCategory?: string | null;
-    quantity?: string | null;
+    quantity?: string | number | null;
     totalAmount?: number | null;
-    items?: string | null;
+    items?: any[] | string | null;
     deliveryOption: string;
     notes?: string | null;
   };

@@ -160,3 +160,14 @@ export const growthStages = pgTable("growth_stages", {
 });
 
 export type GrowthStage = typeof growthStages.$inferSelect;
+
+export const subscribers = pgTable("subscribers", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  isActive: boolean("is_active").notNull().default(true),
+  consented: boolean("consented").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type Subscriber = typeof subscribers.$inferSelect;

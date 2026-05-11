@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { PriceCatalogItem, GrowthStage } from "@/lib/db/schema";
 import ProductCard, { type ProductCardProps as ProductProps, SafeImage, formatPriceRange } from "./ProductCard";
 import { toCategorySlug } from "@/lib/category-slugs";
+import { subscribeToNewsletter } from "@/app/actions/newsletter";
 
 
 
@@ -1180,23 +1181,57 @@ export default function HomeClient({
               Get periodic pricing updates, product availability, and useful farm notes in a more measured cadence.
             </p>
             <form
-              className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto"
-              onSubmit={(e) => { e.preventDefault(); alert("Thanks for subscribing!"); }}
+              id="newsletter-form"
+              className="max-w-lg mx-auto"
+              action={async (formData) => {
+                const loadingToast = toast.loading("Subscribing...");
+                try {
+                  const result = await subscribeToNewsletter(formData);
+                  toast.dismiss(loadingToast);
+                  if (result.success) {
+                    toast.success(result.message || "Successfully subscribed!");
+                    const form = document.getElementById("newsletter-form") as HTMLFormElement;
+                    form?.reset();
+                  } else {
+                    toast.error(result.error || "Failed to subscribe");
+                  }
+                } catch (error) {
+                  toast.dismiss(loadingToast);
+                  toast.error("An unexpected error occurred. Please try again.");
+                }
+              }}
             >
-              <input
-                required
-                type="email"
-                placeholder="Enter your email address"
-                className="flex-grow bg-white/8 border border-white/12 focus:border-[#87a08e] rounded-xl px-5 py-3.5 outline-none font-medium text-white placeholder-white/40 text-sm transition-all"
-              />
-              <button
-                type="submit"
-                className="bg-[#2c5b43] hover:bg-[#214734] text-white px-7 py-3.5 rounded-xl font-bold uppercase tracking-wide transition-all active:scale-95 shadow-sm text-sm whitespace-nowrap"
-              >
-                Subscribe
-              </button>
+              <div className="flex flex-col sm:flex-row gap-3 mb-4">
+                <input
+                  required
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email address"
+                  className="flex-grow bg-white/8 border border-white/12 focus:border-[#87a08e] rounded-xl px-5 py-3.5 outline-none font-medium text-white placeholder-white/40 text-sm transition-all"
+                />
+                <button
+                  type="submit"
+                  className="bg-leaf hover:bg-leaf-dark text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-lg shadow-leaf/20 active:scale-95 text-sm uppercase tracking-widest"
+                >
+                  Join Us
+                </button>
+              </div>
+              <div className="flex items-start gap-2 justify-center px-1">
+                <input 
+                    type="checkbox" 
+                    name="consent" 
+                    id="home-consent"
+                    required
+                    className="mt-1 w-3.5 h-3.5 rounded border-white/10 bg-white/5 text-leaf focus:ring-[#87a08e]/30 transition-all cursor-pointer" 
+                />
+                <label htmlFor="home-consent" className="text-[10px] text-white/40 leading-tight cursor-pointer hover:text-white/60 transition-colors">
+                    I agree to receive updates and accept the <Link href="/privacy" className="underline hover:text-[#87a08e]">Privacy Policy</Link>.
+                </label>
+              </div>
+              <p className="text-[9px] text-white/20 italic mt-2">
+                You can unsubscribe at any time. We respect your privacy.
+              </p>
             </form>
-            <p className="text-white/40 text-xs mt-4 font-medium">No spam. Unsubscribe anytime.</p>
           </div>
         </div>
       </section>

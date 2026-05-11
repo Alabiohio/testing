@@ -3,7 +3,9 @@ import { Geist, Geist_Mono, Belanosima, Saira } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CookieConsent from "@/components/CookieConsent";
 import { CartProvider } from "@/lib/cart-context";
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -86,8 +88,10 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
+            <CookieConsent />
           </SavedProvider>
         </CartProvider>
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || "G-K373FYJ2ZB"} />
       </body>
     </html>
   );

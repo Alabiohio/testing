@@ -4,6 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, Phone, MapPin, Facebook, Instagram, Twitter, MessageCircle, Shield, Truck, ChevronRight, ArrowUpRight, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
+import { subscribeToNewsletter } from '@/app/actions/newsletter';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
@@ -220,18 +222,57 @@ const Footer = () => {
                         <p className="text-white/90 text-sm leading-relaxed mb-4">
                             Subscribe for updates and exclusive offers.
                         </p>
-                        <form className="relative" onSubmit={(e) => e.preventDefault()}>
-                            <input
-                                type="email"
-                                placeholder="Email address"
-                                className="w-full bg-white/5 border border-white/10 rounded-xl pl-4 pr-10 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#87a08e]/50 focus:bg-white/10 transition-all shadow-inner"
-                            />
-                            <button
-                                type="submit"
-                                className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-[#2c5b43] hover:bg-[#214734] text-white rounded-xl transition-colors cursor-pointer"
-                            >
-                                <ArrowRight className="w-4 h-4" />
-                            </button>
+                        <form 
+                            id="footer-newsletter-form"
+                            className="space-y-3" 
+                            action={async (formData) => {
+                                const loadingToast = toast.loading("Subscribing...");
+                                try {
+                                    const result = await subscribeToNewsletter(formData);
+                                    toast.dismiss(loadingToast);
+                                    if (result.success) {
+                                        toast.success(result.message || "Successfully subscribed!");
+                                        const form = document.getElementById("footer-newsletter-form") as HTMLFormElement;
+                                        form?.reset();
+                                    } else {
+                                        toast.error(result.error || "Failed to subscribe");
+                                    }
+                                } catch (error) {
+                                    toast.dismiss(loadingToast);
+                                    toast.error("An unexpected error occurred. Please try again.");
+                                }
+                            }}
+                        >
+                            <div className="relative">
+                                <input
+                                    type="email"
+                                    name="email"
+                                    required
+                                    placeholder="Email address"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-4 pr-10 py-3 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#87a08e]/50 focus:bg-white/10 transition-all shadow-inner"
+                                />
+                                <button
+                                    type="submit"
+                                    className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center bg-[#2c5b43] hover:bg-[#214734] text-white rounded-xl transition-colors cursor-pointer"
+                                >
+                                    <ArrowRight className="w-4 h-4" />
+                                </button>
+                            </div>
+                            <div className="flex items-start gap-2 px-1">
+                                <input 
+                                    type="checkbox" 
+                                    name="consent" 
+                                    id="footer-consent"
+                                    required
+                                    className="mt-1 w-3.5 h-3.5 rounded border-white/10 bg-white/5 text-[#2c5b43] focus:ring-[#87a08e]/30 transition-all cursor-pointer" 
+                                />
+                                <label htmlFor="footer-consent" className="text-[10px] text-white/40 leading-tight cursor-pointer hover:text-white/60 transition-colors">
+                                    I agree to receive updates and accept the <Link href="/privacy" className="underline hover:text-[#87a08e]">Privacy Policy</Link>.
+                                </label>
+                            </div>
+                            <p className="text-[9px] text-white/20 italic px-1">
+                                You can unsubscribe at any time.
+                            </p>
                         </form>
                     </div>
                 </div>
@@ -267,6 +308,12 @@ const Footer = () => {
                                 {link.name}
                             </Link>
                         ))}
+                        <button
+                            onClick={() => window.dispatchEvent(new CustomEvent('open-cookie-settings'))}
+                            className="text-white/25 hover:text-white/55 text-xs transition-colors"
+                        >
+                            Manage Cookies
+                        </button>
                     </div>
                 </div>
             </div>

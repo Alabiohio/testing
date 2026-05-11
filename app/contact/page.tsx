@@ -126,14 +126,6 @@ export default function ContactPage() {
                         <h2 className="text-3xl font-black text-deep-green  mb-10 tracking-tight">Send Message</h2>
 
                         <ContactForm />
-
-                        <div className="mt-12 pt-12 border-t border-earth/5 flex justify-center gap-6">
-                            {[Facebook, Instagram, Twitter].map((Icon, i) => (
-                                <a key={i} href="#" className="w-12 h-12 rounded-xl bg-[#f4f5f1] flex items-center justify-center text-deep-green hover:bg-deep-green hover:text-white transition-all">
-                                    <Icon className="w-6 h-6" />
-                                </a>
-                            ))}
-                        </div>
                     </motion.div>
                 </div>
 

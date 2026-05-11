@@ -184,7 +184,7 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
     const isFormValid = useMemo(() => {
         // Standard fields
         if (!formData.name || !formData.streetAddress || !formData.country || !formData.state) return false;
-        if (formData.deliveryOption !== "Pickup" && (!formData.city || !formData.postalCode)) return false;
+        if (formData.deliveryOption !== "Pickup" && !formData.city) return false;
 
         if (formData.categories.length === 0) return false;
 
@@ -520,20 +520,24 @@ function OrderFormContent({ formData, setFormData, categoryGroups, deliveryOptio
                                                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                                             />
                                             <datalist id="city-suggestions">
-                                                {formData.state && formData.country && (() => {
-                                                    const countryCode = Country.getAllCountries().find(c => c.name === formData.country)?.isoCode || "";
-                                                    const stateCode = State.getStatesOfCountry(countryCode).find(s => s.name === formData.state)?.isoCode || "";
-                                                    const cities = City.getCitiesOfState(countryCode, stateCode);
+                                                    {formData.state && formData.country && (() => {
+                                                        const countryCode = Country.getAllCountries().find(c => c.name === formData.country)?.isoCode || "";
+                                                        const stateCode = State.getStatesOfCountry(countryCode).find(s => s.name === formData.state)?.isoCode || "";
+                                                        const cities = City.getCitiesOfState(countryCode, stateCode);
 
-                                                    return cities.map((city) => (
-                                                        <option key={city.name} value={city.name} />
-                                                    ));
-                                                })()}
+                                                        if (cities.length === 0) {
+                                                            return <option value={formData.state} />;
+                                                        }
+
+                                                        return cities.map((city) => (
+                                                            <option key={city.name} value={city.name} />
+                                                        ));
+                                                    })()}
                                             </datalist>
                                         </div>
 
                                         <div className="space-y-3">
-                                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Postal / Zip Code</label>
+                                            <label className="text-[10px] font-bold uppercase tracking-widest text-foreground/40 ml-1">Postal / Zip Code (Optional)</label>
                                             <input
                                                 type="text"
                                                 className="w-full bg-white border border-earth/10 focus:border-leaf rounded-lg py-3 px-4 outline-none transition-all text-sm font-medium placeholder:text-foreground/30"

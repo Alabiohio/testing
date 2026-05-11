@@ -159,7 +159,8 @@ const Navbar = () => {
                                     alt="CCB Farms Logo"
                                     width={128}
                                     height={128}
-                                    className="object-contain w-auto h-auto"
+                                    priority
+                                    className="object-contain w-full h-full"
                                 />
                             </div>
                         </Link>
@@ -291,7 +292,7 @@ const Navbar = () => {
                                         alt="CCB Farms Logo"
                                         width={80}
                                         height={80}
-                                        className="object-contain w-auto h-auto"
+                                        className="object-contain w-full h-full"
                                     />
                                 </div>
                                 <button

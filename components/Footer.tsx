@@ -113,10 +113,10 @@ const Footer = () => {
                 </div>
 
                 {/* === Main Grid === */}
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 pb-14 border-b border-white/[0.06]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 pb-14 border-b border-white/[0.06]">
 
                     {/* Brand */}
-                    <div className="col-span-2 md:col-span-1 space-y-5">
+                    <div className="space-y-5 sm:col-span-2 md:col-span-1">
                         <div className="inline-flex flex-col items-end w-36 -ml-2">
                             <Link href="/" className="relative w-full">
                                 <div className="relative w-32 h-auto flex items-center justify-center overflow-hidden">
@@ -199,7 +199,19 @@ const Footer = () => {
                                 <div className="mt-0.5 w-7 h-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center shrink-0">
                                     <MapPin className="w-3.5 h-3.5 text-[#87a08e]" />
                                 </div>
-                                <p className="text-white/90 text-sm leading-relaxed">Lagos, Nationwide<br />& Internationally</p>
+                                <div className="space-y-1">
+                                    <p className="text-white/90 text-[13px] font-bold">Lagos Flagship:</p>
+                                    <p className="text-white/60 text-xs leading-relaxed">
+                                        Suite A51, Primal Tek Plaza,<br />
+                                        63/65 Egbeda-Idimu Road,<br />
+                                        Lagos State, Nigeria
+                                    </p>
+                                    <p className="text-white/90 text-[13px] font-bold mt-2">Ogun State:</p>
+                                    <p className="text-white/60 text-xs leading-relaxed">
+                                        Awowo Farm Settlements,<br />
+                                        Abeokuta, Ogun State
+                                    </p>
+                                </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <div className="w-7 h-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center shrink-0">
@@ -217,7 +229,7 @@ const Footer = () => {
                     </div>
 
                     {/* Newsletter */}
-                    <div className="col-span-2 md:col-span-1">
+                    <div className="sm:col-span-2 md:col-span-1">
                         <h3 className="text-white/70 text-[11px] font-bold uppercase tracking-[0.15em] mb-5">Newsletter</h3>
                         <p className="text-white/90 text-sm leading-relaxed mb-4">
                             Subscribe for updates and exclusive offers.
@@ -266,11 +278,11 @@ const Footer = () => {
                                     required
                                     className="mt-1 w-3.5 h-3.5 rounded border-white/10 bg-white/5 text-[#2c5b43] focus:ring-[#87a08e]/30 transition-all cursor-pointer" 
                                 />
-                                <label htmlFor="footer-consent" className="text-[10px] text-white/40 leading-tight cursor-pointer hover:text-white/60 transition-colors">
+                                <label htmlFor="footer-consent" className="text-[10px] text-white/70 leading-tight cursor-pointer hover:text-white/60 transition-colors">
                                     I agree to receive updates and accept the <Link href="/privacy" className="underline hover:text-[#87a08e]">Privacy Policy</Link>.
                                 </label>
                             </div>
-                            <p className="text-[9px] text-white/20 italic px-1">
+                            <p className="text-[9px] text-white/70 italic px-1">
                                 You can unsubscribe at any time.
                             </p>
                         </form>
@@ -295,7 +307,7 @@ const Footer = () => {
 
                 {/* === Bottom Bar === */}
                 <div className="py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <p className="text-white/25 text-xs">
+                    <p className="text-white/65 text-xs">
                         © {currentYear} CCB Farms. All rights reserved.
                     </p>
                     <div className="flex items-center gap-6">
@@ -303,14 +315,14 @@ const Footer = () => {
                             <Link
                                 key={link.name}
                                 href={link.href}
-                                className="text-white/25 hover:text-white/55 text-xs transition-colors"
+                                className="text-white/75 hover:text-white/95 text-xs transition-colors"
                             >
                                 {link.name}
                             </Link>
                         ))}
                         <button
                             onClick={() => window.dispatchEvent(new CustomEvent('open-cookie-settings'))}
-                            className="text-white/25 hover:text-white/55 text-xs transition-colors"
+                            className="text-white/75 hover:text-white/95 text-xs transition-colors"
                         >
                             Manage Cookies
                         </button>

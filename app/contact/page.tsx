@@ -107,10 +107,23 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <h3 className="text-2xl font-black text-deep-green  mb-2">Our Location</h3>
-                                    <p className="text-lg text-foreground/60 leading-relaxed font-medium">
-                                        Lagos, Nationwide and <br />
-                                        Internationally.
-                                    </p>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-sm font-black text-deep-green uppercase tracking-widest mb-1">Lagos Flagship Office</p>
+                                            <p className="text-lg text-foreground/60 leading-relaxed font-medium">
+                                                Suite A51, Primal Tek Plaza, <br />
+                                                63/65 Egbeda-Idimu Road, <br />
+                                                Egbeda, Lagos State, Nigeria
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-black text-deep-green uppercase tracking-widest mb-1">Ogun State Farm</p>
+                                            <p className="text-lg text-foreground/60 leading-relaxed font-medium">
+                                                Awowo Farm Settlements, <br />
+                                                Abeokuta, Ogun State
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

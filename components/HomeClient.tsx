@@ -1257,7 +1257,7 @@ export default function HomeClient({
             </div>
             <div className="mt-12 flex flex-wrap justify-center gap-10 text-gray-600 font-bold text-sm">
               <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> 09093009400</span>
-              <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Lagos, Nationwide & Int'l</span>
+              <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Lagos & Ogun State</span>
               <span className="flex items-center gap-2"><Truck className="w-4 h-4" /> Nationwide & Global Delivery</span>
             </div>
           </div>

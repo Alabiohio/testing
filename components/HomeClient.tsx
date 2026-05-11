@@ -373,7 +373,7 @@ export default function HomeClient({
       imageUrl: product.img
     }, 1);
     toast.success(`${product.name} added to cart`);
-    };
+  };
 
   const products = initialProducts;
 
@@ -696,7 +696,7 @@ export default function HomeClient({
               // Group the available products by their exact subcategory
               const groups: Record<string, typeof products> = {};
               subCats.forEach(sc => groups[sc] = []);
-              
+
               products.forEach(p => {
                 const pCat = p.category.toLowerCase();
                 if (subCats.includes(pCat)) {
@@ -1081,7 +1081,7 @@ export default function HomeClient({
                   fill
                   className="object-contain group-hover:scale-105 transition-transform duration-1000 p-4"
                 />
-                
+
                 {/* Catchy Nutrients Badges */}
                 <div className="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2">
                   {[
@@ -1108,9 +1108,9 @@ export default function HomeClient({
             {/* Textual Content */}
             <div className="space-y-10">
               <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight mb-8">
-                The Health Benefits of<br />
-                <span className="text-leaf">Eating Catfish</span>
+                <h2 className="text-2xl md:text-3xl font-bold text-deep-green tracking-tight mb-8">
+                  The Health Benefits of<br />
+                  <span className="text-leaf">Eating Catfish</span>
                 </h2>
               </div>
 
@@ -1176,7 +1176,7 @@ export default function HomeClient({
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="bg-[#1a231d] rounded-xl p-10 md:p-16 relative overflow-hidden text-center">
           <div className="relative z-10 max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-4">Stay informed without the noise</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight mb-4">Stay informed</h2>
             <p className="text-white/60 text-base mb-8 font-medium">
               Get periodic pricing updates, product availability, and useful farm notes in a more measured cadence.
             </p>
@@ -1217,15 +1217,15 @@ export default function HomeClient({
                 </button>
               </div>
               <div className="flex items-start gap-2 justify-center px-1">
-                <input 
-                    type="checkbox" 
-                    name="consent" 
-                    id="home-consent"
-                    required
-                    className="mt-1 w-3.5 h-3.5 rounded border-white/10 bg-white/5 text-leaf focus:ring-[#87a08e]/30 transition-all cursor-pointer" 
+                <input
+                  type="checkbox"
+                  name="consent"
+                  id="home-consent"
+                  required
+                  className="mt-1 w-3.5 h-3.5 rounded border-white/10 bg-white/5 text-leaf focus:ring-[#87a08e]/30 transition-all cursor-pointer"
                 />
                 <label htmlFor="home-consent" className="text-[10px] text-white/40 leading-tight cursor-pointer hover:text-white/60 transition-colors">
-                    I agree to receive updates and accept the <Link href="/privacy" className="underline hover:text-[#87a08e]">Privacy Policy</Link>.
+                  I agree to receive updates and accept the <Link href="/privacy" className="underline hover:text-[#87a08e]">Privacy Policy</Link>.
                 </label>
               </div>
               <p className="text-[9px] text-white/20 italic mt-2">
@@ -1257,8 +1257,6 @@ export default function HomeClient({
             </div>
             <div className="mt-12 flex flex-wrap justify-center gap-10 text-gray-600 font-bold text-sm">
               <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> 09093009400</span>
-              <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> Lagos & Ogun State</span>
-              <span className="flex items-center gap-2"><Truck className="w-4 h-4" /> Nationwide & Global Delivery</span>
             </div>
           </div>
         </div>

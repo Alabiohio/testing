@@ -1064,7 +1064,7 @@ export default function HomeClient({
       </section>
 
       {/* ===== HEALTH BENEFITS SECTION ===== */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-20 scroll-mt-24" id="health-benefits">
+      <section className="max-w-7xl mx-auto px-2 sm:px-2 lg:px-8 mb-20 scroll-mt-24" id="health-benefits">
         <div className="bg-white rounded-3xl p-8 md:p-16 border border-earth/10 relative overflow-hidden">
           {/* Decorative background element */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-leaf/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
@@ -1077,7 +1077,7 @@ export default function HomeClient({
               viewport={{ once: true }}
               className="relative"
             >
-              <div className="aspect-square sm:aspect-[4/3] relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white group">
+              <div className="aspect-square sm:aspect-[4/3] relative rounded-3xl overflow-hidden shadow-xl border-4 border-white group">
                 <Image
                   src="/assets/images/catfish.png"
                   alt="Healthy Catfish"

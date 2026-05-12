@@ -113,10 +113,10 @@ const Footer = () => {
                 </div>
 
                 {/* === Main Grid === */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 pb-14 border-b border-white/[0.06]">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-10 pb-14 border-b border-white/[0.06]">
 
                     {/* Brand */}
-                    <div className="space-y-5 sm:col-span-2 md:col-span-1">
+                    <div className="space-y-5 col-span-2 md:col-span-1">
                         <div className="inline-flex flex-col items-end w-36 -ml-2">
                             <Link href="/" className="relative w-full">
                                 <div className="relative w-32 h-auto flex items-center justify-center overflow-hidden">
@@ -136,23 +136,6 @@ const Footer = () => {
                         <p className="text-white/90 text-sm leading-relaxed max-w-[200px]">
                             A dependable catfish supply partner for households, retailers, and commercial buyers.
                         </p>
-                        {/* Social Icons */}
-                        <div className="flex gap-2.5 pt-1">
-                            {[
-                                { Icon: Facebook, href: '#', label: 'Facebook' },
-                                { Icon: Instagram, href: '#', label: 'Instagram' },
-                                { Icon: Twitter, href: '#', label: 'Twitter' },
-                            ].map(({ Icon, href, label }) => (
-                                <a
-                                    key={label}
-                                    href={href}
-                                    aria-label={label}
-                                    className="w-9 h-9 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center text-white/40 hover:text-white hover:bg-[#22c55e] hover:border-[#22c55e] transition-all duration-200"
-                                >
-                                    <Icon className="w-4 h-4" />
-                                </a>
-                            ))}
-                        </div>
                     </div>
 
                     {/* Shop Links */}
@@ -193,7 +176,6 @@ const Footer = () => {
 
                     {/* Contact */}
                     <div>
-                        <h3 className="text-white/70 text-[11px] font-bold uppercase tracking-[0.15em] mb-5">Contact</h3>
                         <div className="space-y-4">
                             <div className="flex items-start gap-3">
                                 <div className="mt-0.5 w-7 h-7 rounded-lg bg-white/5 border border-white/8 flex items-center justify-center shrink-0">
@@ -205,11 +187,6 @@ const Footer = () => {
                                         Suite A51, Primal Tek Plaza,<br />
                                         63/65 Egbeda-Idimu Road,<br />
                                         Lagos State, Nigeria
-                                    </p>
-                                    <p className="text-white/90 text-[13px] font-bold mt-2">Ogun State:</p>
-                                    <p className="text-white/60 text-xs leading-relaxed">
-                                        Awowo Farm Settlements,<br />
-                                        Abeokuta, Ogun State
                                     </p>
                                 </div>
                             </div>
@@ -228,15 +205,31 @@ const Footer = () => {
                         </div>
                     </div>
 
+                    <div>
+                        <div className="space-y-4">
+                            <div className="flex items-start gap-3">
+                                <div className="space-y-1">
+
+                                    <p className="text-white/90 text-[13px] font-bold mt-2">Ogun State:</p>
+                                    <p className="text-white/60 text-xs leading-relaxed">
+                                        Awowo Farm Settlements,<br />
+                                        Abeokuta, Ogun State
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
                     {/* Newsletter */}
-                    <div className="sm:col-span-2 md:col-span-1">
+                    <div className="col-span-2 md:col-span-1">
                         <h3 className="text-white/70 text-[11px] font-bold uppercase tracking-[0.15em] mb-5">Newsletter</h3>
                         <p className="text-white/90 text-sm leading-relaxed mb-4">
                             Subscribe for updates and exclusive offers.
                         </p>
-                        <form 
+                        <form
                             id="footer-newsletter-form"
-                            className="space-y-3" 
+                            className="space-y-3"
                             action={async (formData) => {
                                 const loadingToast = toast.loading("Subscribing...");
                                 try {
@@ -271,12 +264,12 @@ const Footer = () => {
                                 </button>
                             </div>
                             <div className="flex items-start gap-2 px-1">
-                                <input 
-                                    type="checkbox" 
-                                    name="consent" 
+                                <input
+                                    type="checkbox"
+                                    name="consent"
                                     id="footer-consent"
                                     required
-                                    className="mt-1 w-3.5 h-3.5 rounded border-white/10 bg-white/5 text-[#2c5b43] focus:ring-[#87a08e]/30 transition-all cursor-pointer" 
+                                    className="mt-1 w-3.5 h-3.5 rounded border-white/10 bg-white/5 text-[#2c5b43] focus:ring-[#87a08e]/30 transition-all cursor-pointer"
                                 />
                                 <label htmlFor="footer-consent" className="text-[10px] text-white/70 leading-tight cursor-pointer hover:text-white/60 transition-colors">
                                     I agree to receive updates and accept the <Link href="/privacy" className="underline hover:text-[#87a08e]">Privacy Policy</Link>.

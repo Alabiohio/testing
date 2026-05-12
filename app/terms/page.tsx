@@ -4,8 +4,8 @@ import { FileText, Scale, Gavel, AlertCircle, ShoppingBag, Truck, Mail, ArrowLef
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms & Conditions | CCB Farms',
-  description: 'The legal terms governing your use of CCB Farms services and products.',
+  title: 'Terms of Service',
+  description: 'Review the legal terms governing your use of CCB Farms services, products, and training programs.',
 };
 
 const TermsAndConditions = () => {

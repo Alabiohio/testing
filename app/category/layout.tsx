@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Official Categories",
-    description: "Explore our premium catfish categories. From healthy fingerlings to delicious smoked catfish - order online for delivery within Lagos, Nationwide and Internationally.",
+    title: "Catfish Categories & Pricing",
+    description: "Explore our premium catfish categories with detailed pricing. From healthy fingerlings to delicious smoked catfish - order online for nationwide delivery.",
     openGraph: {
-        title: "Official Categories | CCB Farms",
+        title: "Catfish Categories & Pricing | CCB Farms",
         description: "Explore our catfish categories - Fingerlings, Juveniles, Table-size, and Smoked Catfish.",
         images: ["/assets/bgImages/tablesize.png"],
     },

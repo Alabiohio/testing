@@ -38,9 +38,51 @@ export async function generateMetadata({ params }: { params: Promise<{ categoryS
     const slug = categorySlug.toLowerCase();
     const title = getCategoryDisplayName(slug);
 
+    const slugDescriptions: Record<string, { meta: string; og: string }> = {
+        fingerlings: {
+            meta: "Buy healthy catfish fingerlings from CCB Farms. Fast-growing, disease-resistant strains ideal for stocking ponds and starting your fish farm.",
+            og: "Healthy, fast-growing catfish fingerlings for pond stocking. Disease-resistant strains with high survival rates.",
+        },
+        juveniles: {
+            meta: "Order premium juvenile catfish from CCB Farms. Raised in controlled environments for optimal growth, ready for your grow-out ponds.",
+            og: "Premium juvenile catfish raised for optimal growth. Ready for grow-out ponds with high yield potential.",
+        },
+        "table-size": {
+            meta: "Fresh table-size catfish available for order at CCB Farms. Market-ready, hygienically handled fish for households, restaurants, and retailers.",
+            og: "Market-ready table-size catfish. Fresh, hygienically handled for households, restaurants, and retailers.",
+        },
+        smoked: {
+            meta: "Order premium smoked catfish from CCB Farms. Expertly smoked for rich flavour and long shelf life. Perfect for retail and bulk buyers.",
+            og: "Expertly smoked catfish with rich flavour and long shelf life. Available for retail and bulk orders.",
+        },
+        broodstock: {
+            meta: "Source quality broodstock catfish from CCB Farms. Proven breeders with high fertility rates for hatchery operations and breeding programs.",
+            og: "Quality broodstock catfish with high fertility rates. Ideal for hatcheries and breeding programs.",
+        },
+        farming: {
+            meta: "Explore catfish for farming — fingerlings and juveniles from CCB Farms. Health-guaranteed strains optimised for high survival and fast growth.",
+            og: "Fingerlings and juveniles for fish farming. Health-guaranteed, fast-growing strains from CCB Farms.",
+        },
+        consumption: {
+            meta: "Shop fresh table-size and smoked catfish from CCB Farms. Hygienically processed and delivered nationwide for homes, restaurants, and retailers.",
+            og: "Fresh table-size and smoked catfish. Hygienically processed with nationwide delivery.",
+        },
+        breeding: {
+            meta: "Premium broodstock catfish from CCB Farms. Proven breeders for hatchery operations, with expert guidance on breeding programs.",
+            og: "Premium broodstock catfish for hatcheries. Proven breeders with expert aquaculture guidance.",
+        },
+    };
+
+    const desc = slugDescriptions[slug];
+
     return {
-        title: `${title} | CCB Farms`,
-        description: `Premium quality ${title.toLowerCase()} from CCB Farms. Health-guaranteed and high-yield strains available for order.`,
+        title: title,
+        description: desc?.meta || `Shop premium ${title.toLowerCase()} from CCB Farms. Quality-guaranteed catfish with nationwide delivery.`,
+        openGraph: {
+            title: `${title} | CCB Farms`,
+            description: desc?.og || `Shop premium ${title.toLowerCase()} from CCB Farms. Quality-guaranteed with nationwide delivery.`,
+            images: ["/ccbLg.png"],
+        },
     };
 }
 

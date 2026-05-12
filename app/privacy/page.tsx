@@ -4,8 +4,8 @@ import { Shield, Lock, Eye, Mail, ArrowLeft, Cookie } from 'lucide-react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | CCB Farms',
-  description: 'How we collect, use, and protect your data at CCB Farms.',
+  title: 'Privacy Policy',
+  description: 'Learn how CCB Farms protects your privacy and secures your personal information. Read our complete data protection policy.',
 };
 
 const PrivacyPolicy = () => {

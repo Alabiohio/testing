@@ -3,6 +3,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
     title: "Your Cart",
     description: "Review and manage the items in your CCB Farms shopping cart before securely proceeding to checkout.",
+    robots: { index: false, follow: true },
 };
 
 export default function CartLayout({

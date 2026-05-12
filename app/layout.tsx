@@ -26,22 +26,22 @@ const sourceSans = Source_Sans_3({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://ccb.farms'),
+  metadataBase: new URL('https://ccb.farm'),
   title: {
-    default: "CCB Farms - Premium Catfish & Sustainable Agriculture",
+    default: "CCB Farms - Your Trusted Catfish Supply Partner",
     template: "%s | CCB Farms"
   },
-  description: "CCB Farms is a leading supplier of premium catfish (Fingerlings, Juveniles, Table-size) and a provider of expert agricultural training. Sustainable excellence in every pond.",
+  description: "CCB Farms is a dependable catfish supply partner for households, retailers, and commercial buyers. Quality Fingerlings, Juveniles, Table-size, Smoked Catfish & aquaculture training.",
   keywords: ["catfish", "fish farming", "Nigeria agriculture", "juveniles", "fingerlings", "smoked fish", "farming training"],
   authors: [{ name: "CCB Farms" }],
   creator: "CCB Farms",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://ccb.farms",
+    url: "https://ccb.farm",
     siteName: "CCB Farms",
-    title: "CCB Farms - Premium Catfish & Sustainable Agriculture",
-    description: "Quality catfish supply and expert agricultural training. Fingerlings, Juveniles, Table-size, and Smoked Catfish.",
+    title: "CCB Farms - Your Trusted Catfish Supply Partner",
+    description: "CCB Farms is a dependable catfish supply partner for households, retailers, and commercial buyers. Quality Fingerlings, Juveniles, Table-size & Smoked Catfish.",
     images: [
       {
         url: "/ccbLg.png", // Using the logo as a fallback OG image
@@ -53,9 +53,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "CCB Farms - Premium Catfish & Sustainable Agriculture",
-    description: "Quality catfish supply and expert agricultural training.",
-    images: ["/ccbLg.png"],
+    title: "CCB Farms - Quality Catfish from Farm to Table",
+    description: "CCB Farms is a dependable catfish supply partner. Quality Fingerlings, Juveniles, Table-size & Smoked Catfish with nationwide delivery.",
+    images: ["/ccb.png"],
   },
   icons: {
     icon: "/favicon.ico",

@@ -1,5 +1,12 @@
 import Link from "next/link";
 import { ArrowRight, Home } from "lucide-react";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Page Not Found",
+  description: "The page you are looking for could not be found. Browse our catfish products or return to the homepage.",
+  robots: { index: false, follow: true },
+};
 
 export default function NotFound() {
     return (

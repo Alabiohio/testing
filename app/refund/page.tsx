@@ -4,8 +4,8 @@ import { RefreshCcw, CheckCircle, AlertTriangle, Clock, ShoppingBag, Mail, Arrow
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Refund Policy | CCB Farms',
-  description: 'Our policy regarding refunds and returns for livestock and training services.',
+  title: 'Refund Policy',
+  description: 'Understand our refund and returns policy for livestock products and training services. Customer satisfaction guaranteed.',
 };
 
 const RefundPolicy = () => {

@@ -2,13 +2,13 @@
 
 ## Project Name
 
-ccb.farms -- Catfish Sales & Training Website
+ccb.farm -- Catfish Sales & Training Website
 
 ## Project Overview
 
 This project is a responsive business website for a catfish farming and
 sales brand serving farmers and consumers. The platform will be deployed
-on Vercel and connected to the domain ccb.farms.
+on Vercel and connected to the domain ccb.farm.
 
 ## Main Navigation
 
@@ -56,7 +56,7 @@ integration.
 
 ## Deployment
 
-Local setup, testing, domain connection to ccb.farms and final approval.
+Local setup, testing, domain connection to ccb.farm and final approval.
 
 ## Future Enhancements
 

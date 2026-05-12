@@ -133,37 +133,39 @@ const Navbar = () => {
 
     return (
         <>
-            {/* Promo Announcement Bar */}
-            <AnimatePresence>
-                {promoVisible && (
-                    <motion.div
-                        initial={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="promo-bar relative z-[105] overflow-hidden"
-                    >
-                        <div className="ticker-wrap">
-                            <div className="ticker-content flex items-center">
-                                {[...tickerItems, ...tickerItems].map((item, i) => (
-                                    <React.Fragment key={i}>
-                                        <span className="inline-flex items-center font-bold text-white text-sm sm:text-sm whitespace-nowrap">
-                                            {item.content || item.text}
-                                        </span>
-                                        <div className="flex-shrink-0 flex items-center justify-center mx-4">
-                                            <Asterisk className="w-3 h-3 text-white" strokeWidth={3} />
-                                        </div>
-                                    </React.Fragment>
-                                ))}
+            {/* Sticky Header: Promo Bar + Navbar */}
+            <div className="sticky top-0 z-[100]">
+                {/* Promo Announcement Bar */}
+                <AnimatePresence>
+                    {promoVisible && (
+                        <motion.div
+                            initial={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="promo-bar relative overflow-hidden"
+                        >
+                            <div className="ticker-wrap">
+                                <div className="ticker-content flex items-center">
+                                    {[...tickerItems, ...tickerItems].map((item, i) => (
+                                        <React.Fragment key={i}>
+                                            <span className="inline-flex items-center font-bold text-white text-sm sm:text-sm whitespace-nowrap">
+                                                {item.content || item.text}
+                                            </span>
+                                            <div className="flex-shrink-0 flex items-center justify-center mx-4">
+                                                <Asterisk className="w-3 h-3 text-white" strokeWidth={3} />
+                                            </div>
+                                        </React.Fragment>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-            {/* Main Navbar - Statically Sticky */}
-            <nav
-                className="sticky top-0 z-[100] w-full transition-all duration-300 bg-[#f5f6f2]/95 backdrop-blur-xl shadow-[0_8px_28px_rgba(15,23,42,0.06)] border-b border-black/5"
-                ref={headerRef}
-            >
+                {/* Main Navbar */}
+                <nav
+                    className="w-full transition-all duration-300 bg-[#f5f6f2]/95 backdrop-blur-xl shadow-[0_8px_28px_rgba(15,23,42,0.06)] border-b border-black/5"
+                    ref={headerRef}
+                >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-[72px] items-center">
                         {/* Logo */}
@@ -181,19 +183,19 @@ const Navbar = () => {
                         </Link>
 
                         {/* Desktop Menu */}
-                        <div className="hidden lg:flex items-center gap-1">
+                        <div className="hidden lg:flex items-center gap-1 relative">
                             {menuItems.map((item) => {
                                 const isActive = pathname === item.href;
                                 return (
                                     <Link
                                         key={item.name}
                                         href={item.href}
-                                        className={`px-4 py-2 text-sm font-semibold tracking-wide transition-all rounded-xl relative group ${isActive
-                                            ? 'text-deep-green bg-deep-green/8'
+                                        className={`px-4 py-2 text-sm font-semibold tracking-wide transition-colors rounded-xl relative group ${isActive
+                                            ? 'text-deep-green'
                                             : 'text-gray-700 hover:text-deep-green hover:bg-black/[0.03]'
                                             }`}
                                     >
-                                        <span className="relative">
+                                        <span className="relative z-10">
                                             {item.name}
                                             {!isActive && (
                                                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-leaf transition-all duration-300 group-hover:w-full rounded-full" />
@@ -202,8 +204,9 @@ const Navbar = () => {
                                         {isActive && (
                                             <motion.div
                                                 layoutId="nav-active"
-                                                className="absolute inset-0 bg-deep-green/8 rounded-xl -z-10"
-                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                                className="absolute inset-0 bg-deep-green/10 rounded-xl"
+                                                style={{ zIndex: 0 }}
+                                                transition={{ type: "spring", stiffness: 350, damping: 30 }}
                                             />
                                         )}
                                     </Link>
@@ -276,6 +279,7 @@ const Navbar = () => {
                     </div>
                 </div>
             </nav>
+            </div>
 
             {/* Mobile Menu Side Drawer */}
             <AnimatePresence>

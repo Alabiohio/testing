@@ -5,8 +5,13 @@ import { getMappedProducts } from "@/lib/products";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: "Shop | CCB Farms",
-    description: "Browse our full collection of premium aquaculture products, from fingerlings to smoked catfish.",
+    title: "Shop Premium Catfish",
+    description: "Browse our full collection of premium aquaculture products. Quality Fingerlings, Juveniles, Table-size, and Smoked Catfish for sustainable farming.",
+    openGraph: {
+        title: "Shop Premium Catfish | CCB Farms",
+        description: "Browse our full collection of premium catfish products. Fingerlings, Juveniles, Table-size, and Smoked Catfish.",
+        images: ["/ccbLg.png"],
+    },
 };
 
 export default async function ShopPage() {
